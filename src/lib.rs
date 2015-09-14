@@ -70,6 +70,13 @@ impl<L, R> Either<L, R> {
             Right(ref mut inner) => Right(inner),
         }
     }
+
+    pub fn flip(self) -> Either<R, L> {
+        match self {
+            Left(l) => Right(l),
+            Right(r) => Left(r),
+        }
+    }
 }
 
 /// Convert from `Result` to `Either` with `Ok => Right` and `Err => Left`.
