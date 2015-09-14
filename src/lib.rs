@@ -1,4 +1,5 @@
 use std::io::{self, Write, Read, BufRead};
+use std::convert::{AsRef, AsMut};
 
 pub use Either::{Left, Right};
 
@@ -162,6 +163,22 @@ impl<L, R> Write for Either<L, R>
 
     fn flush(&mut self) -> io::Result<()> {
         either_mut!(*self, inner => inner.flush())
+    }
+}
+
+impl<L, R, Target> AsRef<Target> for Either<L, R>
+    where L: AsRef<Target>, R: AsRef<Target>
+{
+    fn as_ref(&self) -> &Target {
+        either!(*self, inner => inner.as_ref())
+    }
+}
+
+impl<L, R, Target> AsMut<Target> for Either<L, R>
+    where L: AsMut<Target>, R: AsMut<Target>
+{
+    fn as_mut(&mut self) -> &mut Target {
+        either_mut!(*self, inner => inner.as_mut())
     }
 }
 
