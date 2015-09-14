@@ -148,5 +148,26 @@ impl<L, R> Write for Either<L, R>
 }
 
 #[test]
-fn it_works() {
+fn basic() {
+    let mut e = Left(2);
+    let r = Right(2);
+    assert_eq!(e, Left(2));
+    e = r;
+    assert_eq!(e, Right(2));
+    assert_eq!(e.left(), None);
+    assert_eq!(e.right(), Some(2));
+    assert_eq!(e.as_ref().right(), Some(&2));
+    assert_eq!(e.as_mut().right(), Some(&mut 2));
+}
+
+#[test]
+fn iter() {
+    let x = 3;
+    let mut iter = match x {
+        1...3 => Left(0..10),
+        _ => Right(17..),
+    };
+
+    assert_eq!(iter.next(), Some(0));
+    assert_eq!(iter.count(), 9);
 }
