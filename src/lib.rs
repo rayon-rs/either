@@ -4,6 +4,9 @@ pub use Either::{Left, Right};
 
 /// `Either` represents an alternative holding one value out of
 /// either of the two possible values.
+///
+/// `Either` treats the two cases `Left` and `Right` equally, with
+/// no priority.
 #[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, Debug)]
 pub enum Either<L, R> {
     Left(L),
@@ -89,6 +92,7 @@ impl<L, R> Into<Result<R, L>> for Either<L, R> {
     }
 }
 
+/// `Either<L, R>` is an iterator if both `L` and `R` are iterators.
 impl<L, R> Iterator for Either<L, R>
     where L: Iterator, R: Iterator<Item=L::Item>
 {
@@ -111,6 +115,12 @@ impl<L, R> DoubleEndedIterator for Either<L, R>
     }
 }
 
+impl<L, R> ExactSizeIterator for Either<L, R>
+    where L: ExactSizeIterator, R: ExactSizeIterator<Item=L::Item>
+{
+}
+
+/// `Either<L, R>` implements `Read` if both `L` and `R` do.
 impl<L, R> Read for Either<L, R>
     where L: Read, R: Read
 {
@@ -135,6 +145,7 @@ impl<L, R> BufRead for Either<L, R>
     }
 }
 
+/// `Either<L, R>` implements `Write` if both `L` and `R` do.
 impl<L, R> Write for Either<L, R>
     where L: Write, R: Write
 {
