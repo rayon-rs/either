@@ -10,7 +10,9 @@ pub use Either::{Left, Right};
 /// no priority.
 #[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, Debug)]
 pub enum Either<L, R> {
+    /// A value of type `L`.
     Left(L),
+    /// A value of type `R`.
     Right(R),
 }
 
