@@ -7,6 +7,6 @@ license = "MIT/Apache-2.0"
 repository = "https://github.com/bluss/either"
 documentation = "http://bluss.github.io/either"
 
-description = "The enum `Either`, with variants `Left` and `Right` and convenient trait implementations."
+description = "The enum `Either`, with variants `Left` and `Right` and trait implementations including Iterator, Read, Write."
 
 keywords = ["data-structure"]
