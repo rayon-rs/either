@@ -1,5 +1,7 @@
 use std::io::{self, Write, Read, BufRead};
 use std::convert::{AsRef, AsMut};
+use std::ops::Deref;
+use std::ops::DerefMut;
 
 pub use Either::{Left, Right};
 
@@ -184,6 +186,25 @@ impl<L, R, Target> AsMut<Target> for Either<L, R>
     }
 }
 
+impl<L, R> Deref for Either<L, R>
+    where L: Deref, R: Deref<Target=L::Target>
+{
+    type Target = L::Target;
+
+    fn deref(&self) -> &Self::Target {
+        either!(*self, inner => &*inner)
+    }
+}
+
+impl<L, R> DerefMut for Either<L, R>
+    where L: DerefMut, R: DerefMut<Target=L::Target>
+{
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        either_mut!(*self, inner => &mut *inner)
+    }
+}
+
+
 #[test]
 fn basic() {
     let mut e = Left(2);
@@ -195,6 +216,13 @@ fn basic() {
     assert_eq!(e.right(), Some(2));
     assert_eq!(e.as_ref().right(), Some(&2));
     assert_eq!(e.as_mut().right(), Some(&mut 2));
+}
+
+#[test]
+fn deref() {
+    fn is_str(_: &str) {}
+    let value: Either<String, &str> = Left(String::from("test"));
+    is_str(&*value);
 }
 
 #[test]
