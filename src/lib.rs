@@ -1,3 +1,5 @@
+//! The enum `Either`.
+
 use std::io::{self, Write, Read, BufRead};
 use std::convert::{AsRef, AsMut};
 use std::ops::Deref;
@@ -8,8 +10,8 @@ pub use Either::{Left, Right};
 /// `Either` represents an alternative holding one value out of
 /// either of the two possible values.
 ///
-/// `Either` treats the two cases `Left` and `Right` equally, with
-/// no priority.
+/// `Either` is a general purpose sum type of two parts. For representing
+/// success or error, use the regular `Result<T, E>` instead.
 #[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, Debug)]
 pub enum Either<L, R> {
     /// A value of type `L`.
