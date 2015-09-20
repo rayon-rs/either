@@ -38,30 +38,43 @@ macro_rules! either_mut {
     )
 }
 
-/// Helper macro for unwrapping the left side of an `Either` while returning
-/// early with the right side if there is no left one. Can only be used in
-/// functions that return `Either` because of the early return of `Right` that
-/// it provides.
+/// Macro for unwrapping the left side of an `Either`, which fails early
+/// with the opposite side. Can only be used in functions that return
+/// `Either` because of the early return of `Right` that it provides.
+///
+/// See also `right!` for its dual, which applies the same just to the
+/// right side.
+///
+/// # Example
+///
+/// ```
+/// # #[macro_use] extern crate either; use either::*; fn main() {
+/// fn twice(wrapper: Either<u32, &str>) -> Either<u32, &str> {
+///     let value = left!(wrapper);
+///     Left(value * 2)
+/// }
+///
+/// assert_eq!(twice(Left(2)), Left(4));
+/// assert_eq!(twice(Right("ups")), Right("ups"));
+/// # }
+/// ```
 #[macro_export]
 macro_rules! left {
     ($expr:expr) => (
         match $expr {
-            Either::Left(val) => val,
-            Either::Right(err) => return Either::Right(From::from(err))
+            $crate::Left(val) => val,
+            $crate::Right(err) => return $crate::Right(::std::convert::From::from(err))
         }
     )
 }
 
-/// Helper macro for unwrapping the right side of an `Either` while returning
-/// early with the left side if there is no right one. Can only be used in
-/// functions that return `Either` because of the early return of `Left` that
-/// it provides.
+/// Dual to `left!`, see its documentation for more information.
 #[macro_export]
 macro_rules! right {
     ($expr:expr) => (
         match $expr {
-            Either::Left(err) => return Either::Left(From::from(err)),
-            Either::Right(val) => val
+            $crate::Left(err) => return $crate::Left(::std::convert::From::from(err)),
+            $crate::Right(val) => val
         }
     )
 }
