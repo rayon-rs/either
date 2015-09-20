@@ -25,6 +25,10 @@ How to use with cargo::
 Recent Changes
 --------------
 
+- 0.1.2
+
+  - Add macros `try_left!` and `try_right!`.
+
 - 0.1.1
 
   - Implement Deref, DerefMut
