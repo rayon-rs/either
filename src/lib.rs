@@ -38,6 +38,34 @@ macro_rules! either_mut {
     )
 }
 
+/// Helper macro for unwrapping the left side of an `Either` while returning
+/// early with the right side if there is no left one. Can only be used in
+/// functions that return `Either` because of the early return of `Right` that
+/// it provides.
+#[macro_export]
+macro_rules! left {
+    ($expr:expr) => (
+        match $expr {
+            Either::Left(val) => val,
+            Either::Right(err) => return Either::Right(From::from(err))
+        }
+    )
+}
+
+/// Helper macro for unwrapping the right side of an `Either` while returning
+/// early with the left side if there is no right one. Can only be used in
+/// functions that return `Either` because of the early return of `Left` that
+/// it provides.
+#[macro_export]
+macro_rules! right {
+    ($expr:expr) => (
+        match $expr {
+            Either::Left(err) => return Either::Left(From::from(err)),
+            Either::Right(val) => val
+        }
+    )
+}
+
 impl<L, R> Either<L, R> {
     pub fn is_left(&self) -> bool {
         match *self {
@@ -218,6 +246,20 @@ fn basic() {
     assert_eq!(e.right(), Some(2));
     assert_eq!(e.as_ref().right(), Some(&2));
     assert_eq!(e.as_mut().right(), Some(&mut 2));
+}
+
+#[test]
+fn macros() {
+    fn a() -> Either<u32, u32> {
+        let x = left!(Right::<u32, u32>(1337));
+        Left(x * 2)
+    }
+    assert_eq!(a(), Right(1337));
+
+    fn b() -> Either<String, &'static str> {
+        Right(right!(Left::<&str, &str>("foo bar")))
+    }
+    assert_eq!(b(), Left(String::from("foo bar")));
 }
 
 #[test]
