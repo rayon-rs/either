@@ -264,13 +264,13 @@ fn basic() {
 #[test]
 fn macros() {
     fn a() -> Either<u32, u32> {
-        let x = left!(Right::<u32, u32>(1337));
+        let x: u32 = left!(Right(1337));
         Left(x * 2)
     }
     assert_eq!(a(), Right(1337));
 
     fn b() -> Either<String, &'static str> {
-        Right(right!(Left::<&str, &str>("foo bar")))
+        Right(right!(Left("foo bar")))
     }
     assert_eq!(b(), Left(String::from("foo bar")));
 }
