@@ -42,7 +42,7 @@ macro_rules! either_mut {
 /// with the opposite side. Can only be used in functions that return
 /// `Either` because of the early return of `Right` that it provides.
 ///
-/// See also `right!` for its dual, which applies the same just to the
+/// See also `try_right!` for its dual, which applies the same just to the
 /// right side.
 ///
 /// # Example
@@ -50,7 +50,7 @@ macro_rules! either_mut {
 /// ```
 /// # #[macro_use] extern crate either; use either::*; fn main() {
 /// fn twice(wrapper: Either<u32, &str>) -> Either<u32, &str> {
-///     let value = left!(wrapper);
+///     let value = try_left!(wrapper);
 ///     Left(value * 2)
 /// }
 ///
@@ -59,7 +59,7 @@ macro_rules! either_mut {
 /// # }
 /// ```
 #[macro_export]
-macro_rules! left {
+macro_rules! try_left {
     ($expr:expr) => (
         match $expr {
             $crate::Left(val) => val,
@@ -68,9 +68,9 @@ macro_rules! left {
     )
 }
 
-/// Dual to `left!`, see its documentation for more information.
+/// Dual to `try_left!`, see its documentation for more information.
 #[macro_export]
-macro_rules! right {
+macro_rules! try_right {
     ($expr:expr) => (
         match $expr {
             $crate::Left(err) => return $crate::Left(::std::convert::From::from(err)),
@@ -264,13 +264,13 @@ fn basic() {
 #[test]
 fn macros() {
     fn a() -> Either<u32, u32> {
-        let x: u32 = left!(Right(1337));
+        let x: u32 = try_left!(Right(1337));
         Left(x * 2)
     }
     assert_eq!(a(), Right(1337));
 
     fn b() -> Either<String, &'static str> {
-        Right(right!(Left("foo bar")))
+        Right(try_right!(Left("foo bar")))
     }
     assert_eq!(b(), Left(String::from("foo bar")));
 }
