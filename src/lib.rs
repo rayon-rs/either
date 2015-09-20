@@ -48,15 +48,18 @@ macro_rules! either_mut {
 /// # Example
 ///
 /// ```
-/// # #[macro_use] extern crate either; use either::*; fn main() {
+/// #[macro_use] extern crate either;
+/// use either::{Either, Left, Right};
+///
 /// fn twice(wrapper: Either<u32, &str>) -> Either<u32, &str> {
 ///     let value = try_left!(wrapper);
 ///     Left(value * 2)
 /// }
 ///
-/// assert_eq!(twice(Left(2)), Left(4));
-/// assert_eq!(twice(Right("ups")), Right("ups"));
-/// # }
+/// fn main() {
+///     assert_eq!(twice(Left(2)), Left(4));
+///     assert_eq!(twice(Right("ups")), Right("ups"));
+/// }
 /// ```
 #[macro_export]
 macro_rules! try_left {
