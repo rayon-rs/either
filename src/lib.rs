@@ -1,5 +1,7 @@
 //! The enum `Either`.
 
+use std::error::Error;
+use std::fmt;
 use std::io::{self, Write, Read, BufRead};
 use std::convert::{AsRef, AsMut};
 use std::ops::Deref;
@@ -250,6 +252,26 @@ impl<L, R> DerefMut for Either<L, R>
     }
 }
 
+/// `Either` implements `Error` if *both* `L` and `R` implement it.
+impl<L, R> Error for Either<L, R>
+    where L: Error, R: Error
+{
+    fn description(&self) -> &str {
+        either!(*self, inner => inner.description())
+    }
+
+    fn cause(&self) -> Option<&Error> {
+        either!(*self, inner => inner.cause())
+    }
+}
+
+impl<L, R> fmt::Display for Either<L, R>
+    where L: fmt::Display, R: fmt::Display
+{
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        either!(*self, inner => inner.fmt(f))
+    }
+}
 
 #[test]
 fn basic() {
@@ -323,4 +345,16 @@ fn read_write() {
 
     let buf = [1u8; 16];
     assert_eq!(writer.write(&buf).unwrap(), buf.len());
+}
+
+#[test]
+fn error() {
+    let invalid_utf8 = b"\xff";
+    let res = || -> Result<_, Either<_, _>> {
+        try!(::std::str::from_utf8(invalid_utf8).map_err(Left));
+        try!("x".parse::<i32>().map_err(Right));
+        Ok(())
+    }();
+    assert!(res.is_err());
+    res.unwrap_err().description(); // make sure this can be called
 }
