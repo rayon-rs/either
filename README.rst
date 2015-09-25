@@ -25,6 +25,10 @@ How to use with cargo::
 Recent Changes
 --------------
 
+- 0.1.3
+
+  - Implement Display, Error
+
 - 0.1.2
 
   - Add macros `try_left!` and `try_right!`.
