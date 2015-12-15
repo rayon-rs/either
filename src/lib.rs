@@ -289,7 +289,7 @@ fn basic() {
 #[test]
 fn macros() {
     fn a() -> Either<u32, u32> {
-        let x: u32 = try_left!(Right(1337));
+        let x: u32 = try_left!(Right(1337u32));
         Left(x * 2)
     }
     assert_eq!(a(), Right(1337));
