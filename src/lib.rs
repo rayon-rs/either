@@ -1,4 +1,4 @@
-//! The enum `Either`.
+//! The enum [**Either**](enum.Either.html).
 
 use std::error::Error;
 use std::fmt;
