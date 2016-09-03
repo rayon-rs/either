@@ -87,8 +87,6 @@ macro_rules! try_right {
 impl<L, R> Either<L, R> {
     /// Returns true if the value is `Left(L)`.
     ///
-    /// # Examples
-    ///
     /// ```
     /// use either::*;
     ///
@@ -107,8 +105,6 @@ impl<L, R> Either<L, R> {
 
     /// Returns true if the value is `Right(R)`.
     ///
-    /// # Examples
-    ///
     /// ```
     /// use either::*;
     ///
@@ -123,8 +119,6 @@ impl<L, R> Either<L, R> {
     }
 
     /// Converts the left side of `Either<L, R>` to an `Option<L>`.
-    ///
-    /// # Examples
     ///
     /// ```
     /// use either::*;
@@ -144,8 +138,6 @@ impl<L, R> Either<L, R> {
 
     /// Converts the right side of `Either<L, R>` to an `Option<R>`.
     ///
-    /// # Examples
-    ///
     /// ```
     /// use either::*;
     ///
@@ -164,8 +156,6 @@ impl<L, R> Either<L, R> {
 
     /// Converts `Either<L, R>` to `Either<&L, &R>`.
     ///
-    /// # Examples
-    ///
     /// ```
     /// use either::*;
     ///
@@ -183,8 +173,6 @@ impl<L, R> Either<L, R> {
     }
 
     /// Converts `Either<L, R>` to `Either<&mut L, &mut R>`.
-    ///
-    /// # Examples
     ///
     /// ```
     /// use either::*;
@@ -213,8 +201,6 @@ impl<L, R> Either<L, R> {
 
     /// Converts `Either<L, R>` to `Either<R, L>`.
     ///
-    /// # Examples
-    ///
     /// ```
     /// use either::*;
     ///
@@ -232,8 +218,6 @@ impl<L, R> Either<L, R> {
     }
 
     /// Applies the function `f` on the `Left(L)` variant.
-    ///
-    /// # Examples
     ///
     /// ```
     /// use either::*;
@@ -253,8 +237,6 @@ impl<L, R> Either<L, R> {
     }
 
     /// Applies the function `f` on the `Right(R)` variant.
-    ///
-    /// # Examples
     ///
     /// ```
     /// use either::*;
@@ -276,8 +258,6 @@ impl<L, R> Either<L, R> {
     /// Applies one of two functions depending on contents, unifying their result. If the value is
     /// `Left(L)` then the first function `f` is applied; if it is `Right(R)` then the second
     /// function `g` is applied.
-    ///
-    /// # Examples
     ///
     /// ```
     /// use either::*;
