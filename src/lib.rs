@@ -164,6 +164,8 @@ impl<L, R> Either<L, R> {
 
     /// Converts `Either<L, R>` to `Either<&L, &R>`.
     ///
+    /// # Examples
+    ///
     /// ```
     /// use either::*;
     ///
@@ -181,6 +183,8 @@ impl<L, R> Either<L, R> {
     }
 
     /// Converts `Either<L, R>` to `Either<&mut L, &mut R>`.
+    ///
+    /// # Examples
     ///
     /// ```
     /// use either::*;
