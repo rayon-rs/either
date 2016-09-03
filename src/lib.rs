@@ -98,6 +98,7 @@ impl<L, R> Either<L, R> {
     /// let right: Either<(), _> = Either::Right("the right value");
     /// assert_eq!(right.is_left(), false);
     /// ```
+    #[inline]
     pub fn is_left(&self) -> bool {
         match *self {
             Left(_) => true,
@@ -118,6 +119,7 @@ impl<L, R> Either<L, R> {
     /// let right: Either<(), _> = Either::Right("the right value");
     /// assert_eq!(right.is_right(), true);
     /// ```
+    #[inline]
     pub fn is_right(&self) -> bool {
         !self.is_left()
     }
@@ -135,6 +137,7 @@ impl<L, R> Either<L, R> {
     /// let right: Either<(), _> = Either::Right(321);
     /// assert_eq!(right.left(), None);
     /// ```
+    #[inline]
     pub fn left(self) -> Option<L> {
         match self {
             Left(l) => Some(l),
@@ -155,6 +158,7 @@ impl<L, R> Either<L, R> {
     /// let right: Either<(), _> = Either::Right(321);
     /// assert_eq!(right.right(), Some(321));
     /// ```
+    #[inline]
     pub fn right(self) -> Option<R> {
         match self {
             Left(_) => None,
@@ -173,6 +177,7 @@ impl<L, R> Either<L, R> {
     /// let right: Either<(), _> = Either::Right("some value");
     /// assert_eq!(right.as_ref(), Either::Right(&"some value"));
     /// ```
+    #[inline]
     pub fn as_ref(&self) -> Either<&L, &R> {
         match *self {
             Left(ref inner) => Left(inner),
@@ -200,6 +205,7 @@ impl<L, R> Either<L, R> {
     /// mutate(&mut right);
     /// assert_eq!(right, Either::Right(1));
     /// ```
+    #[inline]
     pub fn as_mut(&mut self) -> Either<&mut L, &mut R> {
         match *self {
             Left(ref mut inner) => Left(inner),
@@ -220,6 +226,7 @@ impl<L, R> Either<L, R> {
     /// let right: Either<(), _> = Either::Right("some value");
     /// assert_eq!(right.flip(), Either::Left("some value"));
     /// ```
+    #[inline]
     pub fn flip(self) -> Either<R, L> {
         match self {
             Left(l) => Right(l),
@@ -230,6 +237,7 @@ impl<L, R> Either<L, R> {
 
 /// Convert from `Result` to `Either` with `Ok => Right` and `Err => Left`.
 impl<L, R> From<Result<R, L>> for Either<L, R> {
+    #[inline]
     fn from(r: Result<R, L>) -> Self {
         match r {
             Err(e) => Left(e),
@@ -240,6 +248,7 @@ impl<L, R> From<Result<R, L>> for Either<L, R> {
 
 /// Convert from `Either` to `Result` with `Right => Ok` and `Left => Err`.
 impl<L, R> Into<Result<R, L>> for Either<L, R> {
+    #[inline]
     fn into(self) -> Result<R, L> {
         match self {
             Left(l) => Err(l),
