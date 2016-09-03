@@ -85,6 +85,17 @@ macro_rules! try_right {
 }
 
 impl<L, R> Either<L, R> {
+    /// Returns true if the value is `Left(L)`.
+    ///
+    /// ```
+    /// use either::*;
+    ///
+    /// let left: Either<_, ()> = Left(123);
+    /// assert_eq!(left.is_left(), true);
+    ///
+    /// let right: Either<(), _> = Right("the right value");
+    /// assert_eq!(right.is_left(), false);
+    /// ```
     pub fn is_left(&self) -> bool {
         match *self {
             Left(_) => true,
@@ -92,10 +103,32 @@ impl<L, R> Either<L, R> {
         }
     }
 
+    /// Returns true if the value is `Right(R)`.
+    ///
+    /// ```
+    /// use either::*;
+    ///
+    /// let left: Either<_, ()> = Left(123);
+    /// assert_eq!(left.is_right(), false);
+    ///
+    /// let right: Either<(), _> = Right("the right value");
+    /// assert_eq!(right.is_right(), true);
+    /// ```
     pub fn is_right(&self) -> bool {
         !self.is_left()
     }
 
+    /// Converts the left side of `Either<L, R>` to an `Option<L>`.
+    ///
+    /// ```
+    /// use either::*;
+    ///
+    /// let left: Either<_, ()> = Left("some value");
+    /// assert_eq!(left.left(),  Some("some value"));
+    ///
+    /// let right: Either<(), _> = Right(321);
+    /// assert_eq!(right.left(), None);
+    /// ```
     pub fn left(self) -> Option<L> {
         match self {
             Left(l) => Some(l),
@@ -103,6 +136,17 @@ impl<L, R> Either<L, R> {
         }
     }
 
+    /// Converts the right side of `Either<L, R>` to an `Option<R>`.
+    ///
+    /// ```
+    /// use either::*;
+    ///
+    /// let left: Either<_, ()> = Left("some value");
+    /// assert_eq!(left.right(),  None);
+    ///
+    /// let right: Either<(), _> = Right(321);
+    /// assert_eq!(right.right(), Some(321));
+    /// ```
     pub fn right(self) -> Option<R> {
         match self {
             Left(_) => None,
@@ -110,6 +154,17 @@ impl<L, R> Either<L, R> {
         }
     }
 
+    /// Converts `Either<L, R>` to `Either<&L, &R>`.
+    ///
+    /// ```
+    /// use either::*;
+    ///
+    /// let left: Either<_, ()> = Left("some value");
+    /// assert_eq!(left.as_ref(), Left(&"some value"));
+    ///
+    /// let right: Either<(), _> = Right("some value");
+    /// assert_eq!(right.as_ref(), Right(&"some value"));
+    /// ```
     pub fn as_ref(&self) -> Either<&L, &R> {
         match *self {
             Left(ref inner) => Left(inner),
@@ -117,6 +172,26 @@ impl<L, R> Either<L, R> {
         }
     }
 
+    /// Converts `Either<L, R>` to `Either<&mut L, &mut R>`.
+    ///
+    /// ```
+    /// use either::*;
+    ///
+    /// fn mutate(r: &mut Either<u32, u32>) {
+    ///     match r.as_mut() {
+    ///         Left(&mut ref mut l) => *l = 314,
+    ///         Right(&mut ref mut r) => *r = 1,
+    ///     }
+    /// }
+    ///
+    /// let mut left = Left(123);
+    /// mutate(&mut left);
+    /// assert_eq!(left, Left(314));
+    ///
+    /// let mut right = Right(123);
+    /// mutate(&mut right);
+    /// assert_eq!(right, Right(1));
+    /// ```
     pub fn as_mut(&mut self) -> Either<&mut L, &mut R> {
         match *self {
             Left(ref mut inner) => Left(inner),
@@ -124,10 +199,84 @@ impl<L, R> Either<L, R> {
         }
     }
 
+    /// Converts `Either<L, R>` to `Either<R, L>`.
+    ///
+    /// ```
+    /// use either::*;
+    ///
+    /// let left: Either<_, ()> = Left(123);
+    /// assert_eq!(left.flip(), Right(123));
+    ///
+    /// let right: Either<(), _> = Right("some value");
+    /// assert_eq!(right.flip(), Left("some value"));
+    /// ```
     pub fn flip(self) -> Either<R, L> {
         match self {
             Left(l) => Right(l),
             Right(r) => Left(r),
+        }
+    }
+
+    /// Applies the function `f` on the `Left(L)` variant.
+    ///
+    /// ```
+    /// use either::*;
+    ///
+    /// let left: Either<_, u32> = Left(123);
+    /// assert_eq!(left.map_left(|x| x * 2), Left(246));
+    ///
+    /// let right: Either<u32, _> = Right(123);
+    /// assert_eq!(right.map_left(|x| x * 2), Right(123));
+    /// ```
+    pub fn map_left<F, M>(self, f: F) -> Either<M, R>
+        where F: FnOnce(L) -> M {
+        match self {
+            Left(l) => Left(f(l)),
+            Right(r) => Right(r),
+        }
+    }
+
+    /// Applies the function `f` on the `Right(R)` variant.
+    ///
+    /// ```
+    /// use either::*;
+    ///
+    /// let left: Either<_, u32> = Left(123);
+    /// assert_eq!(left.map_right(|x| x * 2), Left(123));
+    ///
+    /// let right: Either<u32, _> = Right(123);
+    /// assert_eq!(right.map_right(|x| x * 2), Right(246));
+    /// ```
+    pub fn map_right<F, S>(self, f: F) -> Either<L, S>
+        where F: FnOnce(R) -> S {
+        match self {
+            Left(l) => Left(l),
+            Right(r) => Right(f(r)),
+        }
+    }
+
+    /// Applies one of two functions depending on contents, unifying their result. If the value is
+    /// `Left(L)` then the first function `f` is applied; if it is `Right(R)` then the second
+    /// function `g` is applied.
+    ///
+    /// ```
+    /// use either::*;
+    ///
+    /// fn square(n: u32) -> i32 { (n * n) as i32 }
+    /// fn negate(n: i32) -> i32 { -n }
+    ///
+    /// let left: Either<u32, i32> = Left(4);
+    /// assert_eq!(left.either(square, negate), 16);
+    ///
+    /// let right: Either<u32, i32> = Right(-4);
+    /// assert_eq!(right.either(square, negate), 4);
+    /// ```
+    pub fn either<F, G, T>(self, f: F, g: G) -> T
+      where F: FnOnce(L) -> T,
+            G: FnOnce(R) -> T {
+        match self {
+            Left(l) => f(l),
+            Right(r) => g(r),
         }
     }
 }
