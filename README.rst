@@ -2,7 +2,13 @@
 Either
 ======
 
-The Either enum.
+The enum ``Either`` with variants ``Left`` and ``Right`` and trait
+implementations including Iterator, Read, Write.
+
+Either has methods that are similar to Option and Result.
+
+Includes convenience macros ``try_left!()`` and ``try_right!()`` to use for
+short-circuiting logic.
 
 Please read the `API documentation here`__
 
@@ -25,13 +31,18 @@ How to use with cargo::
 Recent Changes
 --------------
 
+- 0.1.7
+
+  - Add methods ``.map_left()``, ``.map_right()`` and ``.either()``.
+  - Add more documentation
+
 - 0.1.3
 
   - Implement Display, Error
 
 - 0.1.2
 
-  - Add macros `try_left!` and `try_right!`.
+  - Add macros ``try_left!`` and ``try_right!``.
 
 - 0.1.1
 

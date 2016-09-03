@@ -1,14 +1,16 @@
 [package]
 name = "either"
-version = "0.1.6"
+version = "0.1.7"
 authors = ["bluss"]
 
 license = "MIT/Apache-2.0"
 repository = "https://github.com/bluss/either"
-documentation = "http://bluss.github.io/either"
+documentation = "https://bluss.github.io/either"
 
 description = """
 The enum `Either`, with variants `Left` and `Right` and trait implementations including Iterator, Read, Write.
+
+Either has methods that are similar to Option and Result.
 
 Includes convenience macros `try_left!()` and `try_right!()` to use for short-circuiting logic."""
 
