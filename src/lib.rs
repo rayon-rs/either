@@ -90,12 +90,12 @@ impl<L, R> Either<L, R> {
     /// # Examples
     ///
     /// ```
-    /// use either::Either;
+    /// use either::*;
     ///
-    /// let left: Either<_, ()> = Either::Left(123);
+    /// let left: Either<_, ()> = Left(123);
     /// assert_eq!(left.is_left(), true);
     ///
-    /// let right: Either<(), _> = Either::Right("the right value");
+    /// let right: Either<(), _> = Right("the right value");
     /// assert_eq!(right.is_left(), false);
     /// ```
     #[inline]
@@ -111,12 +111,12 @@ impl<L, R> Either<L, R> {
     /// # Examples
     ///
     /// ```
-    /// use either::Either;
+    /// use either::*;
     ///
-    /// let left: Either<_, ()> = Either::Left(123);
+    /// let left: Either<_, ()> = Left(123);
     /// assert_eq!(left.is_right(), false);
     ///
-    /// let right: Either<(), _> = Either::Right("the right value");
+    /// let right: Either<(), _> = Right("the right value");
     /// assert_eq!(right.is_right(), true);
     /// ```
     #[inline]
@@ -129,12 +129,12 @@ impl<L, R> Either<L, R> {
     /// # Examples
     ///
     /// ```
-    /// use either::Either;
+    /// use either::*;
     ///
-    /// let left: Either<_, ()> = Either::Left("some value");
+    /// let left: Either<_, ()> = Left("some value");
     /// assert_eq!(left.left(),  Some("some value"));
     ///
-    /// let right: Either<(), _> = Either::Right(321);
+    /// let right: Either<(), _> = Right(321);
     /// assert_eq!(right.left(), None);
     /// ```
     #[inline]
@@ -150,12 +150,12 @@ impl<L, R> Either<L, R> {
     /// # Examples
     ///
     /// ```
-    /// use either::Either;
+    /// use either::*;
     ///
-    /// let left: Either<_, ()> = Either::Left("some value");
+    /// let left: Either<_, ()> = Left("some value");
     /// assert_eq!(left.right(),  None);
     ///
-    /// let right: Either<(), _> = Either::Right(321);
+    /// let right: Either<(), _> = Right(321);
     /// assert_eq!(right.right(), Some(321));
     /// ```
     #[inline]
@@ -169,13 +169,13 @@ impl<L, R> Either<L, R> {
     /// Converts `Either<L, R>` to `Either<&L, &R>`.
     ///
     /// ```
-    /// use either::Either;
+    /// use either::*;
     ///
-    /// let left: Either<_, ()> = Either::Left("some value");
-    /// assert_eq!(left.as_ref(), Either::Left(&"some value"));
+    /// let left: Either<_, ()> = Left("some value");
+    /// assert_eq!(left.as_ref(), Left(&"some value"));
     ///
-    /// let right: Either<(), _> = Either::Right("some value");
-    /// assert_eq!(right.as_ref(), Either::Right(&"some value"));
+    /// let right: Either<(), _> = Right("some value");
+    /// assert_eq!(right.as_ref(), Right(&"some value"));
     /// ```
     #[inline]
     pub fn as_ref(&self) -> Either<&L, &R> {
@@ -188,22 +188,22 @@ impl<L, R> Either<L, R> {
     /// Converts `Either<L, R>` to `Either<&mut L, &mut R>`.
     ///
     /// ```
-    /// use either::Either;
+    /// use either::*;
     ///
     /// fn mutate(r: &mut Either<u32, u32>) {
     ///     match r.as_mut() {
-    ///         Either::Left(&mut ref mut l) => *l = 314,
-    ///         Either::Right(&mut ref mut r) => *r = 1,
+    ///         Left(&mut ref mut l) => *l = 314,
+    ///         Right(&mut ref mut r) => *r = 1,
     ///     }
     /// }
     ///
-    /// let mut left = Either::Left(123);
+    /// let mut left = Left(123);
     /// mutate(&mut left);
-    /// assert_eq!(left, Either::Left(314));
+    /// assert_eq!(left, Left(314));
     ///
-    /// let mut right = Either::Right(123);
+    /// let mut right = Right(123);
     /// mutate(&mut right);
-    /// assert_eq!(right, Either::Right(1));
+    /// assert_eq!(right, Right(1));
     /// ```
     #[inline]
     pub fn as_mut(&mut self) -> Either<&mut L, &mut R> {
@@ -218,7 +218,7 @@ impl<L, R> Either<L, R> {
     /// # Examples
     ///
     /// ```
-    /// use either::Either;
+    /// use either::*;
     ///
     /// let left: Either<_, ()> = Either::Left(123);
     /// assert_eq!(left.flip(), Either::Right(123));
