@@ -233,6 +233,34 @@ impl<L, R> Either<L, R> {
             Right(r) => Left(r),
         }
     }
+
+    /// Applies one of two functions depending on contents, unifying their result. If the value is
+    /// `Left(L)` then the first function `f` is applied; if it is `Right(R)` then the second
+    /// function `g` is applied.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use either::*;
+    ///
+    /// fn square(n: u32) -> i32 { (n * n) as i32 }
+    /// fn negate(n: i32) -> i32 { -n }
+    ///
+    /// let left: Either<u32, i32> = Left(4);
+    /// assert_eq!(left.either(square, negate), 16);
+    ///
+    /// let right: Either<u32, i32> = Right(-4);
+    /// assert_eq!(right.either(square, negate), 4);
+    /// ```
+    #[inline]
+    pub fn either<F, G, T>(self, f: F, g: G) -> T
+      where F: FnOnce(L) -> T,
+            G: FnOnce(R) -> T {
+        match self {
+            Either::Left(l) => f(l),
+            Either::Right(r) => g(r),
+        }
+    }
 }
 
 /// Convert from `Result` to `Either` with `Ok => Right` and `Err => Left`.
