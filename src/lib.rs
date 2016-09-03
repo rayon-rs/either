@@ -220,17 +220,61 @@ impl<L, R> Either<L, R> {
     /// ```
     /// use either::*;
     ///
-    /// let left: Either<_, ()> = Either::Left(123);
-    /// assert_eq!(left.flip(), Either::Right(123));
+    /// let left: Either<_, ()> = Left(123);
+    /// assert_eq!(left.flip(), Right(123));
     ///
-    /// let right: Either<(), _> = Either::Right("some value");
-    /// assert_eq!(right.flip(), Either::Left("some value"));
+    /// let right: Either<(), _> = Right("some value");
+    /// assert_eq!(right.flip(), Left("some value"));
     /// ```
     #[inline]
     pub fn flip(self) -> Either<R, L> {
         match self {
             Left(l) => Right(l),
             Right(r) => Left(r),
+        }
+    }
+
+    /// Applies the function `f` on the `Left(L)` variant.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use either::*;
+    ///
+    /// let left: Either<_, u32> = Left(123);
+    /// assert_eq!(left.map_left(|x| x * 2), Left(246));
+    ///
+    /// let right: Either<u32, _> = Right(123);
+    /// assert_eq!(right.map_left(|x| x * 2), Right(123));
+    /// ```
+    #[inline]
+    pub fn map_left<F, M>(self, f: F) -> Either<M, R>
+        where F: FnOnce(L) -> M {
+        match self {
+            Left(l) => Left(f(l)),
+            Right(r) => Right(r),
+        }
+    }
+
+    /// Applies the function `f` on the `Right(R)` variant.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use either::*;
+    ///
+    /// let left: Either<_, u32> = Left(123);
+    /// assert_eq!(left.map_right(|x| x * 2), Left(123));
+    ///
+    /// let right: Either<u32, _> = Right(123);
+    /// assert_eq!(right.map_right(|x| x * 2), Right(246));
+    /// ```
+    #[inline]
+    pub fn map_right<F, S>(self, f: F) -> Either<L, S>
+        where F: FnOnce(R) -> S {
+        match self {
+            Left(l) => Left(l),
+            Right(r) => Right(f(r)),
         }
     }
 
@@ -257,8 +301,8 @@ impl<L, R> Either<L, R> {
       where F: FnOnce(L) -> T,
             G: FnOnce(R) -> T {
         match self {
-            Either::Left(l) => f(l),
-            Either::Right(r) => g(r),
+            Left(l) => f(l),
+            Right(r) => g(r),
         }
     }
 }
