@@ -223,7 +223,8 @@ impl<L, R> Either<L, R> {
     /// assert_eq!(right.map_left(|x| x * 2), Right(123));
     /// ```
     pub fn map_left<F, M>(self, f: F) -> Either<M, R>
-        where F: FnOnce(L) -> M {
+        where F: FnOnce(L) -> M
+    {
         match self {
             Left(l) => Left(f(l)),
             Right(r) => Right(r),
@@ -242,7 +243,8 @@ impl<L, R> Either<L, R> {
     /// assert_eq!(right.map_right(|x| x * 2), Right(246));
     /// ```
     pub fn map_right<F, S>(self, f: F) -> Either<L, S>
-        where F: FnOnce(R) -> S {
+        where F: FnOnce(R) -> S
+    {
         match self {
             Left(l) => Left(l),
             Right(r) => Right(f(r)),
@@ -267,7 +269,8 @@ impl<L, R> Either<L, R> {
     /// ```
     pub fn either<F, G, T>(self, f: F, g: G) -> T
       where F: FnOnce(L) -> T,
-            G: FnOnce(R) -> T {
+            G: FnOnce(R) -> T
+    {
         match self {
             Left(l) => f(l),
             Right(r) => g(r),
