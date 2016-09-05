@@ -85,16 +85,14 @@ macro_rules! try_right {
 }
 
 impl<L, R> Either<L, R> {
-    /// Returns true if the value is `Left(L)`.
+    /// Return true if the value is the `Left` variant.
     ///
     /// ```
     /// use either::*;
     ///
-    /// let left: Either<_, ()> = Left(123);
-    /// assert_eq!(left.is_left(), true);
-    ///
-    /// let right: Either<(), _> = Right("the right value");
-    /// assert_eq!(right.is_left(), false);
+    /// let values = [Left(1), Right("the right value")];
+    /// assert_eq!(values[0].is_left(), true);
+    /// assert_eq!(values[1].is_left(), false);
     /// ```
     pub fn is_left(&self) -> bool {
         match *self {
@@ -103,22 +101,20 @@ impl<L, R> Either<L, R> {
         }
     }
 
-    /// Returns true if the value is `Right(R)`.
+    /// Return true if the value is the `Right` variant.
     ///
     /// ```
     /// use either::*;
     ///
-    /// let left: Either<_, ()> = Left(123);
-    /// assert_eq!(left.is_right(), false);
-    ///
-    /// let right: Either<(), _> = Right("the right value");
-    /// assert_eq!(right.is_right(), true);
+    /// let values = [Left(1), Right("the right value")];
+    /// assert_eq!(values[0].is_right(), false);
+    /// assert_eq!(values[1].is_right(), true);
     /// ```
     pub fn is_right(&self) -> bool {
         !self.is_left()
     }
 
-    /// Converts the left side of `Either<L, R>` to an `Option<L>`.
+    /// Convert the left side of `Either<L, R>` to an `Option<L>`.
     ///
     /// ```
     /// use either::*;
@@ -136,7 +132,7 @@ impl<L, R> Either<L, R> {
         }
     }
 
-    /// Converts the right side of `Either<L, R>` to an `Option<R>`.
+    /// Convert the right side of `Either<L, R>` to an `Option<R>`.
     ///
     /// ```
     /// use either::*;
@@ -154,7 +150,7 @@ impl<L, R> Either<L, R> {
         }
     }
 
-    /// Converts `Either<L, R>` to `Either<&L, &R>`.
+    /// Convert `&Either<L, R>` to `Either<&L, &R>`.
     ///
     /// ```
     /// use either::*;
@@ -172,25 +168,23 @@ impl<L, R> Either<L, R> {
         }
     }
 
-    /// Converts `Either<L, R>` to `Either<&mut L, &mut R>`.
+    /// Convert `&mut Either<L, R>` to `Either<&mut L, &mut R>`.
     ///
     /// ```
     /// use either::*;
     ///
-    /// fn mutate(r: &mut Either<u32, u32>) {
-    ///     match r.as_mut() {
-    ///         Left(&mut ref mut l) => *l = 314,
-    ///         Right(&mut ref mut r) => *r = 1,
+    /// fn mutate_left(value: &mut Either<u32, u32>) {
+    ///     if let Some(l) = value.as_mut().left() {
+    ///         *l = 999;
     ///     }
     /// }
     ///
     /// let mut left = Left(123);
-    /// mutate(&mut left);
-    /// assert_eq!(left, Left(314));
-    ///
     /// let mut right = Right(123);
-    /// mutate(&mut right);
-    /// assert_eq!(right, Right(1));
+    /// mutate_left(&mut left);
+    /// mutate_left(&mut right);
+    /// assert_eq!(left, Left(999));
+    /// assert_eq!(right, Right(123));
     /// ```
     pub fn as_mut(&mut self) -> Either<&mut L, &mut R> {
         match *self {
@@ -199,7 +193,7 @@ impl<L, R> Either<L, R> {
         }
     }
 
-    /// Converts `Either<L, R>` to `Either<R, L>`.
+    /// Convert `Either<L, R>` to `Either<R, L>`.
     ///
     /// ```
     /// use either::*;
@@ -217,7 +211,7 @@ impl<L, R> Either<L, R> {
         }
     }
 
-    /// Applies the function `f` on the `Left(L)` variant.
+    /// Apply the function `f` on the value in the `Left` variant if it is present.
     ///
     /// ```
     /// use either::*;
@@ -236,7 +230,7 @@ impl<L, R> Either<L, R> {
         }
     }
 
-    /// Applies the function `f` on the `Right(R)` variant.
+    /// Apply the function `f` on the value in the `Right` variant if it is present.
     ///
     /// ```
     /// use either::*;
@@ -255,7 +249,7 @@ impl<L, R> Either<L, R> {
         }
     }
 
-    /// Applies one of two functions depending on contents, unifying their result. If the value is
+    /// Apply one of two functions depending on contents, unifying their result. If the value is
     /// `Left(L)` then the first function `f` is applied; if it is `Right(R)` then the second
     /// function `g` is applied.
     ///
