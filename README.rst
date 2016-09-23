@@ -12,7 +12,7 @@ short-circuiting logic.
 
 Please read the `API documentation here`__
 
-__ http://bluss.github.io/either/
+__ https://docs.rs/either/
 
 |build_status|_ |crates|_
 
@@ -25,7 +25,7 @@ __ http://bluss.github.io/either/
 How to use with cargo::
 
     [dependencies]
-    either = "0.1"
+    either = "1.0"
 
 
 Recent Changes
