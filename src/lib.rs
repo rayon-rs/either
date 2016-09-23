@@ -1,11 +1,23 @@
 //! The enum [**Either**](enum.Either.html).
+//!
+//! Crate features:
+//!
+//! * `"use_std"`
+//! Enabled by default. Disable to make the library `#![no_std]`.
+//!
 
-use std::error::Error;
+#![cfg_attr(all(not(test), not(feature = "use_std")), no_std)]
+#[cfg(all(not(test), not(feature = "use_std")))]
+extern crate core as std;
+
 use std::fmt;
-use std::io::{self, Write, Read, BufRead};
 use std::convert::{AsRef, AsMut};
 use std::ops::Deref;
 use std::ops::DerefMut;
+#[cfg(any(test, feature = "use_std"))]
+use std::io::{self, Write, Read, BufRead};
+#[cfg(any(test, feature = "use_std"))]
+use std::error::Error;
 
 pub use Either::{Left, Right};
 
@@ -317,7 +329,10 @@ impl<L, R> ExactSizeIterator for Either<L, R>
 {
 }
 
+#[cfg(any(test, feature = "use_std"))]
 /// `Either<L, R>` implements `Read` if both `L` and `R` do.
+///
+/// Requires crate feature `"use_std"`
 impl<L, R> Read for Either<L, R>
     where L: Read, R: Read
 {
@@ -330,6 +345,8 @@ impl<L, R> Read for Either<L, R>
     }
 }
 
+#[cfg(any(test, feature = "use_std"))]
+/// Requires crate feature `"use_std"`
 impl<L, R> BufRead for Either<L, R>
     where L: BufRead, R: BufRead
 {
@@ -342,7 +359,10 @@ impl<L, R> BufRead for Either<L, R>
     }
 }
 
+#[cfg(any(test, feature = "use_std"))]
 /// `Either<L, R>` implements `Write` if both `L` and `R` do.
+///
+/// Requires crate feature `"use_std"`
 impl<L, R> Write for Either<L, R>
     where L: Write, R: Write
 {
@@ -389,6 +409,7 @@ impl<L, R> DerefMut for Either<L, R>
     }
 }
 
+#[cfg(any(test, feature = "use_std"))]
 /// `Either` implements `Error` if *both* `L` and `R` implement it.
 impl<L, R> Error for Either<L, R>
     where L: Error, R: Error
