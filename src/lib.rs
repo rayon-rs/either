@@ -6,6 +6,7 @@
 //! Enabled by default. Disable to make the library `#![no_std]`.
 //!
 
+#![doc(html_root_url = "https://docs.rs/either/1/")]
 #![cfg_attr(all(not(test), not(feature = "use_std")), no_std)]
 #[cfg(all(not(test), not(feature = "use_std")))]
 extern crate core as std;
