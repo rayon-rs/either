@@ -1,11 +1,24 @@
 //! The enum [**Either**](enum.Either.html).
+//!
+//! Crate features:
+//!
+//! * `"use_std"`
+//! Enabled by default. Disable to make the library `#![no_std]`.
+//!
 
-use std::error::Error;
+#![doc(html_root_url = "https://docs.rs/either/1/")]
+#![cfg_attr(all(not(test), not(feature = "use_std")), no_std)]
+#[cfg(all(not(test), not(feature = "use_std")))]
+extern crate core as std;
+
 use std::fmt;
-use std::io::{self, Write, Read, BufRead};
 use std::convert::{AsRef, AsMut};
 use std::ops::Deref;
 use std::ops::DerefMut;
+#[cfg(any(test, feature = "use_std"))]
+use std::io::{self, Write, Read, BufRead};
+#[cfg(any(test, feature = "use_std"))]
+use std::error::Error;
 
 pub use Either::{Left, Right};
 
@@ -23,19 +36,10 @@ pub enum Either<L, R> {
 }
 
 macro_rules! either {
-    ($value:expr, $inner:ident => $result:expr) => (
+    ($value:expr, $pattern:pat => $result:expr) => (
         match $value {
-            Either::Left(ref $inner) => $result,
-            Either::Right(ref $inner) => $result,
-        }
-    )
-}
-
-macro_rules! either_mut {
-    ($value:expr, $inner:ident => $result:expr) => (
-        match $value {
-            Either::Left(ref mut $inner) => $result,
-            Either::Right(ref mut $inner) => $result,
+            Either::Left($pattern) => $result,
+            Either::Right($pattern) => $result,
         }
     )
 }
@@ -305,11 +309,11 @@ impl<L, R> Iterator for Either<L, R>
     type Item = L::Item;
 
     fn next(&mut self) -> Option<L::Item> {
-        either_mut!(*self, inner => inner.next())
+        either!(*self, ref mut inner => inner.next())
     }
 
     fn size_hint(&self) -> (usize, Option<usize>) {
-        either!(*self, inner => inner.size_hint())
+        either!(*self, ref inner => inner.size_hint())
     }
 }
 
@@ -317,7 +321,7 @@ impl<L, R> DoubleEndedIterator for Either<L, R>
     where L: DoubleEndedIterator, R: DoubleEndedIterator<Item=L::Item>
 {
     fn next_back(&mut self) -> Option<L::Item> {
-        either_mut!(*self, inner => inner.next_back())
+        either!(*self, ref mut inner => inner.next_back())
     }
 }
 
@@ -326,41 +330,49 @@ impl<L, R> ExactSizeIterator for Either<L, R>
 {
 }
 
+#[cfg(any(test, feature = "use_std"))]
 /// `Either<L, R>` implements `Read` if both `L` and `R` do.
+///
+/// Requires crate feature `"use_std"`
 impl<L, R> Read for Either<L, R>
     where L: Read, R: Read
 {
     fn read(&mut self, buf: &mut [u8]) -> io::Result<usize> {
-        either_mut!(*self, inner => inner.read(buf))
+        either!(*self, ref mut inner => inner.read(buf))
     }
 
     fn read_to_end(&mut self, buf: &mut Vec<u8>) -> io::Result<usize> {
-        either_mut!(*self, inner => inner.read_to_end(buf))
+        either!(*self, ref mut inner => inner.read_to_end(buf))
     }
 }
 
+#[cfg(any(test, feature = "use_std"))]
+/// Requires crate feature `"use_std"`
 impl<L, R> BufRead for Either<L, R>
     where L: BufRead, R: BufRead
 {
     fn fill_buf(&mut self) -> io::Result<&[u8]> {
-        either_mut!(*self, inner => inner.fill_buf())
+        either!(*self, ref mut inner => inner.fill_buf())
     }
 
     fn consume(&mut self, amt: usize) {
-        either_mut!(*self, inner => inner.consume(amt))
+        either!(*self, ref mut inner => inner.consume(amt))
     }
 }
 
+#[cfg(any(test, feature = "use_std"))]
 /// `Either<L, R>` implements `Write` if both `L` and `R` do.
+///
+/// Requires crate feature `"use_std"`
 impl<L, R> Write for Either<L, R>
     where L: Write, R: Write
 {
     fn write(&mut self, buf: &[u8]) -> io::Result<usize> {
-        either_mut!(*self, inner => inner.write(buf))
+        either!(*self, ref mut inner => inner.write(buf))
     }
 
     fn flush(&mut self) -> io::Result<()> {
-        either_mut!(*self, inner => inner.flush())
+        either!(*self, ref mut inner => inner.flush())
     }
 }
 
@@ -368,7 +380,7 @@ impl<L, R, Target> AsRef<Target> for Either<L, R>
     where L: AsRef<Target>, R: AsRef<Target>
 {
     fn as_ref(&self) -> &Target {
-        either!(*self, inner => inner.as_ref())
+        either!(*self, ref inner => inner.as_ref())
     }
 }
 
@@ -376,7 +388,7 @@ impl<L, R, Target> AsMut<Target> for Either<L, R>
     where L: AsMut<Target>, R: AsMut<Target>
 {
     fn as_mut(&mut self) -> &mut Target {
-        either_mut!(*self, inner => inner.as_mut())
+        either!(*self, ref mut inner => inner.as_mut())
     }
 }
 
@@ -386,7 +398,7 @@ impl<L, R> Deref for Either<L, R>
     type Target = L::Target;
 
     fn deref(&self) -> &Self::Target {
-        either!(*self, inner => &*inner)
+        either!(*self, ref inner => &*inner)
     }
 }
 
@@ -394,20 +406,21 @@ impl<L, R> DerefMut for Either<L, R>
     where L: DerefMut, R: DerefMut<Target=L::Target>
 {
     fn deref_mut(&mut self) -> &mut Self::Target {
-        either_mut!(*self, inner => &mut *inner)
+        either!(*self, ref mut inner => &mut *inner)
     }
 }
 
+#[cfg(any(test, feature = "use_std"))]
 /// `Either` implements `Error` if *both* `L` and `R` implement it.
 impl<L, R> Error for Either<L, R>
     where L: Error, R: Error
 {
     fn description(&self) -> &str {
-        either!(*self, inner => inner.description())
+        either!(*self, ref inner => inner.description())
     }
 
     fn cause(&self) -> Option<&Error> {
-        either!(*self, inner => inner.cause())
+        either!(*self, ref inner => inner.cause())
     }
 }
 
@@ -415,7 +428,7 @@ impl<L, R> fmt::Display for Either<L, R>
     where L: fmt::Display, R: fmt::Display
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        either!(*self, inner => inner.fmt(f))
+        either!(*self, ref inner => inner.fmt(f))
     }
 }
 
