@@ -31,6 +31,10 @@ How to use with cargo::
 Recent Changes
 --------------
 
+- 1.0.1
+
+  - Fix ``Iterator`` impl for ``Either`` to forward ``.fold()``.
+
 - 1.0.0
 
   - Add default crate feature ``use_std`` so that you can opt out of linking to

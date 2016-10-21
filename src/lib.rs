@@ -1,6 +1,6 @@
 //! The enum [**Either**](enum.Either.html).
 //!
-//! Crate features:
+//! **Crate features:**
 //!
 //! * `"use_std"`
 //! Enabled by default. Disable to make the library `#![no_std]`.
