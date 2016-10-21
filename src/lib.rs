@@ -315,6 +315,12 @@ impl<L, R> Iterator for Either<L, R>
     fn size_hint(&self) -> (usize, Option<usize>) {
         either!(*self, ref inner => inner.size_hint())
     }
+
+    fn fold<Acc, G>(self, init: Acc, f: G) -> Acc
+        where G: FnMut(Acc, Self::Item) -> Acc,
+    {
+        either!(self, inner => inner.fold(init, f))
+    }
 }
 
 impl<L, R> DoubleEndedIterator for Either<L, R>
