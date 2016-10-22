@@ -11,7 +11,7 @@
 #[cfg(all(not(test), not(feature = "use_std")))]
 extern crate core as std;
 
-use std::fmt;
+use std::{fmt, iter, cmp};
 use std::convert::{AsRef, AsMut};
 use std::ops::Deref;
 use std::ops::DerefMut;
@@ -302,6 +302,18 @@ impl<L, R> Into<Result<R, L>> for Either<L, R> {
     }
 }
 
+// An `IntoIterator` `impl` would need lattice specialization to work.
+
+impl<L, R, A> Extend<A> for Either<L, R>
+    where L: Extend<A>, R: Extend<A>
+{
+    fn extend<T>(&mut self, iter: T)
+        where T: IntoIterator<Item=A>
+    {
+        either!(*self, ref mut inner => inner.extend(iter))
+    }
+}
+
 /// `Either<L, R>` is an iterator if both `L` and `R` are iterators.
 impl<L, R> Iterator for Either<L, R>
     where L: Iterator, R: Iterator<Item=L::Item>
@@ -317,9 +329,141 @@ impl<L, R> Iterator for Either<L, R>
     }
 
     fn fold<Acc, G>(self, init: Acc, f: G) -> Acc
-        where G: FnMut(Acc, Self::Item) -> Acc,
+        where G: FnMut(Acc, L::Item) -> Acc,
     {
         either!(self, inner => inner.fold(init, f))
+    }
+
+    fn count(self) -> usize {
+        either!(self, inner => inner.count())
+    }
+
+    fn last(self) -> Option<L::Item> {
+        either!(self, inner => inner.last())
+    }
+
+    fn nth(&mut self, n: usize) -> Option<L::Item> {
+        either!(*self, ref mut inner => inner.nth(n))
+    }
+    
+    fn collect<B>(self) -> B
+        where B: iter::FromIterator<L::Item>
+    {
+        either!(self, inner => inner.collect())
+    }
+    
+    fn partition<B, F>(self, f: F) -> (B, B)
+        where B: Default + Extend<L::Item>, F: FnMut(&L::Item) -> bool
+    {
+        either!(self, inner => inner.partition(f))
+    }
+    
+    fn all<F>(&mut self, f: F) -> bool
+        where F: FnMut(L::Item) -> bool
+    {
+        either!(*self, ref mut inner => inner.all(f))
+    }
+    
+    fn any<F>(&mut self, f: F) -> bool
+        where F: FnMut(L::Item) -> bool
+    {
+        either!(*self, ref mut inner => inner.any(f))
+    }
+    
+    fn find<P>(&mut self, predicate: P) -> Option<L::Item>
+        where P: FnMut(&L::Item) -> bool
+    {
+        either!(*self, ref mut inner => inner.find(predicate))
+    }
+    
+    fn position<P>(&mut self, predicate: P) -> Option<usize>
+        where P: FnMut(L::Item) -> bool
+    {
+        either!(*self, ref mut inner => inner.position(predicate))
+    }
+    
+    fn max(self) -> Option<L::Item>
+        where L::Item: Ord
+    {
+        either!(self, inner => inner.max())
+    }
+    
+    fn min(self) -> Option<L::Item>
+        where L::Item: Ord
+    {
+        either!(self, inner => inner.min())
+    }
+    
+    fn max_by_key<B, F>(self, f: F) -> Option<L::Item>
+        where B: Ord, F: FnMut(&L::Item) -> B
+    {
+        either!(self, inner => inner.max_by_key(f))
+    }
+    
+    fn min_by_key<B, F>(self, f: F) -> Option<L::Item>
+        where B: Ord, F: FnMut(&L::Item) -> B
+    {
+        either!(self, inner => inner.min_by_key(f))
+    }
+    
+    fn sum<S>(self) -> S
+        where S: iter::Sum<L::Item>
+    {
+        either!(self, inner => inner.sum())
+    }
+    
+    fn product<S>(self) -> S
+        where S: iter::Product<L::Item>
+    {
+        either!(self, inner => inner.product())
+    }
+    
+    fn cmp<I>(self, other: I) -> cmp::Ordering
+        where I: IntoIterator<Item=L::Item>, L::Item: Ord
+    {
+        either!(self, inner => inner.cmp(other))
+    }
+    
+    fn partial_cmp<I>(self, other: I) -> Option<cmp::Ordering>
+        where I: IntoIterator, L::Item: PartialOrd<I::Item>
+    {
+        either!(self, inner => inner.partial_cmp(other))
+    }
+    
+    fn eq<I>(self, other: I) -> bool
+        where I: IntoIterator, L::Item: PartialEq<I::Item>
+    {
+        either!(self, inner => inner.eq(other))
+    }
+    
+    fn ne<I>(self, other: I) -> bool
+        where I: IntoIterator, L::Item: PartialEq<I::Item>
+    {
+        either!(self, inner => inner.ne(other))
+    }
+    
+    fn lt<I>(self, other: I) -> bool
+        where I: IntoIterator, L::Item: PartialOrd<I::Item>
+    {
+        either!(self, inner => inner.lt(other))
+    }
+    
+    fn le<I>(self, other: I) -> bool
+        where I: IntoIterator, L::Item: PartialOrd<I::Item>
+    {
+        either!(self, inner => inner.le(other))
+    }
+    
+    fn gt<I>(self, other: I) -> bool
+        where I: IntoIterator, L::Item: PartialOrd<I::Item>
+    {
+        either!(self, inner => inner.gt(other))
+    }
+    
+    fn ge<I>(self, other: I) -> bool
+        where I: IntoIterator, L::Item: PartialOrd<I::Item>
+    {
+        either!(self, inner => inner.ge(other))
     }
 }
 
