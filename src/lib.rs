@@ -11,8 +11,9 @@
 #[cfg(all(not(test), not(feature = "use_std")))]
 extern crate core as std;
 
-use std::fmt;
 use std::convert::{AsRef, AsMut};
+use std::fmt;
+use std::iter;
 use std::ops::Deref;
 use std::ops::DerefMut;
 #[cfg(any(test, feature = "use_std"))]
