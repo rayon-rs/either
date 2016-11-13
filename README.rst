@@ -31,6 +31,11 @@ How to use with cargo::
 Recent Changes
 --------------
 
+- 1.0.2
+
+  - Forward more ``Iterator`` methods
+  - Implement ``Extend`` for ``Either<L, R>`` if ``L, R`` do.
+
 - 1.0.1
 
   - Fix ``Iterator`` impl for ``Either`` to forward ``.fold()``.
