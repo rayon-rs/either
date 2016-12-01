@@ -283,6 +283,46 @@ impl<L, R> Either<L, R> {
             Right(r) => g(r),
         }
     }
+
+    /// Apply the function `f` on the value in the `Left` variant if it is present.
+    ///
+    /// ```
+    /// use either::*;
+    ///
+    /// let left: Either<_, u32> = Left(123);
+    /// assert_eq!(left.and_then_left::<_,()>(|x| Right(x * 2)), Right(246));
+    ///
+    /// let right: Either<u32, _> = Right(123);
+    /// assert_eq!(right.and_then_left(|x| Right::<(), _>(x * 2)), Right(123));
+    /// ```
+    pub fn and_then_left<F, S>(self, f: F) -> Either<S, R>
+        where F: FnOnce(L) -> Either<S, R>
+    {
+        match self {
+            Left(l) => f(l),
+            Right(r) => Right(r),
+        }
+    }
+
+    /// Apply the function `f` on the value in the `Right` variant if it is present.
+    ///
+    /// ```
+    /// use either::*;
+    ///
+    /// let left: Either<_, u32> = Left(123);
+    /// assert_eq!(left.and_then_right(|x| Right(x * 2)), Left(123));
+    ///
+    /// let right: Either<u32, _> = Right(123);
+    /// assert_eq!(right.and_then_right(|x| Right(x * 2)), Right(246));
+    /// ```
+    pub fn and_then_right<F, S>(self, f: F) -> Either<L, S>
+        where F: FnOnce(R) -> Either<L, S>
+    {
+        match self {
+            Left(l) => Left(l),
+            Right(r) => f(r),
+        }
+    }
 }
 
 /// Convert from `Result` to `Either` with `Ok => Right` and `Err => Left`.
