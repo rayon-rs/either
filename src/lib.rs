@@ -216,7 +216,8 @@ impl<L, R> Either<L, R> {
         }
     }
 
-    /// Apply the function `f` on the value in the `Left` variant if it is present.
+    /// Apply the function `f` on the value in the `Left` variant if it is present rewrapping the
+    /// result in `Left`.
     ///
     /// ```
     /// use either::*;
@@ -236,7 +237,8 @@ impl<L, R> Either<L, R> {
         }
     }
 
-    /// Apply the function `f` on the value in the `Right` variant if it is present.
+    /// Apply the function `f` on the value in the `Right` variant if it is present rewrapping the
+    /// result in `Right`.
     ///
     /// ```
     /// use either::*;
