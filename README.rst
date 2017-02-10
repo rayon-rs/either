@@ -31,6 +31,10 @@ How to use with cargo::
 Recent Changes
 --------------
 
+- 1.0.3
+
+  - Add crate categories
+
 - 1.0.2
 
   - Forward more ``Iterator`` methods
