@@ -15,6 +15,7 @@ Either has methods that are similar to Option and Result.
 Includes convenience macros `try_left!()` and `try_right!()` to use for short-circuiting logic."""
 
 keywords = ["data-structure", "no_std"]
+categories = ["data-structures", "no-std"]
 
 [features]
 default = ["use_std"]
