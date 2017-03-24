@@ -216,7 +216,8 @@ impl<L, R> Either<L, R> {
         }
     }
 
-    /// Apply the function `f` on the value in the `Left` variant if it is present.
+    /// Apply the function `f` on the value in the `Left` variant if it is present rewrapping the
+    /// result in `Left`.
     ///
     /// ```
     /// use either::*;
@@ -236,7 +237,8 @@ impl<L, R> Either<L, R> {
         }
     }
 
-    /// Apply the function `f` on the value in the `Right` variant if it is present.
+    /// Apply the function `f` on the value in the `Right` variant if it is present rewrapping the
+    /// result in `Right`.
     ///
     /// ```
     /// use either::*;
@@ -279,6 +281,46 @@ impl<L, R> Either<L, R> {
         match self {
             Left(l) => f(l),
             Right(r) => g(r),
+        }
+    }
+
+    /// Apply the function `f` on the value in the `Left` variant if it is present.
+    ///
+    /// ```
+    /// use either::*;
+    ///
+    /// let left: Either<_, u32> = Left(123);
+    /// assert_eq!(left.left_and_then::<_,()>(|x| Right(x * 2)), Right(246));
+    ///
+    /// let right: Either<u32, _> = Right(123);
+    /// assert_eq!(right.left_and_then(|x| Right::<(), _>(x * 2)), Right(123));
+    /// ```
+    pub fn left_and_then<F, S>(self, f: F) -> Either<S, R>
+        where F: FnOnce(L) -> Either<S, R>
+    {
+        match self {
+            Left(l) => f(l),
+            Right(r) => Right(r),
+        }
+    }
+
+    /// Apply the function `f` on the value in the `Right` variant if it is present.
+    ///
+    /// ```
+    /// use either::*;
+    ///
+    /// let left: Either<_, u32> = Left(123);
+    /// assert_eq!(left.right_and_then(|x| Right(x * 2)), Left(123));
+    ///
+    /// let right: Either<u32, _> = Right(123);
+    /// assert_eq!(right.right_and_then(|x| Right(x * 2)), Right(246));
+    /// ```
+    pub fn right_and_then<F, S>(self, f: F) -> Either<L, S>
+        where F: FnOnce(R) -> Either<L, S>
+    {
+        match self {
+            Left(l) => Left(l),
+            Right(r) => f(r),
         }
     }
 }
