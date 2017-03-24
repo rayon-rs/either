@@ -290,12 +290,12 @@ impl<L, R> Either<L, R> {
     /// use either::*;
     ///
     /// let left: Either<_, u32> = Left(123);
-    /// assert_eq!(left.and_then_left::<_,()>(|x| Right(x * 2)), Right(246));
+    /// assert_eq!(left.left_and_then::<_,()>(|x| Right(x * 2)), Right(246));
     ///
     /// let right: Either<u32, _> = Right(123);
-    /// assert_eq!(right.and_then_left(|x| Right::<(), _>(x * 2)), Right(123));
+    /// assert_eq!(right.left_and_then(|x| Right::<(), _>(x * 2)), Right(123));
     /// ```
-    pub fn and_then_left<F, S>(self, f: F) -> Either<S, R>
+    pub fn left_and_then<F, S>(self, f: F) -> Either<S, R>
         where F: FnOnce(L) -> Either<S, R>
     {
         match self {
@@ -310,12 +310,12 @@ impl<L, R> Either<L, R> {
     /// use either::*;
     ///
     /// let left: Either<_, u32> = Left(123);
-    /// assert_eq!(left.and_then_right(|x| Right(x * 2)), Left(123));
+    /// assert_eq!(left.right_and_then(|x| Right(x * 2)), Left(123));
     ///
     /// let right: Either<u32, _> = Right(123);
-    /// assert_eq!(right.and_then_right(|x| Right(x * 2)), Right(246));
+    /// assert_eq!(right.right_and_then(|x| Right(x * 2)), Right(246));
     /// ```
-    pub fn and_then_right<F, S>(self, f: F) -> Either<L, S>
+    pub fn right_and_then<F, S>(self, f: F) -> Either<L, S>
         where F: FnOnce(R) -> Either<L, S>
     {
         match self {
