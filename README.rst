@@ -31,6 +31,11 @@ How to use with cargo::
 Recent Changes
 --------------
 
+- 1.1.0
+
+  - Add methods ``left_and_then``, ``right_and_then`` by @rampantmonkey
+  - Include license files in the repository and released crate
+
 - 1.0.3
 
   - Add crate categories
