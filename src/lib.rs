@@ -17,7 +17,7 @@ use std::iter;
 use std::ops::Deref;
 use std::ops::DerefMut;
 #[cfg(any(test, feature = "use_std"))]
-use std::io::{self, Write, Read, BufRead};
+use std::io::{self, Write, Read, BufRead, Seek};
 #[cfg(any(test, feature = "use_std"))]
 use std::error::Error;
 
@@ -440,6 +440,16 @@ impl<L, R> BufRead for Either<L, R>
 
     fn consume(&mut self, amt: usize) {
         either!(*self, ref mut inner => inner.consume(amt))
+    }
+}
+
+#[cfg(any(test, feature = "use_std"))]
+/// Requires crate feature `"use_std"`
+impl<L, R> Seek for Either<L, R>
+    where L: Seek, R: Seek
+{
+    fn seek(&mut self, pos: io::SeekFrom) -> io::Result<u64> {
+        either!(*self, ref mut inner => inner.seek(pos))
     }
 }
 
