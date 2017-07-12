@@ -278,9 +278,33 @@ impl<L, R> Either<L, R> {
       where F: FnOnce(L) -> T,
             G: FnOnce(R) -> T
     {
+        self.either_with((), |(), x| f(x), |(), x| g(x))
+    }
+
+    /// Like `either`, but provide some context to whichever of the
+    /// functions ends up being called.
+    ///
+    /// ```
+    /// use either::*;
+    /// struct Context(u32, i32);
+    /// fn foo(context: Context, n: u32) -> i32 { (context.0 + n) as i32 }
+    /// fn bar(context: Context, n: i32) -> i32 { context.1 + n }
+    ///
+    /// let context: Context = Context(1, 2);
+    /// let left: Either<u32, i32> = Left(3);
+    /// assert_eq!(left.either_with(context, foo, bar), 4);
+    ///
+    /// let context: Context = Context(1, 2);
+    /// let right: Either<u32, i32> = Right(5);
+    /// assert_eq!(right.either_with(context, foo, bar), 7);
+    /// ```
+    pub fn either_with<Ctx, F, G, T>(self, ctx: Ctx, f: F, g: G) -> T
+      where F: FnOnce(Ctx, L) -> T,
+            G: FnOnce(Ctx, R) -> T
+    {
         match self {
-            Left(l) => f(l),
-            Right(r) => g(r),
+            Left(l) => f(ctx, l),
+            Right(r) => g(ctx, r),
         }
     }
 
