@@ -6,14 +6,14 @@
 //! Enabled by default. Disable to make the library `#![no_std]`.
 //!
 
-#![feature(specialization)]
+#![cfg_attr(feature="specialization", feature(specialization))]
 
 #![doc(html_root_url = "https://docs.rs/either/1/")]
 #![cfg_attr(all(not(test), not(feature = "use_std")), no_std)]
 #[cfg(all(not(test), not(feature = "use_std")))]
 extern crate core as std;
 
-use std::cmp::Ordering;
+#[cfg(feature="specialization")] use std::cmp::Ordering;
 use std::convert::{AsRef, AsMut};
 use std::fmt;
 use std::iter;
@@ -39,6 +39,7 @@ pub enum Either<L, R> {
     Right(R),
 }
 
+#[cfg(feature="specialization")]
 impl<L, L_, R, R_> PartialEq<Either<L_, R_>> for Either<L, R>
     where L: PartialEq<L_>, R: PartialEq<R_> {
     default fn eq(&self, other: &Either<L_, R_>) -> bool {
@@ -58,6 +59,7 @@ impl<L, L_, R, R_> PartialEq<Either<L_, R_>> for Either<L, R>
     }
 }
 
+#[cfg(feature="specialization")]
 impl<L, L_, R, R_> PartialOrd<Either<L_, R_>> for Either<L, R>
     where L: PartialOrd<L_>, R: PartialOrd<R_> {
     default fn partial_cmp(&self, other: &Either<L_, R_>) -> Option<Ordering> {
