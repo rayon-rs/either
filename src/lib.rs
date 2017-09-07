@@ -6,6 +6,8 @@
 //! Enabled by default. Disable to make the library `#![no_std]`.
 //!
 
+#![feature(specialization)]
+
 #![doc(html_root_url = "https://docs.rs/either/1/")]
 #![cfg_attr(all(not(test), not(feature = "use_std")), no_std)]
 #[cfg(all(not(test), not(feature = "use_std")))]
@@ -29,7 +31,7 @@ pub use Either::{Left, Right};
 ///
 /// `Either` is a general purpose sum type of two parts. For representing
 /// success or error, use the regular `Result<T, E>` instead.
-#[derive(Copy, Clone, Eq, Ord, Hash, Debug)]
+#[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, Debug)]
 pub enum Either<L, R> {
     /// A value of type `L`.
     Left(L),
@@ -39,7 +41,7 @@ pub enum Either<L, R> {
 
 impl<L, L_, R, R_> PartialEq<Either<L_, R_>> for Either<L, R>
     where L: PartialEq<L_>, R: PartialEq<R_> {
-    fn eq(&self, other: &Either<L_, R_>) -> bool {
+    default fn eq(&self, other: &Either<L_, R_>) -> bool {
         match (self, other) {
             (&Left(ref l1), &Left(ref l2)) => *l1 == *l2,
             (&Right(ref r1), &Right(ref r2)) => *r1 == *r2,
@@ -47,7 +49,7 @@ impl<L, L_, R, R_> PartialEq<Either<L_, R_>> for Either<L, R>
         }
     }
 
-    fn ne(&self, other: &Either<L_, R_>) -> bool {
+    default fn ne(&self, other: &Either<L_, R_>) -> bool {
         match (self, other) {
             (&Left(ref l1), &Left(ref l2)) => *l1 != *l2,
             (&Right(ref r1), &Right(ref r2)) => *r1 != *r2,
@@ -58,7 +60,7 @@ impl<L, L_, R, R_> PartialEq<Either<L_, R_>> for Either<L, R>
 
 impl<L, L_, R, R_> PartialOrd<Either<L_, R_>> for Either<L, R>
     where L: PartialOrd<L_>, R: PartialOrd<R_> {
-    fn partial_cmp(&self, other: &Either<L_, R_>) -> Option<Ordering> {
+    default fn partial_cmp(&self, other: &Either<L_, R_>) -> Option<Ordering> {
         match (self, other) {
             (&Left(ref l1), &Left(ref l2)) => l1.partial_cmp(l2),
             (&Right(ref r1), &Right(ref r2)) => r1.partial_cmp(r2),
