@@ -31,6 +31,10 @@ How to use with cargo::
 Recent Changes
 --------------
 
+- 1.2.0
+
+  - Add method ``.either_with()`` by @Twey (#13)
+
 - 1.1.0
 
   - Add methods ``left_and_then``, ``right_and_then`` by @rampantmonkey
