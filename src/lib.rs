@@ -285,18 +285,20 @@ impl<L, R> Either<L, R> {
     /// functions ends up being called.
     ///
     /// ```
+    /// // In this example, the context is a mutable reference
     /// use either::*;
-    /// struct Context(u32, i32);
-    /// fn foo(context: Context, n: u32) -> i32 { (context.0 + n) as i32 }
-    /// fn bar(context: Context, n: i32) -> i32 { context.1 + n }
     ///
-    /// let context: Context = Context(1, 2);
-    /// let left: Either<u32, i32> = Left(3);
-    /// assert_eq!(left.either_with(context, foo, bar), 4);
+    /// let mut result = Vec::new();
     ///
-    /// let context: Context = Context(1, 2);
-    /// let right: Either<u32, i32> = Right(5);
-    /// assert_eq!(right.either_with(context, foo, bar), 7);
+    /// let values = vec![Left(2), Right(2.7)];
+    ///
+    /// for value in values {
+    ///     value.either_with(&mut result,
+    ///                       |ctx, integer| ctx.push(integer),
+    ///                       |ctx, real| ctx.push(f64::round(real) as i32));
+    /// }
+    ///
+    /// assert_eq!(result, vec![2, 3]);
     /// ```
     pub fn either_with<Ctx, F, G, T>(self, ctx: Ctx, f: F, g: G) -> T
       where F: FnOnce(Ctx, L) -> T,
