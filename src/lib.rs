@@ -6,11 +6,14 @@
 //! Enabled by default. Disable to make the library `#![no_std]`.
 //!
 
+#![cfg_attr(feature="specialization", feature(specialization))]
+
 #![doc(html_root_url = "https://docs.rs/either/1/")]
 #![cfg_attr(all(not(test), not(feature = "use_std")), no_std)]
 #[cfg(all(not(test), not(feature = "use_std")))]
 extern crate core as std;
 
+#[cfg(feature="specialization")] use std::cmp::Ordering;
 use std::convert::{AsRef, AsMut};
 use std::fmt;
 use std::iter;
@@ -34,6 +37,39 @@ pub enum Either<L, R> {
     Left(L),
     /// A value of type `R`.
     Right(R),
+}
+
+#[cfg(feature="specialization")]
+impl<L, L_, R, R_> PartialEq<Either<L_, R_>> for Either<L, R>
+    where L: PartialEq<L_>, R: PartialEq<R_> {
+    default fn eq(&self, other: &Either<L_, R_>) -> bool {
+        match (self, other) {
+            (&Left(ref l1), &Left(ref l2)) => *l1 == *l2,
+            (&Right(ref r1), &Right(ref r2)) => *r1 == *r2,
+            _ => false,
+        }
+    }
+
+    default fn ne(&self, other: &Either<L_, R_>) -> bool {
+        match (self, other) {
+            (&Left(ref l1), &Left(ref l2)) => *l1 != *l2,
+            (&Right(ref r1), &Right(ref r2)) => *r1 != *r2,
+            _ => true,
+        }
+    }
+}
+
+#[cfg(feature="specialization")]
+impl<L, L_, R, R_> PartialOrd<Either<L_, R_>> for Either<L, R>
+    where L: PartialOrd<L_>, R: PartialOrd<R_> {
+    default fn partial_cmp(&self, other: &Either<L_, R_>) -> Option<Ordering> {
+        match (self, other) {
+            (&Left(ref l1), &Left(ref l2)) => l1.partial_cmp(l2),
+            (&Right(ref r1), &Right(ref r2)) => r1.partial_cmp(r2),
+            (&Left(_), &Right(_)) => Some(Ordering::Less),
+            (&Right(_), &Left(_)) => Some(Ordering::Greater),
+        }
+    }
 }
 
 macro_rules! either {
