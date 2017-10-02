@@ -278,7 +278,7 @@ impl<L, R> Either<L, R> {
       where F: FnOnce(L) -> T,
             G: FnOnce(R) -> T
     {
-        self.either_with((), |(), x| f(x), |(), x| g(x))
+        self.either_with((), move |(), x| f(x), move |(), x| g(x))
     }
 
     /// Like `either`, but provide some context to whichever of the
