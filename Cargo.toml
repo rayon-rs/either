@@ -17,6 +17,9 @@ Includes convenience macros `try_left!()` and `try_right!()` to use for short-ci
 keywords = ["data-structure", "no_std"]
 categories = ["data-structures", "no-std"]
 
+[dependencies]
+serde = { version = "1.0", optional = true, features = ["derive"] }
+
 [features]
 default = ["use_std"]
 use_std = []

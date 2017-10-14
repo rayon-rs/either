@@ -11,6 +11,10 @@
 #[cfg(all(not(test), not(feature = "use_std")))]
 extern crate core as std;
 
+#[cfg(feature = "serde")]
+#[macro_use]
+extern crate serde;
+
 use std::convert::{AsRef, AsMut};
 use std::fmt;
 use std::iter;
@@ -28,6 +32,7 @@ pub use Either::{Left, Right};
 ///
 /// `Either` is a general purpose sum type of two parts. For representing
 /// success or error, use the regular `Result<T, E>` instead.
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, Debug)]
 pub enum Either<L, R> {
     /// A value of type `L`.
