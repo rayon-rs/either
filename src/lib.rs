@@ -1,4 +1,7 @@
-//! The enum [**Either**](enum.Either.html).
+//! The enum [`Either`] with variants `Left` and `Right` is a general purpose
+//! sum type with two cases.
+//!
+//! [`Either`]: enum.Either.html
 //!
 //! **Crate features:**
 //!
@@ -30,11 +33,12 @@ use std::error::Error;
 
 pub use Either::{Left, Right};
 
-/// `Either` represents an alternative holding one value out of
-/// either of the two possible values.
+/// The enum `Either` with variants `Left` and `Right` is a general purpose
+/// sum type with two cases.
 ///
-/// `Either` is a general purpose sum type of two parts. For representing
-/// success or error, use the regular `Result<T, E>` instead.
+/// The `Either` type is symmetric and treats its variants the same way, without
+/// preference.
+/// (For representing success or error, use the regular `Result` enum instead.)
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, Debug)]
 pub enum Either<L, R> {
