@@ -25,11 +25,15 @@ __ https://docs.rs/either/
 How to use with cargo::
 
     [dependencies]
-    either = "1.0"
+    either = "1.3"
 
 
 Recent Changes
 --------------
+
+- 1.3.0
+
+  - Add opt-in serde support by @hcpl
 
 - 1.2.0
 
