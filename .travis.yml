@@ -14,9 +14,9 @@ branches:
 # the main build
 script:
   - |
-      cargo build -- --features "${FEATURES}" &&
-      cargo test -- --features "${FEATURES}" &&
-      cargo doc -- --features "${FEATURES}"
+      cargo build --features "${FEATURES}" &&
+      cargo test --features "${FEATURES}" &&
+      cargo doc --features "${FEATURES}"
 
 env:
   matrix:
