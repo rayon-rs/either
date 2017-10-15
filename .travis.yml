@@ -8,27 +8,17 @@ rust:
   - beta
   - nightly
 
-# load travis-cargo
-before_script:
-  - |
-      pip install 'travis-cargo<0.2' --user &&
-      export PATH=$HOME/.local/bin:$PATH
-
 branches:
   only:
     - master
 # the main build
 script:
   - |
-      travis-cargo build -- --features "${FEATURES}" &&
-      travis-cargo test -- --features "${FEATURES}" &&
-      travis-cargo bench -- --features "${FEATURES}" &&
-      travis-cargo doc -- --features "${FEATURES}"
+      cargo build -- --features "${FEATURES}" &&
+      cargo test -- --features "${FEATURES}" &&
+      cargo doc -- --features "${FEATURES}"
 
 env:
-  global:
-    # override the default `--features unstable` used for the nightly branch (optional)
-    - TRAVIS_CARGO_NIGHTLY_FEATURE=""
   matrix:
     - FEATURES=""
     - FEATURES="serde"
