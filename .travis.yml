@@ -20,12 +20,20 @@ branches:
 # the main build
 script:
   - |
-      travis-cargo build &&
-      travis-cargo test &&
-      travis-cargo bench &&
-      travis-cargo doc
+      travis-cargo build -- --features "${FEATURES}" &&
+      travis-cargo test -- --features "${FEATURES}" &&
+      travis-cargo bench -- --features "${FEATURES}" &&
+      travis-cargo doc -- --features "${FEATURES}"
 
 env:
   global:
     # override the default `--features unstable` used for the nightly branch (optional)
     - TRAVIS_CARGO_NIGHTLY_FEATURE=""
+  matrix:
+    - FEATURES=""
+    - FEATURES="serde"
+
+matrix:
+  exclude:
+    - rust: 1.12.0
+      env: FEATURES="serde"
