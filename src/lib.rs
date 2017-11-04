@@ -361,6 +361,26 @@ impl<L, R> Either<L, R> {
             Right(r) => f(r),
         }
     }
+
+    /// Convert the inner value to an iterator.
+    ///
+    /// ```
+    /// use either::*;
+    ///
+    /// let left: Either<_, Vec<u32>> = Left(vec![1, 2, 3, 4, 5]);
+    /// let mut right: Either<Vec<u32>, _> = Right(vec![]);
+    /// right.extend(left.into_iter());
+    /// assert_eq!(right, Right(vec![1, 2, 3, 4, 5]));
+    /// ```
+    pub fn into_iter(self) -> Either<L::IntoIter, R::IntoIter>
+        where L: IntoIterator,
+              R: IntoIterator<Item = L::Item>
+    {
+        match self {
+            Left(l) => Left(l.into_iter()),
+            Right(r) => Right(r.into_iter()),
+        }
+    }
 }
 
 /// Convert from `Result` to `Either` with `Ok => Right` and `Err => Left`.
