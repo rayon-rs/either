@@ -25,11 +25,15 @@ __ https://docs.rs/either/
 How to use with cargo::
 
     [dependencies]
-    either = "1.3"
+    either = "1.4"
 
 
 Recent Changes
 --------------
+
+- 1.4.0
+
+  - Add inherent method ``.into_iter()`` by @cuviper (#12)
 
 - 1.3.0
 
