@@ -383,6 +383,48 @@ impl<L, R> Either<L, R> {
     }
 }
 
+impl<T, L, R> Either<(T, L), (T, R)> {
+    /// Factor out a homogeneous type from an either of pairs.
+    ///
+    /// Here, the homogeneous type is the first element of the pairs.
+    ///
+    /// ```
+    /// use either::*;
+    /// let left: Either<_, (u32, String)> = Left((123, vec![0]));
+    /// assert_eq!(left.factor_first().0, 123);
+    ///
+    /// let right: Either<(u32, Vec<u8>), _> = Right((123, String::new()));
+    /// assert_eq!(right.factor_first().0, 123);
+    /// ```
+    pub fn factor_first(self) -> (T, Either<L, R>) {
+        match self {
+            Left((t, l)) => (t, Left(l)),
+            Right((t, r)) => (t, Right(r)),
+        }
+    }
+}
+
+impl<T, L, R> Either<(L, T), (R, T)> {
+    /// Factor out a homogeneous type from an either of pairs.
+    ///
+    /// Here, the homogeneous type is the second element of the pairs.
+    ///
+    /// ```
+    /// use either::*;
+    /// let left: Either<_, (String, u32)> = Left((vec![0], 123));
+    /// assert_eq!(left.factor_second().1, 123);
+    ///
+    /// let right: Either<(Vec<u8>, u32), _> = Right((String::new(), 123));
+    /// assert_eq!(right.factor_second().1, 123);
+    /// ```
+    pub fn factor_second(self) -> (Either<L, R>, T) {
+        match self {
+            Left((l, t)) => (Left(l), t),
+            Right((r, t)) => (Right(r), t),
+        }
+    }
+}
+
 impl<T> Either<T, T> {
     /// Extract the value of an either over two equivalent types.
     ///
