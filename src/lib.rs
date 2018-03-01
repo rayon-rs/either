@@ -383,6 +383,23 @@ impl<L, R> Either<L, R> {
     }
 }
 
+impl<T> Either<T, T> {
+    /// Extract the value of an either over two equivalent types.
+    ///
+    /// ```
+    /// use either::*;
+    ///
+    /// let left: Either<_, u32> = Left(123);
+    /// assert_eq!(left.into_inner(), 123);
+    ///
+    /// let right: Either<u32, _> = Right(123);
+    /// assert_eq!(right.into_inner(), 123);
+    /// ```
+    pub fn into_inner(self) -> T {
+        either!(self, inner => inner)
+    }
+}
+
 /// Convert from `Result` to `Either` with `Ok => Right` and `Err => Left`.
 impl<L, R> From<Result<R, L>> for Either<L, R> {
     fn from(r: Result<R, L>) -> Self {
