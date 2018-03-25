@@ -31,6 +31,11 @@ How to use with cargo::
 Recent Changes
 --------------
 
+- 1.5.0
+
+  - Add new methods ``.factor_first()``, ``.factor_second()`` and ``.into_inner()``
+    by @mathstuf (#19)
+
 - 1.4.0
 
   - Add inherent method ``.into_iter()`` by @cuviper (#12)
