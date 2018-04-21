@@ -13,7 +13,12 @@
 //!
 
 #![doc(html_root_url = "https://docs.rs/either/1/")]
+
+#![cfg_attr(feature = "try_trait", allow(unstable_features))]
+#![cfg_attr(feature = "try_trait", feature(try_trait))]
+
 #![cfg_attr(all(not(test), not(feature = "use_std")), no_std)]
+
 #[cfg(all(not(test), not(feature = "use_std")))]
 extern crate core as std;
 
@@ -28,6 +33,8 @@ use std::ops::Deref;
 use std::ops::DerefMut;
 #[cfg(any(test, feature = "use_std"))]
 use std::io::{self, Write, Read, BufRead};
+#[cfg(all(feature = "use_std", feature = "try_trait"))]
+use std::ops::Try;
 #[cfg(any(test, feature = "use_std"))]
 use std::error::Error;
 
@@ -613,6 +620,28 @@ impl<L, R> DerefMut for Either<L, R>
     }
 }
 
+#[cfg(all(feature = "use_std", feature = "try_trait"))]
+/// Requires crate feature `"use_std"`
+impl<L, R> Try for Either<L, R> {
+    type Ok = R;
+    type Error = L;
+
+    fn into_result(self) -> Result<Self::Ok, Self::Error> {
+        match self {
+            Left(l) => Err(l),
+            Right(r) => Ok(r),
+        }
+    }
+
+    fn from_error(v: Self::Error) -> Self {
+        Left(v)
+    }
+
+    fn from_ok(v: Self::Ok) -> Self {
+        Right(v)
+    }
+}
+
 #[cfg(any(test, feature = "use_std"))]
 /// `Either` implements `Error` if *both* `L` and `R` implement it.
 impl<L, R> Error for Either<L, R>
@@ -719,4 +748,26 @@ fn error() {
     }();
     assert!(res.is_err());
     res.unwrap_err().description(); // make sure this can be called
+}
+
+#[cfg(feature = "try_trait")]
+#[test]
+fn try_trait_to_result() {
+    fn can_fail(value: Either<i32, &str>) -> Result<&str, i32> {
+        Ok(value?)
+    }
+
+    assert_eq!(can_fail(Left(42)   ), Err(42) );
+    assert_eq!(can_fail(Right("hi")), Ok("hi"));
+}
+
+#[cfg(feature = "try_trait")]
+#[test]
+fn try_trait_to_either() {
+    fn can_fail(value: Result<&str, i32>) -> Either<i32, &str> {
+        Right(value?)
+    }
+
+    assert_eq!(can_fail(Err(42) ), Left(42)   );
+    assert_eq!(can_fail(Ok("hi")), Right("hi"));
 }
