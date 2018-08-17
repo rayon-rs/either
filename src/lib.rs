@@ -112,7 +112,7 @@ impl<L, R> Either<L, R> {
     /// assert_eq!(values[1].is_left(), false);
     /// ```
     pub fn is_left(&self) -> bool {
-        match *self {
+        match self {
             Left(_) => true,
             Right(_) => false,
         }
@@ -179,9 +179,9 @@ impl<L, R> Either<L, R> {
     /// assert_eq!(right.as_ref(), Right(&"some value"));
     /// ```
     pub fn as_ref(&self) -> Either<&L, &R> {
-        match *self {
-            Left(ref inner) => Left(inner),
-            Right(ref inner) => Right(inner),
+        match self {
+            Left(inner) => Left(inner),
+            Right(inner) => Right(inner),
         }
     }
 
@@ -204,9 +204,9 @@ impl<L, R> Either<L, R> {
     /// assert_eq!(right, Right(123));
     /// ```
     pub fn as_mut(&mut self) -> Either<&mut L, &mut R> {
-        match *self {
-            Left(ref mut inner) => Left(inner),
-            Right(ref mut inner) => Right(inner),
+        match self {
+            Left(inner) => Left(inner),
+            Right(inner) => Right(inner),
         }
     }
 
