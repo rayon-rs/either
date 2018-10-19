@@ -25,7 +25,7 @@ __ https://docs.rs/either/
 How to use with cargo::
 
     [dependencies]
-    either = "1.4"
+    either = "1.5"
 
 
 Recent Changes
