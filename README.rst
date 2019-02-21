@@ -31,6 +31,11 @@ How to use with cargo::
 Recent Changes
 --------------
 
+- 1.5.1
+
+  - Add ``AsRef`` and ``AsMut`` implementations for common unsized types:
+    ``str``, ``[T]``, ``CStr``, ``OsStr``, and ``Path``, by @mexus (#29)
+
 - 1.5.0
 
   - Add new methods ``.factor_first()``, ``.factor_second()`` and ``.into_inner()``
