@@ -587,10 +587,65 @@ impl<L, R, Target> AsRef<Target> for Either<L, R>
     }
 }
 
+macro_rules! impl_specific_ref_and_mut {
+    ($t:ty, $($attr:meta),* ) => {
+        $(#[$attr])*
+        impl<L, R> AsRef<$t> for Either<L, R>
+            where L: AsRef<$t>, R: AsRef<$t>
+        {
+            fn as_ref(&self) -> &$t {
+                either!(*self, ref inner => inner.as_ref())
+            }
+        }
+
+        $(#[$attr])*
+        impl<L, R> AsMut<$t> for Either<L, R>
+            where L: AsMut<$t>, R: AsMut<$t>
+        {
+            fn as_mut(&mut self) -> &mut $t {
+                either!(*self, ref mut inner => inner.as_mut())
+            }
+        }
+    };
+}
+
+impl_specific_ref_and_mut!(str,);
+impl_specific_ref_and_mut!(
+    ::std::path::Path,
+    cfg(feature = "use_std"),
+    doc = "Requires crate feature `use_std`."
+);
+impl_specific_ref_and_mut!(
+    ::std::ffi::OsStr,
+    cfg(feature = "use_std"),
+    doc = "Requires crate feature `use_std`."
+);
+impl_specific_ref_and_mut!(
+    ::std::ffi::CStr,
+    cfg(feature = "use_std"),
+    doc = "Requires crate feature `use_std`."
+);
+
+impl<L, R, Target> AsRef<[Target]> for Either<L, R>
+    where L: AsRef<[Target]>, R: AsRef<[Target]>
+{
+    fn as_ref(&self) -> &[Target] {
+        either!(*self, ref inner => inner.as_ref())
+    }
+}
+
 impl<L, R, Target> AsMut<Target> for Either<L, R>
     where L: AsMut<Target>, R: AsMut<Target>
 {
     fn as_mut(&mut self) -> &mut Target {
+        either!(*self, ref mut inner => inner.as_mut())
+    }
+}
+
+impl<L, R, Target> AsMut<[Target]> for Either<L, R>
+    where L: AsMut<[Target]>, R: AsMut<[Target]>
+{
+    fn as_mut(&mut self) -> &mut [Target] {
         either!(*self, ref mut inner => inner.as_mut())
     }
 }
@@ -719,4 +774,42 @@ fn error() {
     }();
     assert!(res.is_err());
     res.unwrap_err().description(); // make sure this can be called
+}
+
+/// A helper macro to check if AsRef and AsMut are implemented for a given type.
+macro_rules! check_t {
+    ($t:ty) => {{
+        fn check_ref<T: AsRef<$t>>() {}
+        fn propagate_ref<T1: AsRef<$t>, T2: AsRef<$t>>() {
+            check_ref::<Either<T1, T2>>()
+        }
+        fn check_mut<T: AsMut<$t>>() {}
+        fn propagate_mut<T1: AsMut<$t>, T2: AsMut<$t>>() {
+            check_mut::<Either<T1, T2>>()
+        }
+    }};
+}
+
+// This "unused" method is here to ensure that compilation doesn't fail on given types.
+fn _unsized_ref_propagation() {
+    check_t!(str);
+
+    fn check_array_ref<T: AsRef<[Item]>, Item>() {}
+    fn check_array_mut<T: AsMut<[Item]>, Item>() {}
+
+    fn propagate_array_ref<T1: AsRef<[Item]>, T2: AsRef<[Item]>, Item>() {
+        check_array_ref::<Either<T1, T2>, _>()
+    }
+
+    fn propagate_array_mut<T1: AsMut<[Item]>, T2: AsMut<[Item]>, Item>() {
+        check_array_mut::<Either<T1, T2>, _>()
+    }
+}
+
+// This "unused" method is here to ensure that compilation doesn't fail on given types.
+#[cfg(feature = "use_std")]
+fn _unsized_std_propagation() {
+    check_t!(::std::path::Path);
+    check_t!(::std::ffi::OsStr);
+    check_t!(::std::ffi::CStr);
 }
