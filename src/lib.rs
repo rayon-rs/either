@@ -384,6 +384,100 @@ impl<L, R> Either<L, R> {
             Right(r) => Right(r.into_iter()),
         }
     }
+
+    /// Return left value or given value
+    ///
+    /// Arguments passed to `left_or` are eagerly evaluated; if you are passing
+    /// the result of a function call, it is recommended to use [`left_or_else`],
+    /// which is lazily evaluated.
+    ///
+    /// [`left_or_else`]: #method.left_or_else
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use either::*;
+    /// let left: Either<&str, &str> = Left("left");
+    /// assert_eq!(left.left_or("foo"), "left");
+    ///
+    /// let right: Either<&str, &str> = Right("right");
+    /// assert_eq!(right.left_or("left"), "left");
+    /// ```
+    pub fn left_or(self, other: L) -> L {
+        match self {
+            Either::Left(l) => l,
+            Either::Right(_) => other,
+        }
+    }
+
+    /// Returns left value or computes it from a closure
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use either::*;
+    /// let left: Either<String, u32> = Left("3".to_string());
+    /// assert_eq!(left.left_or_else(|_|unreachable!()), "3");
+    ///
+    /// let right: Either<String, u32> = Right(3);
+    /// assert_eq!(right.left_or_else(|x|x.to_string()), "3");
+    /// ```
+    pub fn left_or_else<F>(self, f: F) -> L
+        where
+            F: Fn(R) -> L,
+    {
+        match self {
+            Either::Left(l) => l,
+            Either::Right(r) => f(r),
+        }
+    }
+
+    /// Return right value or given value
+    ///
+    /// Arguments passed to `right_or` are eagerly evaluated; if you are passing
+    /// the result of a function call, it is recommended to use [`right_or_else`],
+    /// which is lazily evaluated.
+    ///
+    /// [`right_or_else`]: #method.right_or_else
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use either::*;
+    /// let right: Either<&str, &str> = Right("right");
+    /// assert_eq!(right.right_or("foo"), "right");
+    ///
+    /// let left: Either<&str, &str> = Left("left");
+    /// assert_eq!(left.right_or("right"), "right");
+    /// ```
+    pub fn right_or(self, other: R) -> R {
+        match self {
+            Either::Left(_) => other,
+            Either::Right(r) => r,
+        }
+    }
+
+    /// Returns left value or computes it from a closure
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use either::*;
+    /// let left: Either<String, u32> = Left("3".to_string());
+    /// assert_eq!(left.right_or_else(|x|x.parse().unwrap()), 3);
+    ///
+    /// let right: Either<String, u32> = Right(3);
+    /// assert_eq!(right.right_or_else(|_|unreachable!()), 3);
+    /// ```
+    pub fn right_or_else<F>(self, f: F) -> R
+        where
+            F: Fn(L) -> R,
+    {
+        match self {
+            Either::Left(l) => f(l),
+            Either::Right(r) => r,
+        }
+    }
 }
 
 impl<T, L, R> Either<(T, L), (T, R)> {
