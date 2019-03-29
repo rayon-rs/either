@@ -417,14 +417,14 @@ impl<L, R> Either<L, R> {
     /// ```
     /// # use either::*;
     /// let left: Either<String, u32> = Left("3".to_string());
-    /// assert_eq!(left.left_or_else(|_|unreachable!()), "3");
+    /// assert_eq!(left.left_or_else(|_| unreachable!()), "3");
     ///
     /// let right: Either<String, u32> = Right(3);
-    /// assert_eq!(right.left_or_else(|x|x.to_string()), "3");
+    /// assert_eq!(right.left_or_else(|x| x.to_string()), "3");
     /// ```
     pub fn left_or_else<F>(self, f: F) -> L
         where
-            F: Fn(R) -> L,
+            F: FnOnce(R) -> L,
     {
         match self {
             Either::Left(l) => l,
@@ -464,14 +464,14 @@ impl<L, R> Either<L, R> {
     /// ```
     /// # use either::*;
     /// let left: Either<String, u32> = Left("3".to_string());
-    /// assert_eq!(left.right_or_else(|x|x.parse().unwrap()), 3);
+    /// assert_eq!(left.right_or_else(|x| x.parse().unwrap()), 3);
     ///
     /// let right: Either<String, u32> = Right(3);
-    /// assert_eq!(right.right_or_else(|_|unreachable!()), 3);
+    /// assert_eq!(right.right_or_else(|_| unreachable!()), 3);
     /// ```
     pub fn right_or_else<F>(self, f: F) -> R
         where
-            F: Fn(L) -> R,
+            F: FnOnce(L) -> R,
     {
         match self {
             Either::Left(l) => f(l),
