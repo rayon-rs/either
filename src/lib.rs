@@ -410,6 +410,28 @@ impl<L, R> Either<L, R> {
         }
     }
 
+    /// Return left or a default
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use either::*;
+    /// let left: Either<String, u32> = Left("left".to_string());
+    /// assert_eq!(left.left_or_default(), "left");
+    ///
+    /// let right: Either<String, u32> = Right(42);
+    /// assert_eq!(right.left_or_default(), String::default());
+    /// ```
+    pub fn left_or_default(self) -> L
+    where
+        L: Default,
+    {
+        match self {
+            Either::Left(l) => l,
+            Either::Right(_) => L::default(),
+        }
+    }
+
     /// Returns left value or computes it from a closure
     ///
     /// # Examples
@@ -453,6 +475,28 @@ impl<L, R> Either<L, R> {
     pub fn right_or(self, other: R) -> R {
         match self {
             Either::Left(_) => other,
+            Either::Right(r) => r,
+        }
+    }
+
+    /// Return right or a default
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use either::*;
+    /// let left: Either<String, u32> = Left("left".to_string());
+    /// assert_eq!(left.right_or_default(), u32::default());
+    ///
+    /// let right: Either<String, u32> = Right(42);
+    /// assert_eq!(right.right_or_default(), 42);
+    /// ```
+    pub fn right_or_default(self) -> R
+    where
+        R: Default,
+    {
+        match self {
+            Either::Left(_) => R::default(),
             Either::Right(r) => r,
         }
     }
