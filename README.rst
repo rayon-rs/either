@@ -31,6 +31,11 @@ How to use with cargo::
 Recent Changes
 --------------
 
+- 1.5.2
+
+  - Add new methods ``.left_or()``,  ``.left_or_default()``,  ``.left_or_else()``,
+    and equivalents on the right, by @DCjanus (#36)
+
 - 1.5.1
 
   - Add ``AsRef`` and ``AsMut`` implementations for common unsized types:
