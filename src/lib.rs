@@ -815,6 +815,7 @@ impl<L, R> Error for Either<L, R>
         either!(*self, ref inner => inner.description())
     }
 
+    #[allow(deprecated)]
     fn cause(&self) -> Option<&Error> {
         either!(*self, ref inner => inner.cause())
     }
