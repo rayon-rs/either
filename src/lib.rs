@@ -501,7 +501,7 @@ impl<L, R> Either<L, R> {
         }
     }
 
-    /// Returns left value or computes it from a closure
+    /// Returns right value or computes it from a closure
     ///
     /// # Examples
     ///
