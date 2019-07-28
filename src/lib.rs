@@ -111,6 +111,7 @@ impl<L, R> Either<L, R> {
     /// assert_eq!(values[0].is_left(), true);
     /// assert_eq!(values[1].is_left(), false);
     /// ```
+    #[inline]
     pub fn is_left(&self) -> bool {
         match *self {
             Left(_) => true,
@@ -127,6 +128,7 @@ impl<L, R> Either<L, R> {
     /// assert_eq!(values[0].is_right(), false);
     /// assert_eq!(values[1].is_right(), true);
     /// ```
+    #[inline]
     pub fn is_right(&self) -> bool {
         !self.is_left()
     }
@@ -142,6 +144,7 @@ impl<L, R> Either<L, R> {
     /// let right: Either<(), _> = Right(321);
     /// assert_eq!(right.left(), None);
     /// ```
+    #[inline]
     pub fn left(self) -> Option<L> {
         match self {
             Left(l) => Some(l),
@@ -160,6 +163,7 @@ impl<L, R> Either<L, R> {
     /// let right: Either<(), _> = Right(321);
     /// assert_eq!(right.right(), Some(321));
     /// ```
+    #[inline]
     pub fn right(self) -> Option<R> {
         match self {
             Left(_) => None,
@@ -178,6 +182,7 @@ impl<L, R> Either<L, R> {
     /// let right: Either<(), _> = Right("some value");
     /// assert_eq!(right.as_ref(), Right(&"some value"));
     /// ```
+    #[inline]
     pub fn as_ref(&self) -> Either<&L, &R> {
         match *self {
             Left(ref inner) => Left(inner),
@@ -203,6 +208,7 @@ impl<L, R> Either<L, R> {
     /// assert_eq!(left, Left(999));
     /// assert_eq!(right, Right(123));
     /// ```
+    #[inline]
     pub fn as_mut(&mut self) -> Either<&mut L, &mut R> {
         match *self {
             Left(ref mut inner) => Left(inner),
@@ -221,6 +227,7 @@ impl<L, R> Either<L, R> {
     /// let right: Either<(), _> = Right("some value");
     /// assert_eq!(right.flip(), Left("some value"));
     /// ```
+    #[inline]
     pub fn flip(self) -> Either<R, L> {
         match self {
             Left(l) => Right(l),
@@ -240,6 +247,7 @@ impl<L, R> Either<L, R> {
     /// let right: Either<u32, _> = Right(123);
     /// assert_eq!(right.map_left(|x| x * 2), Right(123));
     /// ```
+    #[inline]
     pub fn map_left<F, M>(self, f: F) -> Either<M, R>
         where F: FnOnce(L) -> M
     {
@@ -261,6 +269,7 @@ impl<L, R> Either<L, R> {
     /// let right: Either<u32, _> = Right(123);
     /// assert_eq!(right.map_right(|x| x * 2), Right(246));
     /// ```
+    #[inline]
     pub fn map_right<F, S>(self, f: F) -> Either<L, S>
         where F: FnOnce(R) -> S
     {
@@ -286,6 +295,7 @@ impl<L, R> Either<L, R> {
     /// let right: Either<u32, i32> = Right(-4);
     /// assert_eq!(right.either(square, negate), 4);
     /// ```
+    #[inline]
     pub fn either<F, G, T>(self, f: F, g: G) -> T
       where F: FnOnce(L) -> T,
             G: FnOnce(R) -> T
@@ -315,6 +325,7 @@ impl<L, R> Either<L, R> {
     ///
     /// assert_eq!(result, vec![2, 3]);
     /// ```
+    #[inline]
     pub fn either_with<Ctx, F, G, T>(self, ctx: Ctx, f: F, g: G) -> T
       where F: FnOnce(Ctx, L) -> T,
             G: FnOnce(Ctx, R) -> T
@@ -336,6 +347,7 @@ impl<L, R> Either<L, R> {
     /// let right: Either<u32, _> = Right(123);
     /// assert_eq!(right.left_and_then(|x| Right::<(), _>(x * 2)), Right(123));
     /// ```
+    #[inline]
     pub fn left_and_then<F, S>(self, f: F) -> Either<S, R>
         where F: FnOnce(L) -> Either<S, R>
     {
@@ -356,6 +368,7 @@ impl<L, R> Either<L, R> {
     /// let right: Either<u32, _> = Right(123);
     /// assert_eq!(right.right_and_then(|x| Right(x * 2)), Right(246));
     /// ```
+    #[inline]
     pub fn right_and_then<F, S>(self, f: F) -> Either<L, S>
         where F: FnOnce(R) -> Either<L, S>
     {
@@ -375,6 +388,7 @@ impl<L, R> Either<L, R> {
     /// right.extend(left.into_iter());
     /// assert_eq!(right, Right(vec![1, 2, 3, 4, 5]));
     /// ```
+    #[inline]
     pub fn into_iter(self) -> Either<L::IntoIter, R::IntoIter>
         where L: IntoIterator,
               R: IntoIterator<Item = L::Item>
@@ -403,6 +417,7 @@ impl<L, R> Either<L, R> {
     /// let right: Either<&str, &str> = Right("right");
     /// assert_eq!(right.left_or("left"), "left");
     /// ```
+    #[inline]
     pub fn left_or(self, other: L) -> L {
         match self {
             Either::Left(l) => l,
@@ -422,6 +437,7 @@ impl<L, R> Either<L, R> {
     /// let right: Either<String, u32> = Right(42);
     /// assert_eq!(right.left_or_default(), String::default());
     /// ```
+    #[inline]
     pub fn left_or_default(self) -> L
     where
         L: Default,
@@ -444,6 +460,7 @@ impl<L, R> Either<L, R> {
     /// let right: Either<String, u32> = Right(3);
     /// assert_eq!(right.left_or_else(|x| x.to_string()), "3");
     /// ```
+    #[inline]
     pub fn left_or_else<F>(self, f: F) -> L
         where
             F: FnOnce(R) -> L,
@@ -472,6 +489,7 @@ impl<L, R> Either<L, R> {
     /// let left: Either<&str, &str> = Left("left");
     /// assert_eq!(left.right_or("right"), "right");
     /// ```
+    #[inline]
     pub fn right_or(self, other: R) -> R {
         match self {
             Either::Left(_) => other,
@@ -491,6 +509,7 @@ impl<L, R> Either<L, R> {
     /// let right: Either<String, u32> = Right(42);
     /// assert_eq!(right.right_or_default(), 42);
     /// ```
+    #[inline]
     pub fn right_or_default(self) -> R
     where
         R: Default,
@@ -513,6 +532,7 @@ impl<L, R> Either<L, R> {
     /// let right: Either<String, u32> = Right(3);
     /// assert_eq!(right.right_or_else(|_| unreachable!()), 3);
     /// ```
+    #[inline]
     pub fn right_or_else<F>(self, f: F) -> R
         where
             F: FnOnce(L) -> R,
@@ -537,6 +557,7 @@ impl<T, L, R> Either<(T, L), (T, R)> {
     /// let right: Either<(u32, Vec<u8>), _> = Right((123, String::new()));
     /// assert_eq!(right.factor_first().0, 123);
     /// ```
+    #[inline]
     pub fn factor_first(self) -> (T, Either<L, R>) {
         match self {
             Left((t, l)) => (t, Left(l)),
@@ -558,6 +579,7 @@ impl<T, L, R> Either<(L, T), (R, T)> {
     /// let right: Either<(Vec<u8>, u32), _> = Right((String::new(), 123));
     /// assert_eq!(right.factor_second().1, 123);
     /// ```
+    #[inline]
     pub fn factor_second(self) -> (Either<L, R>, T) {
         match self {
             Left((l, t)) => (Left(l), t),
@@ -578,6 +600,7 @@ impl<T> Either<T, T> {
     /// let right: Either<u32, _> = Right(123);
     /// assert_eq!(right.into_inner(), 123);
     /// ```
+    #[inline]
     pub fn into_inner(self) -> T {
         either!(self, inner => inner)
     }
@@ -585,6 +608,7 @@ impl<T> Either<T, T> {
 
 /// Convert from `Result` to `Either` with `Ok => Right` and `Err => Left`.
 impl<L, R> From<Result<R, L>> for Either<L, R> {
+    #[inline]
     fn from(r: Result<R, L>) -> Self {
         match r {
             Err(e) => Left(e),
@@ -595,6 +619,7 @@ impl<L, R> From<Result<R, L>> for Either<L, R> {
 
 /// Convert from `Either` to `Result` with `Right => Ok` and `Left => Err`.
 impl<L, R> Into<Result<R, L>> for Either<L, R> {
+    #[inline]
     fn into(self) -> Result<R, L> {
         match self {
             Left(l) => Err(l),
@@ -606,6 +631,7 @@ impl<L, R> Into<Result<R, L>> for Either<L, R> {
 impl<L, R, A> Extend<A> for Either<L, R>
     where L: Extend<A>, R: Extend<A>
 {
+    #[inline]
     fn extend<T>(&mut self, iter: T)
         where T: IntoIterator<Item=A>
     {
@@ -619,38 +645,46 @@ impl<L, R> Iterator for Either<L, R>
 {
     type Item = L::Item;
 
+    #[inline]
     fn next(&mut self) -> Option<Self::Item> {
         either!(*self, ref mut inner => inner.next())
     }
 
+    #[inline]
     fn size_hint(&self) -> (usize, Option<usize>) {
         either!(*self, ref inner => inner.size_hint())
     }
 
+    #[inline]
     fn fold<Acc, G>(self, init: Acc, f: G) -> Acc
         where G: FnMut(Acc, Self::Item) -> Acc,
     {
         either!(self, inner => inner.fold(init, f))
     }
 
+    #[inline]
     fn count(self) -> usize {
         either!(self, inner => inner.count())
     }
 
+    #[inline]
     fn last(self) -> Option<Self::Item> {
         either!(self, inner => inner.last())
     }
 
+    #[inline]
     fn nth(&mut self, n: usize) -> Option<Self::Item> {
         either!(*self, ref mut inner => inner.nth(n))
     }
 
+    #[inline]
     fn collect<B>(self) -> B
         where B: iter::FromIterator<Self::Item>
     {
         either!(self, inner => inner.collect())
     }
 
+    #[inline]
     fn all<F>(&mut self, f: F) -> bool
         where F: FnMut(Self::Item) -> bool
     {
@@ -661,6 +695,7 @@ impl<L, R> Iterator for Either<L, R>
 impl<L, R> DoubleEndedIterator for Either<L, R>
     where L: DoubleEndedIterator, R: DoubleEndedIterator<Item=L::Item>
 {
+    #[inline]
     fn next_back(&mut self) -> Option<Self::Item> {
         either!(*self, ref mut inner => inner.next_back())
     }
@@ -678,10 +713,12 @@ impl<L, R> ExactSizeIterator for Either<L, R>
 impl<L, R> Read for Either<L, R>
     where L: Read, R: Read
 {
+    #[inline]
     fn read(&mut self, buf: &mut [u8]) -> io::Result<usize> {
         either!(*self, ref mut inner => inner.read(buf))
     }
 
+    #[inline]
     fn read_to_end(&mut self, buf: &mut Vec<u8>) -> io::Result<usize> {
         either!(*self, ref mut inner => inner.read_to_end(buf))
     }
@@ -692,6 +729,7 @@ impl<L, R> Read for Either<L, R>
 impl<L, R> BufRead for Either<L, R>
     where L: BufRead, R: BufRead
 {
+    #[inline]
     fn fill_buf(&mut self) -> io::Result<&[u8]> {
         either!(*self, ref mut inner => inner.fill_buf())
     }
@@ -708,10 +746,12 @@ impl<L, R> BufRead for Either<L, R>
 impl<L, R> Write for Either<L, R>
     where L: Write, R: Write
 {
+    #[inline]
     fn write(&mut self, buf: &[u8]) -> io::Result<usize> {
         either!(*self, ref mut inner => inner.write(buf))
     }
 
+    #[inline]
     fn flush(&mut self) -> io::Result<()> {
         either!(*self, ref mut inner => inner.flush())
     }
@@ -720,6 +760,7 @@ impl<L, R> Write for Either<L, R>
 impl<L, R, Target> AsRef<Target> for Either<L, R>
     where L: AsRef<Target>, R: AsRef<Target>
 {
+    #[inline]
     fn as_ref(&self) -> &Target {
         either!(*self, ref inner => inner.as_ref())
     }
@@ -731,6 +772,7 @@ macro_rules! impl_specific_ref_and_mut {
         impl<L, R> AsRef<$t> for Either<L, R>
             where L: AsRef<$t>, R: AsRef<$t>
         {
+            #[inline]
             fn as_ref(&self) -> &$t {
                 either!(*self, ref inner => inner.as_ref())
             }
@@ -740,6 +782,7 @@ macro_rules! impl_specific_ref_and_mut {
         impl<L, R> AsMut<$t> for Either<L, R>
             where L: AsMut<$t>, R: AsMut<$t>
         {
+            #[inline]
             fn as_mut(&mut self) -> &mut $t {
                 either!(*self, ref mut inner => inner.as_mut())
             }
@@ -767,6 +810,7 @@ impl_specific_ref_and_mut!(
 impl<L, R, Target> AsRef<[Target]> for Either<L, R>
     where L: AsRef<[Target]>, R: AsRef<[Target]>
 {
+    #[inline]
     fn as_ref(&self) -> &[Target] {
         either!(*self, ref inner => inner.as_ref())
     }
@@ -775,6 +819,7 @@ impl<L, R, Target> AsRef<[Target]> for Either<L, R>
 impl<L, R, Target> AsMut<Target> for Either<L, R>
     where L: AsMut<Target>, R: AsMut<Target>
 {
+    #[inline]
     fn as_mut(&mut self) -> &mut Target {
         either!(*self, ref mut inner => inner.as_mut())
     }
@@ -783,6 +828,7 @@ impl<L, R, Target> AsMut<Target> for Either<L, R>
 impl<L, R, Target> AsMut<[Target]> for Either<L, R>
     where L: AsMut<[Target]>, R: AsMut<[Target]>
 {
+    #[inline]
     fn as_mut(&mut self) -> &mut [Target] {
         either!(*self, ref mut inner => inner.as_mut())
     }
@@ -793,6 +839,7 @@ impl<L, R> Deref for Either<L, R>
 {
     type Target = L::Target;
 
+    #[inline]
     fn deref(&self) -> &Self::Target {
         either!(*self, ref inner => &*inner)
     }
@@ -801,6 +848,7 @@ impl<L, R> Deref for Either<L, R>
 impl<L, R> DerefMut for Either<L, R>
     where L: DerefMut, R: DerefMut<Target=L::Target>
 {
+    #[inline]
     fn deref_mut(&mut self) -> &mut Self::Target {
         either!(*self, ref mut inner => &mut *inner)
     }
@@ -811,11 +859,13 @@ impl<L, R> DerefMut for Either<L, R>
 impl<L, R> Error for Either<L, R>
     where L: Error, R: Error
 {
+    #[inline]
     fn description(&self) -> &str {
         either!(*self, ref inner => inner.description())
     }
 
     #[allow(deprecated)]
+    #[inline]
     fn cause(&self) -> Option<&Error> {
         either!(*self, ref inner => inner.cause())
     }
@@ -824,6 +874,7 @@ impl<L, R> Error for Either<L, R>
 impl<L, R> fmt::Display for Either<L, R>
     where L: fmt::Display, R: fmt::Display
 {
+    #[inline]
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         either!(*self, ref inner => inner.fmt(f))
     }
