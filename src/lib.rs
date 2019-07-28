@@ -717,16 +717,16 @@ impl<L, R> Write for Either<L, R>
     }
 }
 
-impl<L, R, Target> AsRef<Target> for Either<L, R>
-    where L: AsRef<Target>, R: AsRef<Target>, Target: ?Sized
+impl<L, R, Target: ?Sized> AsRef<Target> for Either<L, R>
+    where L: AsRef<Target>, R: AsRef<Target>
 {
     fn as_ref(&self) -> &Target {
         either!(*self, ref inner => inner.as_ref())
     }
 }
 
-impl<L, R, Target> AsMut<Target> for Either<L, R>
-    where L: AsMut<Target>, R: AsMut<Target>, Target: ?Sized
+impl<L, R, Target: ?Sized> AsMut<Target> for Either<L, R>
+    where L: AsMut<Target>, R: AsMut<Target>
 {
     fn as_mut(&mut self) -> &mut Target {
         either!(*self, ref mut inner => inner.as_mut())
