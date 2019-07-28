@@ -718,72 +718,17 @@ impl<L, R> Write for Either<L, R>
 }
 
 impl<L, R, Target> AsRef<Target> for Either<L, R>
-    where L: AsRef<Target>, R: AsRef<Target>
+    where L: AsRef<Target>, R: AsRef<Target>, Target: ?Sized
 {
     fn as_ref(&self) -> &Target {
         either!(*self, ref inner => inner.as_ref())
     }
 }
 
-macro_rules! impl_specific_ref_and_mut {
-    ($t:ty, $($attr:meta),* ) => {
-        $(#[$attr])*
-        impl<L, R> AsRef<$t> for Either<L, R>
-            where L: AsRef<$t>, R: AsRef<$t>
-        {
-            fn as_ref(&self) -> &$t {
-                either!(*self, ref inner => inner.as_ref())
-            }
-        }
-
-        $(#[$attr])*
-        impl<L, R> AsMut<$t> for Either<L, R>
-            where L: AsMut<$t>, R: AsMut<$t>
-        {
-            fn as_mut(&mut self) -> &mut $t {
-                either!(*self, ref mut inner => inner.as_mut())
-            }
-        }
-    };
-}
-
-impl_specific_ref_and_mut!(str,);
-impl_specific_ref_and_mut!(
-    ::std::path::Path,
-    cfg(feature = "use_std"),
-    doc = "Requires crate feature `use_std`."
-);
-impl_specific_ref_and_mut!(
-    ::std::ffi::OsStr,
-    cfg(feature = "use_std"),
-    doc = "Requires crate feature `use_std`."
-);
-impl_specific_ref_and_mut!(
-    ::std::ffi::CStr,
-    cfg(feature = "use_std"),
-    doc = "Requires crate feature `use_std`."
-);
-
-impl<L, R, Target> AsRef<[Target]> for Either<L, R>
-    where L: AsRef<[Target]>, R: AsRef<[Target]>
-{
-    fn as_ref(&self) -> &[Target] {
-        either!(*self, ref inner => inner.as_ref())
-    }
-}
-
 impl<L, R, Target> AsMut<Target> for Either<L, R>
-    where L: AsMut<Target>, R: AsMut<Target>
+    where L: AsMut<Target>, R: AsMut<Target>, Target: ?Sized
 {
     fn as_mut(&mut self) -> &mut Target {
-        either!(*self, ref mut inner => inner.as_mut())
-    }
-}
-
-impl<L, R, Target> AsMut<[Target]> for Either<L, R>
-    where L: AsMut<[Target]>, R: AsMut<[Target]>
-{
-    fn as_mut(&mut self) -> &mut [Target] {
         either!(*self, ref mut inner => inner.as_mut())
     }
 }
