@@ -581,6 +581,26 @@ impl<T> Either<T, T> {
     pub fn into_inner(self) -> T {
         either!(self, inner => inner)
     }
+
+    /// Map `f` over the contained value and return the result in the
+    /// corresponding variant.
+    ///
+    /// ```
+    /// use either::*;
+    ///
+    /// let value: Either<_, i32> = Right(42);
+    ///
+    /// let other = value.map(|x| x * 2);
+    /// assert_eq!(other, Right(84));
+    /// ```
+    pub fn map<F, M>(self, f: F) -> Either<M, M>
+        where F: FnOnce(T) -> M
+    {
+        match self {
+            Left(l) => Left(f(l)),
+            Right(r) => Right(f(r)),
+        }
+    }
 }
 
 /// Convert from `Result` to `Either` with `Ok => Right` and `Err => Left`.
