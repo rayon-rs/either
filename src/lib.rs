@@ -887,7 +887,7 @@ fn deref() {
 fn iter() {
     let x = 3;
     let mut iter = match x {
-        1...3 => Left(0..10),
+        3 => Left(0..10),
         _ => Right(17..),
     };
 
