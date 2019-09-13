@@ -1,6 +1,6 @@
 [package]
 name = "either"
-version = "1.5.2"
+version = "1.5.3"
 authors = ["bluss"]
 
 license = "MIT/Apache-2.0"
@@ -24,6 +24,7 @@ use_std = []
 
 [package.metadata.release]
 no-dev-version = true
+tag-name = "{{version}}"
 
 [package.metadata.docs.rs]
 features = ["serde"]

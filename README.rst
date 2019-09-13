@@ -31,6 +31,10 @@ How to use with cargo::
 Recent Changes
 --------------
 
+- 1.5.3
+
+  - Add new method ``.map()`` for ``Either<T, T>`` by @nvzqz (#40).
+
 - 1.5.2
 
   - Add new methods ``.left_or()``,  ``.left_or_default()``,  ``.left_or_else()``,
