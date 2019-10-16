@@ -836,6 +836,7 @@ impl<L, R> Error for Either<L, R>
     }
 
     #[allow(deprecated)]
+    #[allow(bare_trait_objects)]
     fn cause(&self) -> Option<&Error> {
         either!(*self, ref inner => inner.cause())
     }
