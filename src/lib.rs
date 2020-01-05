@@ -831,6 +831,7 @@ impl<L, R> DerefMut for Either<L, R>
 impl<L, R> Error for Either<L, R>
     where L: Error, R: Error
 {
+    #[allow(deprecated)]
     fn description(&self) -> &str {
         either!(*self, ref inner => inner.description())
     }
