@@ -929,11 +929,14 @@ fn read_write() {
 fn error() {
     let invalid_utf8 = b"\xff";
     let res = || -> Result<_, Either<_, _>> {
-        try!(::std::str::from_utf8(invalid_utf8).map_err(Left));
-        try!("x".parse::<i32>().map_err(Right));
+        ::std::str::from_utf8(invalid_utf8).map_err(Left)?;
+        "x".parse::<i32>().map_err(Right)?;
         Ok(())
     }();
     assert!(res.is_err());
+
+    // TODO: description() is now deprecated, what to do?
+    #[allow(deprecated)]
     res.unwrap_err().description(); // make sure this can be called
 }
 
