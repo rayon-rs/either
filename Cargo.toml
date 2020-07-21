@@ -21,6 +21,7 @@ serde = { version = "1.0", optional = true, features = ["derive"] }
 [features]
 default = ["use_std"]
 use_std = []
+untagged = []
 
 [package.metadata.release]
 no-dev-version = true

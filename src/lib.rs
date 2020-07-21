@@ -41,7 +41,7 @@ pub use Either::{Left, Right};
 /// (For representing success or error, use the regular `Result` enum instead.)
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, Debug)]
-#[cfg_attr(feature = "serde", serde(untagged))]
+#[cfg_attr(all(feature = "serde", feature = "untagged"), serde(untagged))]
 pub enum Either<L, R> {
     /// A value of type `L`.
     Left(L),
