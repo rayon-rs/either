@@ -17,7 +17,7 @@
 #[cfg(all(not(test), not(feature = "use_std")))]
 extern crate core as std;
 
-#[cfg(feature = "serde")]
+#[cfg(any(feature = "serde", feature = "serde_untagged"))]
 #[macro_use]
 extern crate serde;
 
@@ -39,9 +39,9 @@ pub use Either::{Left, Right};
 /// The `Either` type is symmetric and treats its variants the same way, without
 /// preference.
 /// (For representing success or error, use the regular `Result` enum instead.)
-#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+#[cfg_attr(any(feature = "serde", feature = "serde_untagged"), derive(Serialize, Deserialize))]
 #[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, Debug)]
-#[cfg_attr(all(feature = "serde", feature = "untagged"), serde(untagged))]
+#[cfg_attr(feature = "serde_untagged", serde(untagged))]
 pub enum Either<L, R> {
     /// A value of type `L`.
     Left(L),
