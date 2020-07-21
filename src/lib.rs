@@ -9,8 +9,13 @@
 //! Enabled by default. Disable to make the library `#![no_std]`.
 //!
 //! * `"serde"`
-//! Disabled by default. Enable to `#[derive(Serialize, Deserialize)]` for `Either`
+//! Disabled by default. Enable to `#[derive(Serialize, Deserialize)]` for
+//! `Either`.
 //!
+//! * `"serde_untagged"`
+//! Disabled by default. Enable to `#[derive(Serialize, Deserialize)]` for
+//! `Either` with an untagged representation of the enum. Enables the feature
+//! "serde".
 
 #![doc(html_root_url = "https://docs.rs/either/1/")]
 #![cfg_attr(all(not(test), not(feature = "use_std")), no_std)]
