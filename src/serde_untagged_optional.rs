@@ -14,12 +14,12 @@
 //! #[derive(Serialize, Deserialize, Debug)]
 //! #[serde(transparent)]
 //! struct IntOrString {
-//!     #[serde(with="either::serde_untagged")]
-//!     inner: either::Either<Vec<String>, HashMap<String, i32>>
+//!     #[serde(with="either::serde_untagged_optional")]
+//!     inner: Option<either::Either<Vec<String>, HashMap<String, i32>>>
 //! };
 //! // serialization
 //! let data = IntOrString {
-//!     inner: either::Either::Left(vec!["Hello".to_string()])    
+//!     inner: Some(either::Either::Left(vec!["Hello".to_string()]))   
 //! };
 //! // notice: no tags are emitted.
 //! assert_eq!(serde_json::to_string(&data)?, r#"["Hello"]"#);
