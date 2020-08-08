@@ -23,7 +23,7 @@ default = ["use_std"]
 use_std = []
 
 [dev-dependencies]
-serde_json = "1.0"
+serde_json = "=1.0.0"
 
 [package.metadata.release]
 no-dev-version = true

@@ -21,6 +21,12 @@ extern crate core as std;
 #[macro_use]
 extern crate serde;
 
+#[cfg(feature = "serde")]
+pub mod serde_untagged;
+
+#[cfg(feature = "serde")]
+pub mod serde_untagged_optional;
+
 use std::convert::{AsRef, AsMut};
 use std::fmt;
 use std::iter;
@@ -848,76 +854,6 @@ impl<L, R> fmt::Display for Either<L, R>
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         either!(*self, ref inner => inner.fmt(f))
-    }
-}
-
-#[cfg(feature = "serde")]
-pub mod serde_untagged {
-    //! Untagged serialization/deserialization support.
-    //!
-    //! `Either` uses default, externally-tagged representation.
-    //! However, sometimes it is useful to support several alternative types.
-    //! For example, we may have a field which is generally Map<String, i32>
-    //! but in typical cases Vec<String> would suffice, too.
-    //! ```rust
-    //! #[macro_use]
-    //! extern crate serde;
-    //! // or `use serde::{Serialize, Deserialize};` in newer rust versions.
-    //! # fn main() -> Result<(), Box<dyn std::error::Error>> {
-    //! use std::collections::HashMap;
-    //! 
-    //! #[derive(Serialize, Deserialize, Debug)]
-    //! #[serde(transparent)]
-    //! struct IntOrString {
-    //!     #[serde(with="either::serde_untagged")]
-    //!     inner: either::Either<Vec<String>, HashMap<String, i32>>
-    //! };
-    //! // serialization
-    //! let data = IntOrString {
-    //!     inner: either::Either::Left(vec!["Hello".to_string()])    
-    //! };
-    //! // notice: no tags are emitted.
-    //! assert_eq!(serde_json::to_string(&data)?, r#"["Hello"]"#);
-    //! // deserialization
-    //! let data: IntOrString = serde_json::from_str(
-    //!     r#"{"a": 0, "b": 14}"#   
-    //! )?;
-    //! println!("found {:?}", data);
-    //! # Ok(()) 
-    //! }
-    //! ```
-
-    use serde::{Deserialize, Deserializer, Serialize, Serializer};
-    use super::Either;
-
-    #[derive(Serialize, Deserialize)]
-    #[serde(untagged)]
-    enum UEither<L, R> {
-        Left(L),
-        Right(R),
-    }
-
-    pub fn serialize<L, R, S>(this: &Either<L, R>, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        S: Serializer,
-        L: Serialize,
-        R: Serialize,
-    {
-        let untagged = this.as_ref().either(UEither::Left, UEither::Right);
-        untagged.serialize(serializer)
-    }
-
-    pub fn deserialize<'de, L, R, D>(deserializer: D) -> Result<Either<L, R>, D::Error>
-    where
-        D: Deserializer<'de>,
-        L: Deserialize<'de>,
-        R: Deserialize<'de>,
-    {
-        let untagged: UEither<L, R> = try!(UEither::deserialize(deserializer));
-        match untagged {
-            UEither::Left(left) => Ok(Either::Left(left)),
-            UEither::Right(right) => Ok(Either::Right(right)),
-        }
     }
 }
 
