@@ -62,10 +62,10 @@ where
     L: Deserialize<'de>,
     R: Deserialize<'de>,
 {
-    let untagged = try!(Option::<Either<L, R>>::deserialize(deserializer));
-    match untagged {
-        None => Ok(None),
-        Some(Either::Left(left)) => Ok(Some(super::Either::Left(left))),
-        Some(Either::Right(right)) => Ok(Some(super::Either::Right(right))),
+    match Option::deserialize(deserializer) {
+        Ok(Some(Either::Left(left))) => Ok(Some(super::Either::Left(left))),
+        Ok(Some(Either::Right(right))) => Ok(Some(super::Either::Right(right))),
+        Ok(None) => Ok(None),
+        Err(error) => Err(error),
     }
 }

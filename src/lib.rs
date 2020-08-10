@@ -978,11 +978,13 @@ fn read_write() {
 #[allow(deprecated)]
 fn error() {
     let invalid_utf8 = b"\xff";
-    let res = || -> Result<_, Either<_, _>> {
-        try!(::std::str::from_utf8(invalid_utf8).map_err(Left));
-        try!("x".parse::<i32>().map_err(Right));
+    let res = if let Err(error) = ::std::str::from_utf8(invalid_utf8) {
+        Err(Left(error))
+    } else if let Err(error) = "x".parse::<i32>() {
+        Err(Right(error))
+    } else {
         Ok(())
-    }();
+    };
     assert!(res.is_err());
     res.unwrap_err().description(); // make sure this can be called
 }

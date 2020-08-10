@@ -57,9 +57,9 @@ where
     L: Deserialize<'de>,
     R: Deserialize<'de>,
 {
-    let untagged: Either<L, R> = try!(Either::deserialize(deserializer));
-    match untagged {
-        Either::Left(left) => Ok(super::Either::Left(left)),
-        Either::Right(right) => Ok(super::Either::Right(right)),
+    match Either::deserialize(deserializer) {
+        Ok(Either::Left(left)) => Ok(super::Either::Left(left)),
+        Ok(Either::Right(right)) => Ok(super::Either::Right(right)),
+        Err(error) => Err(error),
     }
 }
