@@ -975,6 +975,7 @@ fn read_write() {
 }
 
 #[test]
+#[allow(deprecated)]
 fn error() {
     let invalid_utf8 = b"\xff";
     let res = || -> Result<_, Either<_, _>> {
