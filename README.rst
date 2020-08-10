@@ -25,11 +25,16 @@ __ https://docs.rs/either/
 How to use with cargo::
 
     [dependencies]
-    either = "1.5"
+    either = "1.6"
 
 
 Recent Changes
 --------------
+
+- 1.6.0
+
+  - Add new modules ``serde_untagged`` and ``serde_untagged_optional`` to customize
+    how ``Either`` fields are serialized in other types, by @MikailBag (#49)
 
 - 1.5.3
 
