@@ -19,13 +19,13 @@
 //! };
 //! // serialization
 //! let data = IntOrString {
-//!     inner: either::Either::Left(vec!["Hello".to_string()])    
+//!     inner: either::Either::Left(vec!["Hello".to_string()])
 //! };
 //! // notice: no tags are emitted.
 //! assert_eq!(serde_json::to_string(&data)?, r#"["Hello"]"#);
 //! // deserialization
 //! let data: IntOrString = serde_json::from_str(
-//!     r#"{"a": 0, "b": 14}"#   
+//!     r#"{"a": 0, "b": 14}"#
 //! )?;
 //! println!("found {:?}", data);
 //! # Ok(())
