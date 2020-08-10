@@ -21,6 +21,12 @@ extern crate core as std;
 #[macro_use]
 extern crate serde;
 
+#[cfg(feature = "serde")]
+pub mod serde_untagged;
+
+#[cfg(feature = "serde")]
+pub mod serde_untagged_optional;
+
 use std::convert::{AsRef, AsMut};
 use std::fmt;
 use std::iter;
