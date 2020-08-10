@@ -50,9 +50,11 @@ where
     L: Serialize,
     R: Serialize,
 {
-    let untagged = this
-        .as_ref()
-        .map(|either| either.as_ref().either(Either::Left, Either::Right));
+    let untagged = match this {
+        &Some(super::Either::Left(ref left)) => Some(Either::Left(left)),
+        &Some(super::Either::Right(ref right)) => Some(Either::Right(right)),
+        &None => None,
+    };
     untagged.serialize(serializer)
 }
 
