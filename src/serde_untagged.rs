@@ -4,32 +4,37 @@
 //! However, sometimes it is useful to support several alternative types.
 //! For example, we may have a field which is generally Map<String, i32>
 //! but in typical cases Vec<String> would suffice, too.
+//!
 //! ```rust
 //! #[macro_use]
 //! extern crate serde;
 //! // or `use serde::{Serialize, Deserialize};` in newer rust versions.
+//!
 //! # fn main() -> Result<(), Box<dyn std::error::Error>> {
+//! use either::Either;
 //! use std::collections::HashMap;
 //!
 //! #[derive(Serialize, Deserialize, Debug)]
 //! #[serde(transparent)]
 //! struct IntOrString {
-//!     #[serde(with="either::serde_untagged")]
-//!     inner: either::Either<Vec<String>, HashMap<String, i32>>
+//!     #[serde(with = "either::serde_untagged")]
+//!     inner: Either<Vec<String>, HashMap<String, i32>>
 //! };
+//!
 //! // serialization
 //! let data = IntOrString {
-//!     inner: either::Either::Left(vec!["Hello".to_string()])
+//!     inner: Either::Left(vec!["Hello".to_string()])
 //! };
 //! // notice: no tags are emitted.
 //! assert_eq!(serde_json::to_string(&data)?, r#"["Hello"]"#);
+//!
 //! // deserialization
 //! let data: IntOrString = serde_json::from_str(
 //!     r#"{"a": 0, "b": 14}"#
 //! )?;
 //! println!("found {:?}", data);
 //! # Ok(())
-//! }
+//! # }
 //! ```
 
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
