@@ -884,7 +884,7 @@ where
     }
 
     #[allow(deprecated)]
-    #[allow(bare_trait_objects)]
+    #[allow(unknown_lints, bare_trait_objects)]
     fn cause(&self) -> Option<&Error> {
         either!(*self, ref inner => inner.cause())
     }
