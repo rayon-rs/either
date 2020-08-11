@@ -536,6 +536,58 @@ impl<L, R> Either<L, R> {
             Either::Right(r) => r,
         }
     }
+
+    /// Returns the left value
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use either::*;
+    /// let left: Either<_, ()> = Left(3);
+    /// assert_eq!(left.unwrap_left(), 3);
+    /// ```
+    ///
+    /// # Panics
+    ///
+    /// When `Either` is a `Right` value
+    ///
+    /// ```should_panic
+    /// # use either::*;
+    /// let right: Either<(), _> = Right(3);
+    /// right.unwrap_left();
+    /// ```
+    pub fn unwrap_left(self) -> L where R: std::fmt::Debug {
+        match self {
+            Either::Left(l) => l,
+            Either::Right(r) => panic!("called `Either::unwrap_left()` on a `Right` value: {:?}", r),
+        }
+    }
+
+    /// Returns the right value
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use either::*;
+    /// let right: Either<(), _> = Right(3);
+    /// assert_eq!(right.unwrap_right(), 3);
+    /// ```
+    ///
+    /// # Panics
+    ///
+    /// When `Either` is a `Left` value
+    ///
+    /// ```should_panic
+    /// # use either::*;
+    /// let left: Either<_, ()> = Left(3);
+    /// left.unwrap_right();
+    /// ```
+    pub fn unwrap_right(self) -> R where L: std::fmt::Debug {
+        match self {
+            Either::Right(r) => r,
+            Either::Left(l) => panic!("called `Either::unwrap_right()` on a `Left` value: {:?}", l),
+        }
+    }
 }
 
 impl<T, L, R> Either<(T, L), (T, R)> {
