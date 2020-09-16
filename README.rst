@@ -31,6 +31,11 @@ How to use with cargo::
 Recent Changes
 --------------
 
+- 1.6.1
+
+  - Add new methods ``.expect_left()``, ``.unwrap_left()``,
+    and equivalents on the right, by @spenserblack (#51)
+
 - 1.6.0
 
   - Add new modules ``serde_untagged`` and ``serde_untagged_optional`` to customize
@@ -42,7 +47,7 @@ Recent Changes
 
 - 1.5.2
 
-  - Add new methods ``.left_or()``,  ``.left_or_default()``,  ``.left_or_else()``,
+  - Add new methods ``.left_or()``, ``.left_or_default()``, ``.left_or_else()``,
     and equivalents on the right, by @DCjanus (#36)
 
 - 1.5.1
