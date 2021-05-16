@@ -659,7 +659,10 @@ impl<L, R> Either<L, R> {
 }
 
 #[cfg(feature = "never_type")]
-impl<L> Either<L, !> {
+impl<L, R> Either<L, R>
+where
+    R: Into<!>,
+{
     /// Returns the left value, but never panics
     ///
     /// # Examples
@@ -673,13 +676,16 @@ impl<L> Either<L, !> {
     pub fn into_left(self) -> L {
         match self {
             Either::Left(l) => l,
-            Either::Right(r) => r,
+            Either::Right(r) => r.into(),
         }
     }
 }
 
 #[cfg(feature = "never_type")]
-impl<R> Either<!, R> {
+impl<L, R> Either<L, R>
+where
+    L: Into<!>,
+{
     /// Returns the right value, but never panics
     ///
     /// # Examples
@@ -693,7 +699,7 @@ impl<R> Either<!, R> {
     pub fn into_right(self) -> R {
         match self {
             Either::Right(r) => r,
-            Either::Left(l) => l,
+            Either::Left(l) => l.into(),
         }
     }
 }
