@@ -14,6 +14,8 @@
 
 #![doc(html_root_url = "https://docs.rs/either/1/")]
 #![cfg_attr(all(not(test), not(feature = "use_std")), no_std)]
+#![cfg_attr(feature = "never_type", feature(never_type))]
+
 #[cfg(all(not(test), not(feature = "use_std")))]
 extern crate core as std;
 
@@ -652,6 +654,46 @@ impl<L, R> Either<L, R> {
         match self {
             Either::Right(r) => r,
             Either::Left(l) => panic!("{}: {:?}", msg, l),
+        }
+    }
+}
+
+#[cfg(feature = "never_type")]
+impl<L> Either<L, !> {
+    /// Returns the left value, but never panics
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # #![feature(never_type)]
+    /// # use either::*;
+    /// let left: Either<_, !> = Left(3);
+    /// assert_eq!(left.into_left(), 3);
+    /// ```
+    pub fn into_left(self) -> L {
+        match self {
+            Either::Left(l) => l,
+            Either::Right(r) => r,
+        }
+    }
+}
+
+#[cfg(feature = "never_type")]
+impl<R> Either<!, R> {
+    /// Returns the right value, but never panics
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # #![feature(never_type)]
+    /// # use either::*;
+    /// let right: Either<!, _> = Right(3);
+    /// assert_eq!(right.into_right(), 3);
+    /// ```
+    pub fn into_right(self) -> R {
+        match self {
+            Either::Right(r) => r,
+            Either::Left(l) => l,
         }
     }
 }
