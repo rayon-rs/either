@@ -55,7 +55,7 @@ pub enum Either<L, R> {
     Right(R),
 }
 
-macro_rules! either {
+macro_rules! for_both {
     ($value:expr, $pattern:pat => $result:expr) => {
         match $value {
             Either::Left($pattern) => $result,
@@ -711,7 +711,7 @@ impl<T> Either<T, T> {
     /// assert_eq!(right.into_inner(), 123);
     /// ```
     pub fn into_inner(self) -> T {
-        either!(self, inner => inner)
+        for_both!(self, inner => inner)
     }
 
     /// Map `f` over the contained value and return the result in the
@@ -765,7 +765,7 @@ where
     where
         T: IntoIterator<Item = A>,
     {
-        either!(*self, ref mut inner => inner.extend(iter))
+        for_both!(*self, ref mut inner => inner.extend(iter))
     }
 }
 
@@ -778,44 +778,44 @@ where
     type Item = L::Item;
 
     fn next(&mut self) -> Option<Self::Item> {
-        either!(*self, ref mut inner => inner.next())
+        for_both!(*self, ref mut inner => inner.next())
     }
 
     fn size_hint(&self) -> (usize, Option<usize>) {
-        either!(*self, ref inner => inner.size_hint())
+        for_both!(*self, ref inner => inner.size_hint())
     }
 
     fn fold<Acc, G>(self, init: Acc, f: G) -> Acc
     where
         G: FnMut(Acc, Self::Item) -> Acc,
     {
-        either!(self, inner => inner.fold(init, f))
+        for_both!(self, inner => inner.fold(init, f))
     }
 
     fn count(self) -> usize {
-        either!(self, inner => inner.count())
+        for_both!(self, inner => inner.count())
     }
 
     fn last(self) -> Option<Self::Item> {
-        either!(self, inner => inner.last())
+        for_both!(self, inner => inner.last())
     }
 
     fn nth(&mut self, n: usize) -> Option<Self::Item> {
-        either!(*self, ref mut inner => inner.nth(n))
+        for_both!(*self, ref mut inner => inner.nth(n))
     }
 
     fn collect<B>(self) -> B
     where
         B: iter::FromIterator<Self::Item>,
     {
-        either!(self, inner => inner.collect())
+        for_both!(self, inner => inner.collect())
     }
 
     fn all<F>(&mut self, f: F) -> bool
     where
         F: FnMut(Self::Item) -> bool,
     {
-        either!(*self, ref mut inner => inner.all(f))
+        for_both!(*self, ref mut inner => inner.all(f))
     }
 }
 
@@ -825,7 +825,7 @@ where
     R: DoubleEndedIterator<Item = L::Item>,
 {
     fn next_back(&mut self) -> Option<Self::Item> {
-        either!(*self, ref mut inner => inner.next_back())
+        for_both!(*self, ref mut inner => inner.next_back())
     }
 }
 
@@ -846,11 +846,11 @@ where
     R: Read,
 {
     fn read(&mut self, buf: &mut [u8]) -> io::Result<usize> {
-        either!(*self, ref mut inner => inner.read(buf))
+        for_both!(*self, ref mut inner => inner.read(buf))
     }
 
     fn read_to_end(&mut self, buf: &mut Vec<u8>) -> io::Result<usize> {
-        either!(*self, ref mut inner => inner.read_to_end(buf))
+        for_both!(*self, ref mut inner => inner.read_to_end(buf))
     }
 }
 
@@ -862,11 +862,11 @@ where
     R: BufRead,
 {
     fn fill_buf(&mut self) -> io::Result<&[u8]> {
-        either!(*self, ref mut inner => inner.fill_buf())
+        for_both!(*self, ref mut inner => inner.fill_buf())
     }
 
     fn consume(&mut self, amt: usize) {
-        either!(*self, ref mut inner => inner.consume(amt))
+        for_both!(*self, ref mut inner => inner.consume(amt))
     }
 }
 
@@ -880,11 +880,11 @@ where
     R: Write,
 {
     fn write(&mut self, buf: &[u8]) -> io::Result<usize> {
-        either!(*self, ref mut inner => inner.write(buf))
+        for_both!(*self, ref mut inner => inner.write(buf))
     }
 
     fn flush(&mut self) -> io::Result<()> {
-        either!(*self, ref mut inner => inner.flush())
+        for_both!(*self, ref mut inner => inner.flush())
     }
 }
 
@@ -894,7 +894,7 @@ where
     R: AsRef<Target>,
 {
     fn as_ref(&self) -> &Target {
-        either!(*self, ref inner => inner.as_ref())
+        for_both!(*self, ref inner => inner.as_ref())
     }
 }
 
@@ -905,7 +905,7 @@ macro_rules! impl_specific_ref_and_mut {
             where L: AsRef<$t>, R: AsRef<$t>
         {
             fn as_ref(&self) -> &$t {
-                either!(*self, ref inner => inner.as_ref())
+                for_both!(*self, ref inner => inner.as_ref())
             }
         }
 
@@ -914,7 +914,7 @@ macro_rules! impl_specific_ref_and_mut {
             where L: AsMut<$t>, R: AsMut<$t>
         {
             fn as_mut(&mut self) -> &mut $t {
-                either!(*self, ref mut inner => inner.as_mut())
+                for_both!(*self, ref mut inner => inner.as_mut())
             }
         }
     };
@@ -943,7 +943,7 @@ where
     R: AsRef<[Target]>,
 {
     fn as_ref(&self) -> &[Target] {
-        either!(*self, ref inner => inner.as_ref())
+        for_both!(*self, ref inner => inner.as_ref())
     }
 }
 
@@ -953,7 +953,7 @@ where
     R: AsMut<Target>,
 {
     fn as_mut(&mut self) -> &mut Target {
-        either!(*self, ref mut inner => inner.as_mut())
+        for_both!(*self, ref mut inner => inner.as_mut())
     }
 }
 
@@ -963,7 +963,7 @@ where
     R: AsMut<[Target]>,
 {
     fn as_mut(&mut self) -> &mut [Target] {
-        either!(*self, ref mut inner => inner.as_mut())
+        for_both!(*self, ref mut inner => inner.as_mut())
     }
 }
 
@@ -975,7 +975,7 @@ where
     type Target = L::Target;
 
     fn deref(&self) -> &Self::Target {
-        either!(*self, ref inner => &*inner)
+        for_both!(*self, ref inner => &*inner)
     }
 }
 
@@ -985,7 +985,7 @@ where
     R: DerefMut<Target = L::Target>,
 {
     fn deref_mut(&mut self) -> &mut Self::Target {
-        either!(*self, ref mut inner => &mut *inner)
+        for_both!(*self, ref mut inner => &mut *inner)
     }
 }
 
@@ -998,13 +998,13 @@ where
 {
     #[allow(deprecated)]
     fn description(&self) -> &str {
-        either!(*self, ref inner => inner.description())
+        for_both!(*self, ref inner => inner.description())
     }
 
     #[allow(deprecated)]
     #[allow(unknown_lints, bare_trait_objects)]
     fn cause(&self) -> Option<&Error> {
-        either!(*self, ref inner => inner.cause())
+        for_both!(*self, ref inner => inner.cause())
     }
 }
 
@@ -1014,7 +1014,7 @@ where
     R: fmt::Display,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        either!(*self, ref inner => inner.fmt(f))
+        for_both!(*self, ref inner => inner.fmt(f))
     }
 }
 
