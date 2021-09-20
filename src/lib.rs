@@ -55,6 +55,28 @@ pub enum Either<L, R> {
     Right(R),
 }
 
+/// Evaluate the provided expression for both [`Either::Left`] and [`Either::Right`].
+///
+/// This macro is useful in cases where both sides of [`Either`] can be interacted with
+/// in the same way even though the don't share the same type.
+///
+/// # Example
+///
+/// ```
+/// # use either::Either;
+/// fn length(owned_or_borrowed: Either<String, &'static str>) -> usize {
+///     either::for_both!(owned_or_borrowed, s => s.len())
+/// }
+///
+/// # fn main() {
+/// let borrowed = Either::Right("Hello world!");
+/// let owned = Either::Left("Hello world!".to_owned());
+///
+/// assert_eq!(length(borrowed), 12);
+/// assert_eq!(length(owned), 12);
+/// # }
+/// ```
+#[macro_export]
 macro_rules! for_both {
     ($value:expr, $pattern:pat => $result:expr) => {
         match $value {
