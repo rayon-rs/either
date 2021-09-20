@@ -58,8 +58,8 @@ pub enum Either<L, R> {
 macro_rules! for_both {
     ($value:expr, $pattern:pat => $result:expr) => {
         match $value {
-            Either::Left($pattern) => $result,
-            Either::Right($pattern) => $result,
+            $crate::Either::Left($pattern) => $result,
+            $crate::Either::Right($pattern) => $result,
         }
     };
 }
