@@ -19,7 +19,7 @@ __ https://docs.rs/either/
 .. |build_status| image:: https://travis-ci.org/bluss/either.svg?branch=master
 .. _build_status: https://travis-ci.org/bluss/either
 
-.. |crates| image:: http://meritbadge.herokuapp.com/either
+.. |crates| image:: https://img.shields.io/crates/v/either.svg
 .. _crates: https://crates.io/crates/either
 
 How to use with cargo::
@@ -123,7 +123,7 @@ License
 Dual-licensed to be compatible with the Rust project.
 
 Licensed under the Apache License, Version 2.0
-http://www.apache.org/licenses/LICENSE-2.0 or the MIT license
-http://opensource.org/licenses/MIT, at your
+https://www.apache.org/licenses/LICENSE-2.0 or the MIT license
+https://opensource.org/licenses/MIT, at your
 option. This file may not be copied, modified, or distributed
 except according to those terms.
