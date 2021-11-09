@@ -36,7 +36,7 @@ use std::ops::DerefMut;
 #[cfg(any(test, feature = "use_std"))]
 use std::error::Error;
 #[cfg(any(test, feature = "use_std"))]
-use std::io::{self, BufRead, Read, Write};
+use std::io::{self, BufRead, Read, Seek, SeekFrom, Write};
 
 pub use Either::{Left, Right};
 
@@ -900,6 +900,28 @@ where
 
     fn read_to_end(&mut self, buf: &mut Vec<u8>) -> io::Result<usize> {
         for_both!(*self, ref mut inner => inner.read_to_end(buf))
+    }
+}
+
+#[cfg(any(test, feature = "use_std"))]
+/// `Either<L, R>` implements `Seek` if both `L` and `R` do.
+///
+/// Requires crate feature `"use_std"`
+impl<L, R> Seek for Either<L, R>
+where
+    L: Seek,
+    R: Seek,
+{
+    fn seek(&mut self, pos: SeekFrom) -> io::Result<u64> {
+        either!(*self, ref mut inner => inner.seek(pos))
+    }
+
+    fn rewind(&mut self) -> io::Result<()> {
+        either!(*self, ref mut inner => inner.rewind())
+    }
+
+    fn stream_position(&mut self) -> io::Result<u64> {
+        either!(*self, ref mut inner => inner.stream_position())
     }
 }
 
