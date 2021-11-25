@@ -669,7 +669,8 @@ impl<L, R> Either<L, R> {
     /// ```
     pub fn into_common<T>(self) -> T
     where
-        T: From<L> + From<R>,
+        L: Into<T>,
+        R: Into<T>,
     {
         match self {
             Either::Left(l) => l.into(),
