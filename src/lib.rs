@@ -1018,6 +1018,25 @@ where
     }
 }
 
+/// Converts an iterator of coproducts into a pair of containers.
+///
+/// [`unzip_either`] consumes an entire iterator of coproducts, partitioning
+/// elements depending on whether the coproduct is `Left` or `Right`.
+///
+/// This function is similar to `unzip` on [`std::iterator::Iterator`].
+pub fn unzip_either<L, R, I, ExtendL, ExtendR>(i: I) -> (ExtendL, ExtendR)
+where
+    I: Iterator<Item = Either<L, R>>,
+    ExtendL: Extend<L> + Default,
+    ExtendR: Extend<R> + Default,
+{
+    let iter = i.into_iter();
+    let (mut left, mut right) = <(ExtendL, ExtendR)>::default();
+    // TODO: Use `extend_reserve` once stabilized
+    iter.for_each(|e| e.either(|l| left.extend(Some(l)), |r| right.extend(Some(r))));
+    (left, right)
+}
+
 #[test]
 fn basic() {
     let mut e = Left(2);
@@ -1105,6 +1124,20 @@ fn error() {
     };
     assert!(res.is_err());
     res.unwrap_err().description(); // make sure this can be called
+}
+
+#[test]
+fn test_unzip_either() {
+    let range = (0..2).map(|i| {
+        if i % 2 == 0 {
+            Either::Left(i)
+        } else {
+            Either::Right(i as f32)
+        }
+    });
+    let (left, right) = unzip_either::<_, _, _, Vec<_>, Vec<_>>(range);
+    assert_eq!(left, vec![0]);
+    assert_eq!(right, vec![1.0]);
 }
 
 /// A helper macro to check if AsRef and AsMut are implemented for a given type.
