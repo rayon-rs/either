@@ -655,7 +655,7 @@ impl<L, R> Either<L, R> {
         }
     }
 
-    /// Converts to a common type
+    /// Convert the contained value into `T`
     ///
     /// # Examples
     ///
