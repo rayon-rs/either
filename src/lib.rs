@@ -958,6 +958,9 @@ where
     L: ExactSizeIterator,
     R: ExactSizeIterator<Item = L::Item>,
 {
+    fn len(&self) -> usize {
+        for_both!(*self, ref inner => inner.len())
+    }
 }
 
 #[cfg(any(test, feature = "use_std"))]
