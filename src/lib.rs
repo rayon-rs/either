@@ -915,14 +915,6 @@ where
     fn seek(&mut self, pos: SeekFrom) -> io::Result<u64> {
         either!(*self, ref mut inner => inner.seek(pos))
     }
-
-    fn rewind(&mut self) -> io::Result<()> {
-        either!(*self, ref mut inner => inner.rewind())
-    }
-
-    fn stream_position(&mut self) -> io::Result<u64> {
-        either!(*self, ref mut inner => inner.stream_position())
-    }
 }
 
 #[cfg(any(test, feature = "use_std"))]
