@@ -60,6 +60,8 @@ pub enum Either<L, R> {
 /// This macro is useful in cases where both sides of [`Either`] can be interacted with
 /// in the same way even though the don't share the same type.
 ///
+/// Syntax: `either::for_both!(` *expression* `,` *pattern* `=>` *expression* `)`
+///
 /// # Example
 ///
 /// ```
