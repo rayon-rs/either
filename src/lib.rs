@@ -654,6 +654,29 @@ impl<L, R> Either<L, R> {
             Either::Left(l) => panic!("{}: {:?}", msg, l),
         }
     }
+
+    /// Convert the contained value into `T`
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use either::*;
+    /// // Both u16 and u32 can be converted to u64.
+    /// let left: Either<u16, u32> = Left(3u16);
+    /// assert_eq!(left.either_into::<u64>(), 3u64);
+    /// let right: Either<u16, u32> = Right(7u32);
+    /// assert_eq!(right.either_into::<u64>(), 7u64);
+    /// ```
+    pub fn either_into<T>(self) -> T
+    where
+        L: Into<T>,
+        R: Into<T>,
+    {
+        match self {
+            Either::Left(l) => l.into(),
+            Either::Right(r) => r.into(),
+        }
+    }
 }
 
 impl<T, L, R> Either<(T, L), (T, R)> {
