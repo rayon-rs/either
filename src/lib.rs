@@ -13,9 +13,10 @@
 //!
 
 #![doc(html_root_url = "https://docs.rs/either/1/")]
-#![cfg_attr(all(not(test), not(feature = "use_std")), no_std)]
-#[cfg(all(not(test), not(feature = "use_std")))]
-extern crate core as std;
+#![no_std]
+
+#[cfg(any(test, feature = "use_std"))]
+extern crate std;
 
 #[cfg(feature = "serde")]
 #[macro_use]
@@ -27,11 +28,11 @@ pub mod serde_untagged;
 #[cfg(feature = "serde")]
 pub mod serde_untagged_optional;
 
-use std::convert::{AsMut, AsRef};
-use std::fmt;
-use std::iter;
-use std::ops::Deref;
-use std::ops::DerefMut;
+use core::convert::{AsMut, AsRef};
+use core::fmt;
+use core::iter;
+use core::ops::Deref;
+use core::ops::DerefMut;
 
 #[cfg(any(test, feature = "use_std"))]
 use std::error::Error;
@@ -118,7 +119,7 @@ macro_rules! try_left {
     ($expr:expr) => {
         match $expr {
             $crate::Left(val) => val,
-            $crate::Right(err) => return $crate::Right(::std::convert::From::from(err)),
+            $crate::Right(err) => return $crate::Right(::core::convert::From::from(err)),
         }
     };
 }
@@ -128,7 +129,7 @@ macro_rules! try_left {
 macro_rules! try_right {
     ($expr:expr) => {
         match $expr {
-            $crate::Left(err) => return $crate::Left(::std::convert::From::from(err)),
+            $crate::Left(err) => return $crate::Left(::core::convert::From::from(err)),
             $crate::Right(val) => val,
         }
     };
@@ -584,7 +585,7 @@ impl<L, R> Either<L, R> {
     /// ```
     pub fn unwrap_left(self) -> L
     where
-        R: std::fmt::Debug,
+        R: core::fmt::Debug,
     {
         match self {
             Either::Left(l) => l,
@@ -615,7 +616,7 @@ impl<L, R> Either<L, R> {
     /// ```
     pub fn unwrap_right(self) -> R
     where
-        L: std::fmt::Debug,
+        L: core::fmt::Debug,
     {
         match self {
             Either::Right(r) => r,
@@ -644,7 +645,7 @@ impl<L, R> Either<L, R> {
     /// ```
     pub fn expect_left(self, msg: &str) -> L
     where
-        R: std::fmt::Debug,
+        R: core::fmt::Debug,
     {
         match self {
             Either::Left(l) => l,
@@ -673,7 +674,7 @@ impl<L, R> Either<L, R> {
     /// ```
     pub fn expect_right(self, msg: &str) -> R
     where
-        L: std::fmt::Debug,
+        L: core::fmt::Debug,
     {
         match self {
             Either::Right(r) => r,
@@ -898,7 +899,7 @@ where
         for_both!(*self, ref mut inner => inner.read(buf))
     }
 
-    fn read_to_end(&mut self, buf: &mut Vec<u8>) -> io::Result<usize> {
+    fn read_to_end(&mut self, buf: &mut std::vec::Vec<u8>) -> io::Result<usize> {
         for_both!(*self, ref mut inner => inner.read_to_end(buf))
     }
 }
@@ -1099,6 +1100,8 @@ fn basic() {
 
 #[test]
 fn macros() {
+    use std::string::String;
+
     fn a() -> Either<u32, u32> {
         let x: u32 = try_left!(Right(1337u32));
         Left(x * 2)
@@ -1113,6 +1116,8 @@ fn macros() {
 
 #[test]
 fn deref() {
+    use std::string::String;
+
     fn is_str(_: &str) {}
     let value: Either<String, &str> = Left(String::from("test"));
     is_str(&*value);
