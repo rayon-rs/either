@@ -1138,7 +1138,8 @@ fn seek() {
     }
 
     let mut reader = if use_empty {
-        Left(io::empty())
+        // Empty didn't impl Seek until Rust 1.51
+        Left(io::Cursor::new([]))
     } else {
         Right(io::Cursor::new(&mockdata[..]))
     };
@@ -1149,7 +1150,7 @@ fn seek() {
 
     // the first read should advance the cursor and return the next 16 bytes thus the `ne`
     assert_eq!(reader.read(&mut buf).unwrap(), buf.len());
-    assert_ne!(&buf, &mockdata[..buf.len()]);
+    assert!(&buf != &mockdata[..buf.len()]); // (assert_ne needs Rust 1.13)
 
     // if the seek operation fails it should read 16..31 instead of 0..15
     reader.seek(io::SeekFrom::Start(0)).unwrap();
