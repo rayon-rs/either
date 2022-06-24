@@ -1059,6 +1059,10 @@ where
     L: Error,
     R: Error,
 {
+    fn source(&self) -> Option<&(dyn Error + 'static)> {
+        for_both!(*self, ref inner => inner.source())
+    }
+
     #[allow(deprecated)]
     fn description(&self) -> &str {
         for_both!(*self, ref inner => inner.description())
