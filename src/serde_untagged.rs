@@ -6,16 +6,11 @@
 //! but in typical cases Vec<String> would suffice, too.
 //!
 //! ```rust
-//! extern crate either;
-//! #[macro_use]
-//! extern crate serde;
-//! // or `use serde::{Serialize, Deserialize};` in newer rust versions.
-//!
 //! # fn main() -> Result<(), Box<dyn std::error::Error>> {
 //! use either::Either;
 //! use std::collections::HashMap;
 //!
-//! #[derive(Serialize, Deserialize, Debug)]
+//! #[derive(serde::Serialize, serde::Deserialize, Debug)]
 //! #[serde(transparent)]
 //! struct IntOrString {
 //!     #[serde(with = "either::serde_untagged")]
@@ -40,7 +35,7 @@
 
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
 
-#[derive(Serialize, Deserialize)]
+#[derive(serde::Serialize, serde::Deserialize)]
 #[serde(untagged)]
 enum Either<L, R> {
     Left(L),

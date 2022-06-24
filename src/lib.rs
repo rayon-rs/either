@@ -19,10 +19,6 @@
 extern crate std;
 
 #[cfg(feature = "serde")]
-#[macro_use]
-extern crate serde;
-
-#[cfg(feature = "serde")]
 pub mod serde_untagged;
 
 #[cfg(feature = "serde")]
@@ -47,7 +43,7 @@ pub use crate::Either::{Left, Right};
 /// The `Either` type is symmetric and treats its variants the same way, without
 /// preference.
 /// (For representing success or error, use the regular `Result` enum instead.)
-#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, Debug)]
 pub enum Either<L, R> {
     /// A value of type `L`.
@@ -66,11 +62,10 @@ pub enum Either<L, R> {
 /// # Example
 ///
 /// ```
-/// #[macro_use] extern crate either;
 /// use either::Either;
 ///
 /// fn length(owned_or_borrowed: Either<String, &'static str>) -> usize {
-///     for_both!(owned_or_borrowed, s => s.len())
+///     either::for_both!(owned_or_borrowed, s => s.len())
 /// }
 ///
 /// fn main() {
@@ -101,11 +96,10 @@ macro_rules! for_both {
 /// # Example
 ///
 /// ```
-/// #[macro_use] extern crate either;
 /// use either::{Either, Left, Right};
 ///
 /// fn twice(wrapper: Either<u32, &str>) -> Either<u32, &str> {
-///     let value = try_left!(wrapper);
+///     let value = either::try_left!(wrapper);
 ///     Left(value * 2)
 /// }
 ///
