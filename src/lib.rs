@@ -65,18 +65,20 @@ pub enum Either<L, R> {
 /// # Example
 ///
 /// ```
-/// # use either::Either;
+/// #[macro_use] extern crate either;
+/// use either::Either;
+///
 /// fn length(owned_or_borrowed: Either<String, &'static str>) -> usize {
-///     either::for_both!(owned_or_borrowed, s => s.len())
+///     for_both!(owned_or_borrowed, s => s.len())
 /// }
 ///
-/// # fn main() {
-/// let borrowed = Either::Right("Hello world!");
-/// let owned = Either::Left("Hello world!".to_owned());
+/// fn main() {
+///     let borrowed = Either::Right("Hello world!");
+///     let owned = Either::Left("Hello world!".to_owned());
 ///
-/// assert_eq!(length(borrowed), 12);
-/// assert_eq!(length(owned), 12);
-/// # }
+///     assert_eq!(length(borrowed), 12);
+///     assert_eq!(length(owned), 12);
+/// }
 /// ```
 #[macro_export]
 macro_rules! for_both {
