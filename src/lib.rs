@@ -913,7 +913,7 @@ where
     R: Seek,
 {
     fn seek(&mut self, pos: SeekFrom) -> io::Result<u64> {
-        either!(*self, ref mut inner => inner.seek(pos))
+        for_both!(*self, ref mut inner => inner.seek(pos))
     }
 }
 
