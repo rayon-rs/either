@@ -409,6 +409,7 @@ impl<L, R> Either<L, R> {
     /// right.extend(left.into_iter());
     /// assert_eq!(right, Right(vec![1, 2, 3, 4, 5]));
     /// ```
+    #[allow(clippy::should_implement_trait)]
     pub fn into_iter(self) -> Either<L::IntoIter, R::IntoIter>
     where
         L: IntoIterator,
@@ -791,6 +792,7 @@ impl<L, R> From<Result<R, L>> for Either<L, R> {
 }
 
 /// Convert from `Either` to `Result` with `Right => Ok` and `Left => Err`.
+#[allow(clippy::from_over_into)] // From requires RFC 2451, Rust 1.41
 impl<L, R> Into<Result<R, L>> for Either<L, R> {
     fn into(self) -> Result<R, L> {
         match self {
@@ -1033,7 +1035,7 @@ where
     type Target = L::Target;
 
     fn deref(&self) -> &Self::Target {
-        for_both!(*self, ref inner => &*inner)
+        for_both!(*self, ref inner => &**inner)
     }
 }
 
@@ -1148,16 +1150,16 @@ fn seek() {
 
     let mut buf = [0u8; 16];
     assert_eq!(reader.read(&mut buf).unwrap(), buf.len());
-    assert_eq!(&buf, &mockdata[..buf.len()]);
+    assert_eq!(buf, mockdata[..buf.len()]);
 
     // the first read should advance the cursor and return the next 16 bytes thus the `ne`
     assert_eq!(reader.read(&mut buf).unwrap(), buf.len());
-    assert!(&buf != &mockdata[..buf.len()]); // (assert_ne needs Rust 1.13)
+    assert_ne!(buf, mockdata[..buf.len()]);
 
     // if the seek operation fails it should read 16..31 instead of 0..15
     reader.seek(io::SeekFrom::Start(0)).unwrap();
     assert_eq!(reader.read(&mut buf).unwrap(), buf.len());
-    assert_eq!(&buf, &mockdata[..buf.len()]);
+    assert_eq!(buf, mockdata[..buf.len()]);
 }
 
 #[test]

@@ -52,9 +52,9 @@ where
     R: Serialize,
 {
     let untagged = match this {
-        &Some(super::Either::Left(ref left)) => Some(Either::Left(left)),
-        &Some(super::Either::Right(ref right)) => Some(Either::Right(right)),
-        &None => None,
+        Some(super::Either::Left(left)) => Some(Either::Left(left)),
+        Some(super::Either::Right(right)) => Some(Either::Right(right)),
+        None => None,
     };
     untagged.serialize(serializer)
 }
