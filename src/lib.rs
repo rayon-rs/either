@@ -684,13 +684,13 @@ impl<L, R, E> Either<Result<L, E>, Result<R, E>> {
     /// ```
     /// use either::*;
     /// let left: Either<_, Result<String, u32>> = Left(Ok(vec![0]));
-    /// assert_eq!(left.factor_error(), Ok(Left(vec![0])));
+    /// assert_eq!(left.factor_err(), Ok(Left(vec![0])));
     ///
     /// let right: Either<Result<Vec<u8>, u32>, _> = Right(Ok(String::new()));
-    /// assert_eq!(right.factor_error(), Ok(Right(String::new())));
+    /// assert_eq!(right.factor_err(), Ok(Right(String::new())));
     /// ```
     #[doc(alias = "transpose")]
-    pub fn factor_error(self) -> Result<Either<L, R>, E> {
+    pub fn factor_err(self) -> Result<Either<L, R>, E> {
         match self {
             Left(l) => l.map(Either::Left),
             Right(r) => r.map(Either::Right),
