@@ -38,7 +38,7 @@ use std::error::Error;
 #[cfg(any(test, feature = "use_std"))]
 use std::io::{self, BufRead, Read, Seek, SeekFrom, Write};
 
-pub use Either::{Left, Right};
+pub use crate::Either::{Left, Right};
 
 /// The enum `Either` with variants `Left` and `Right` is a general purpose
 /// sum type with two cases.
@@ -1069,8 +1069,7 @@ where
     }
 
     #[allow(deprecated)]
-    #[allow(unknown_lints, bare_trait_objects)]
-    fn cause(&self) -> Option<&Error> {
+    fn cause(&self) -> Option<&dyn Error> {
         for_both!(*self, ref inner => inner.cause())
     }
 }
@@ -1080,7 +1079,7 @@ where
     L: fmt::Display,
     R: fmt::Display,
 {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         for_both!(*self, ref inner => inner.fmt(f))
     }
 }
