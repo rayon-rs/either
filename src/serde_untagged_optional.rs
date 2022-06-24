@@ -6,6 +6,7 @@
 //! but in typical cases Vec<String> would suffice, too.
 //!
 //! ```rust
+//! extern crate either;
 //! #[macro_use]
 //! extern crate serde;
 //! // or `use serde::{Serialize, Deserialize};` in newer rust versions.
