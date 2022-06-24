@@ -16,8 +16,8 @@ __ https://docs.rs/either/
 
 |build_status|_ |crates|_
 
-.. |build_status| image:: https://travis-ci.org/bluss/either.svg?branch=master
-.. _build_status: https://travis-ci.org/bluss/either
+.. |build_status| image:: https://github.com/bluss/either/workflows/CI/badge.svg?branch=master
+.. _build_status: https://github.com/bluss/either/actions
 
 .. |crates| image:: https://img.shields.io/crates/v/either.svg
 .. _crates: https://crates.io/crates/either
