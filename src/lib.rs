@@ -44,7 +44,7 @@ pub use crate::Either::{Left, Right};
 /// preference.
 /// (For representing success or error, use the regular `Result` enum instead.)
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
-#[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, Debug)]
+#[derive(Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Debug)]
 pub enum Either<L, R> {
     /// A value of type `L`.
     Left(L),
@@ -127,6 +127,23 @@ macro_rules! try_right {
             $crate::Right(val) => val,
         }
     };
+}
+
+impl<L: Clone, R: Clone> Clone for Either<L, R> {
+    fn clone(&self) -> Self {
+        match self {
+            Left(inner) => Left(inner.clone()),
+            Right(inner) => Right(inner.clone()),
+        }
+    }
+
+    fn clone_from(&mut self, source: &Self) {
+        match (self, source) {
+            (Left(dest), Left(source)) => dest.clone_from(source),
+            (Right(dest), Right(source)) => dest.clone_from(source),
+            (dest, source) => *dest = source.clone(),
+        }
+    }
 }
 
 impl<L, R> Either<L, R> {
