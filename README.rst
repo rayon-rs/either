@@ -25,11 +25,31 @@ __ https://docs.rs/either/
 How to use with cargo::
 
     [dependencies]
-    either = "1.6"
+    either = "1.7"
 
 
 Recent Changes
 --------------
+
+- 1.7.0
+
+  - **MSRV**: ``either`` now requires Rust 1.31 or later.
+
+  - Export the macro ``for_both!``, by @thomaseizinger (#58)
+
+  - Implement the ``io::Seek`` trait, by @Kerollmops (#60)
+
+  - Add new method ``.either_into()`` for ``Into`` conversion, by @TonalidadeHidrica (#63)
+
+  - Add new methods ``.factor_ok()``, ``.factor_err()``, and ``.factor_none()``,
+    by @zachs18 (#67)
+
+  - Specialize ``source`` in the ``Error`` implementation, by @thomaseizinger (#69)
+
+  - Specialize more iterator methods and implement the ``FusedIterator`` trait,
+    by @Ten0 (#66) and @cuviper (#71)
+
+  - Specialize ``Clone::clone_from``, by @cuviper (#72)
 
 - 1.6.1
 
