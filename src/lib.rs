@@ -701,6 +701,70 @@ impl<L, R> Either<L, R> {
     }
 }
 
+impl<L, R> Either<Option<L>, Option<R>> {
+    /// Factors out `None` from an `Either` of [`Option`].
+    ///
+    /// ```
+    /// use either::*;
+    /// let left: Either<_, Option<String>> = Left(Some(vec![0]));
+    /// assert_eq!(left.factor_none(), Some(Left(vec![0])));
+    ///
+    /// let right: Either<Option<Vec<u8>>, _> = Right(Some(String::new()));
+    /// assert_eq!(right.factor_none(), Some(Right(String::new())));
+    /// ```
+    #[doc(alias = "transpose")]
+    pub fn factor_none(self) -> Option<Either<L, R>> {
+        match self {
+            Left(l) => l.map(Either::Left),
+            Right(r) => r.map(Either::Right),
+        }
+    }
+}
+
+impl<L, R, E> Either<Result<L, E>, Result<R, E>> {
+    /// Factors out a homogenous type from an `Either` of [`Result`].
+    ///
+    /// Here, the homogeneous type is the `Err` type of the [`Result`].
+    ///
+    /// ```
+    /// use either::*;
+    /// let left: Either<_, Result<String, u32>> = Left(Ok(vec![0]));
+    /// assert_eq!(left.factor_err(), Ok(Left(vec![0])));
+    ///
+    /// let right: Either<Result<Vec<u8>, u32>, _> = Right(Ok(String::new()));
+    /// assert_eq!(right.factor_err(), Ok(Right(String::new())));
+    /// ```
+    #[doc(alias = "transpose")]
+    pub fn factor_err(self) -> Result<Either<L, R>, E> {
+        match self {
+            Left(l) => l.map(Either::Left),
+            Right(r) => r.map(Either::Right),
+        }
+    }
+}
+
+impl<T, L, R> Either<Result<T, L>, Result<T, R>> {
+    /// Factors out a homogenous type from an `Either` of [`Result`].
+    ///
+    /// Here, the homogeneous type is the `Ok` type of the [`Result`].
+    ///
+    /// ```
+    /// use either::*;
+    /// let left: Either<_, Result<u32, String>> = Left(Err(vec![0]));
+    /// assert_eq!(left.factor_ok(), Err(Left(vec![0])));
+    ///
+    /// let right: Either<Result<u32, Vec<u8>>, _> = Right(Err(String::new()));
+    /// assert_eq!(right.factor_ok(), Err(Right(String::new())));
+    /// ```
+    #[doc(alias = "transpose")]
+    pub fn factor_ok(self) -> Result<T, Either<L, R>> {
+        match self {
+            Left(l) => l.map_err(Either::Left),
+            Right(r) => r.map_err(Either::Right),
+        }
+    }
+}
+
 impl<T, L, R> Either<(T, L), (T, R)> {
     /// Factor out a homogeneous type from an either of pairs.
     ///
