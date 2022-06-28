@@ -995,6 +995,13 @@ where
     {
         for_both!(self, inner => inner.rfold(init, f))
     }
+
+    fn rfind<P>(&mut self, predicate: P) -> Option<Self::Item>
+    where
+        P: FnMut(&Self::Item) -> bool,
+    {
+        for_both!(*self, ref mut inner => inner.rfind(predicate))
+    }
 }
 
 impl<L, R> ExactSizeIterator for Either<L, R>
