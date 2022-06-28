@@ -941,9 +941,10 @@ where
         for_both!(*self, ref mut inner => inner.next_back())
     }
 
-    fn nth_back(&mut self, n: usize) -> Option<Self::Item> {
-        for_both!(*self, ref mut inner => inner.nth_back(n))
-    }
+    // TODO(MSRV): This was stabilized in Rust 1.37
+    // fn nth_back(&mut self, n: usize) -> Option<Self::Item> {
+    //     for_both!(*self, ref mut inner => inner.nth_back(n))
+    // }
 
     fn rfold<Acc, G>(self, init: Acc, f: G) -> Acc
     where
