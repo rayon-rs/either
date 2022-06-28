@@ -1014,6 +1014,13 @@ where
     }
 }
 
+impl<L, R> iter::FusedIterator for Either<L, R>
+where
+    L: iter::FusedIterator,
+    R: iter::FusedIterator<Item = L::Item>,
+{
+}
+
 #[cfg(any(test, feature = "use_std"))]
 /// `Either<L, R>` implements `Read` if both `L` and `R` do.
 ///
