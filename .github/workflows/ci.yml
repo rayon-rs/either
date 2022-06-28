@@ -38,6 +38,12 @@ jobs:
           cargo generate-lockfile
           cargo update -p serde_json --precise 1.0.39
 
+      - name: Build (no_std)
+        uses: actions-rs/cargo@v1
+        with:
+          command: build
+          args: --no-default-features
+
       - name: Build
         uses: actions-rs/cargo@v1
         with:

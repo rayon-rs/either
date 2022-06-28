@@ -13,13 +13,10 @@
 //!
 
 #![doc(html_root_url = "https://docs.rs/either/1/")]
-#![cfg_attr(all(not(test), not(feature = "use_std")), no_std)]
-#[cfg(all(not(test), not(feature = "use_std")))]
-extern crate core as std;
+#![no_std]
 
-#[cfg(feature = "serde")]
-#[macro_use]
-extern crate serde;
+#[cfg(any(test, feature = "use_std"))]
+extern crate std;
 
 #[cfg(feature = "serde")]
 pub mod serde_untagged;
@@ -27,18 +24,18 @@ pub mod serde_untagged;
 #[cfg(feature = "serde")]
 pub mod serde_untagged_optional;
 
-use std::convert::{AsMut, AsRef};
-use std::fmt;
-use std::iter;
-use std::ops::Deref;
-use std::ops::DerefMut;
+use core::convert::{AsMut, AsRef};
+use core::fmt;
+use core::iter;
+use core::ops::Deref;
+use core::ops::DerefMut;
 
 #[cfg(any(test, feature = "use_std"))]
 use std::error::Error;
 #[cfg(any(test, feature = "use_std"))]
 use std::io::{self, BufRead, Read, Seek, SeekFrom, Write};
 
-pub use Either::{Left, Right};
+pub use crate::Either::{Left, Right};
 
 /// The enum `Either` with variants `Left` and `Right` is a general purpose
 /// sum type with two cases.
@@ -46,7 +43,7 @@ pub use Either::{Left, Right};
 /// The `Either` type is symmetric and treats its variants the same way, without
 /// preference.
 /// (For representing success or error, use the regular `Result` enum instead.)
-#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, Debug)]
 pub enum Either<L, R> {
     /// A value of type `L`.
@@ -65,11 +62,10 @@ pub enum Either<L, R> {
 /// # Example
 ///
 /// ```
-/// #[macro_use] extern crate either;
 /// use either::Either;
 ///
 /// fn length(owned_or_borrowed: Either<String, &'static str>) -> usize {
-///     for_both!(owned_or_borrowed, s => s.len())
+///     either::for_both!(owned_or_borrowed, s => s.len())
 /// }
 ///
 /// fn main() {
@@ -100,11 +96,10 @@ macro_rules! for_both {
 /// # Example
 ///
 /// ```
-/// #[macro_use] extern crate either;
 /// use either::{Either, Left, Right};
 ///
 /// fn twice(wrapper: Either<u32, &str>) -> Either<u32, &str> {
-///     let value = try_left!(wrapper);
+///     let value = either::try_left!(wrapper);
 ///     Left(value * 2)
 /// }
 ///
@@ -118,7 +113,7 @@ macro_rules! try_left {
     ($expr:expr) => {
         match $expr {
             $crate::Left(val) => val,
-            $crate::Right(err) => return $crate::Right(::std::convert::From::from(err)),
+            $crate::Right(err) => return $crate::Right(::core::convert::From::from(err)),
         }
     };
 }
@@ -128,7 +123,7 @@ macro_rules! try_left {
 macro_rules! try_right {
     ($expr:expr) => {
         match $expr {
-            $crate::Left(err) => return $crate::Left(::std::convert::From::from(err)),
+            $crate::Left(err) => return $crate::Left(::core::convert::From::from(err)),
             $crate::Right(val) => val,
         }
     };
@@ -414,6 +409,7 @@ impl<L, R> Either<L, R> {
     /// right.extend(left.into_iter());
     /// assert_eq!(right, Right(vec![1, 2, 3, 4, 5]));
     /// ```
+    #[allow(clippy::should_implement_trait)]
     pub fn into_iter(self) -> Either<L::IntoIter, R::IntoIter>
     where
         L: IntoIterator,
@@ -584,7 +580,7 @@ impl<L, R> Either<L, R> {
     /// ```
     pub fn unwrap_left(self) -> L
     where
-        R: std::fmt::Debug,
+        R: core::fmt::Debug,
     {
         match self {
             Either::Left(l) => l,
@@ -615,7 +611,7 @@ impl<L, R> Either<L, R> {
     /// ```
     pub fn unwrap_right(self) -> R
     where
-        L: std::fmt::Debug,
+        L: core::fmt::Debug,
     {
         match self {
             Either::Right(r) => r,
@@ -644,7 +640,7 @@ impl<L, R> Either<L, R> {
     /// ```
     pub fn expect_left(self, msg: &str) -> L
     where
-        R: std::fmt::Debug,
+        R: core::fmt::Debug,
     {
         match self {
             Either::Left(l) => l,
@@ -673,7 +669,7 @@ impl<L, R> Either<L, R> {
     /// ```
     pub fn expect_right(self, msg: &str) -> R
     where
-        L: std::fmt::Debug,
+        L: core::fmt::Debug,
     {
         match self {
             Either::Right(r) => r,
@@ -796,6 +792,7 @@ impl<L, R> From<Result<R, L>> for Either<L, R> {
 }
 
 /// Convert from `Either` to `Result` with `Right => Ok` and `Left => Err`.
+#[allow(clippy::from_over_into)] // From requires RFC 2451, Rust 1.41
 impl<L, R> Into<Result<R, L>> for Either<L, R> {
     fn into(self) -> Result<R, L> {
         match self {
@@ -898,7 +895,7 @@ where
         for_both!(*self, ref mut inner => inner.read(buf))
     }
 
-    fn read_to_end(&mut self, buf: &mut Vec<u8>) -> io::Result<usize> {
+    fn read_to_end(&mut self, buf: &mut std::vec::Vec<u8>) -> io::Result<usize> {
         for_both!(*self, ref mut inner => inner.read_to_end(buf))
     }
 }
@@ -1038,7 +1035,7 @@ where
     type Target = L::Target;
 
     fn deref(&self) -> &Self::Target {
-        for_both!(*self, ref inner => &*inner)
+        for_both!(*self, ref inner => &**inner)
     }
 }
 
@@ -1069,8 +1066,7 @@ where
     }
 
     #[allow(deprecated)]
-    #[allow(unknown_lints, bare_trait_objects)]
-    fn cause(&self) -> Option<&Error> {
+    fn cause(&self) -> Option<&dyn Error> {
         for_both!(*self, ref inner => inner.cause())
     }
 }
@@ -1080,7 +1076,7 @@ where
     L: fmt::Display,
     R: fmt::Display,
 {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         for_both!(*self, ref inner => inner.fmt(f))
     }
 }
@@ -1100,6 +1096,8 @@ fn basic() {
 
 #[test]
 fn macros() {
+    use std::string::String;
+
     fn a() -> Either<u32, u32> {
         let x: u32 = try_left!(Right(1337u32));
         Left(x * 2)
@@ -1114,6 +1112,8 @@ fn macros() {
 
 #[test]
 fn deref() {
+    use std::string::String;
+
     fn is_str(_: &str) {}
     let value: Either<String, &str> = Left(String::from("test"));
     is_str(&*value);
@@ -1150,16 +1150,16 @@ fn seek() {
 
     let mut buf = [0u8; 16];
     assert_eq!(reader.read(&mut buf).unwrap(), buf.len());
-    assert_eq!(&buf, &mockdata[..buf.len()]);
+    assert_eq!(buf, mockdata[..buf.len()]);
 
     // the first read should advance the cursor and return the next 16 bytes thus the `ne`
     assert_eq!(reader.read(&mut buf).unwrap(), buf.len());
-    assert!(&buf != &mockdata[..buf.len()]); // (assert_ne needs Rust 1.13)
+    assert_ne!(buf, mockdata[..buf.len()]);
 
     // if the seek operation fails it should read 16..31 instead of 0..15
     reader.seek(io::SeekFrom::Start(0)).unwrap();
     assert_eq!(reader.read(&mut buf).unwrap(), buf.len());
-    assert_eq!(&buf, &mockdata[..buf.len()]);
+    assert_eq!(buf, mockdata[..buf.len()]);
 }
 
 #[test]
