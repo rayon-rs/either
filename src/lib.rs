@@ -905,6 +905,13 @@ where
         for_both!(self, inner => inner.fold(init, f))
     }
 
+    fn for_each<F>(self, f: F)
+    where
+        F: FnMut(Self::Item),
+    {
+        for_both!(self, inner => inner.for_each(f))
+    }
+
     fn count(self) -> usize {
         for_both!(self, inner => inner.count())
     }
@@ -924,11 +931,47 @@ where
         for_both!(self, inner => inner.collect())
     }
 
+    fn partition<B, F>(self, f: F) -> (B, B)
+    where
+        B: Default + Extend<Self::Item>,
+        F: FnMut(&Self::Item) -> bool,
+    {
+        for_both!(self, inner => inner.partition(f))
+    }
+
     fn all<F>(&mut self, f: F) -> bool
     where
         F: FnMut(Self::Item) -> bool,
     {
         for_both!(*self, ref mut inner => inner.all(f))
+    }
+
+    fn any<F>(&mut self, f: F) -> bool
+    where
+        F: FnMut(Self::Item) -> bool,
+    {
+        for_both!(*self, ref mut inner => inner.any(f))
+    }
+
+    fn find<P>(&mut self, predicate: P) -> Option<Self::Item>
+    where
+        P: FnMut(&Self::Item) -> bool,
+    {
+        for_both!(*self, ref mut inner => inner.find(predicate))
+    }
+
+    fn find_map<B, F>(&mut self, f: F) -> Option<B>
+    where
+        F: FnMut(Self::Item) -> Option<B>,
+    {
+        for_both!(*self, ref mut inner => inner.find_map(f))
+    }
+
+    fn position<P>(&mut self, predicate: P) -> Option<usize>
+    where
+        P: FnMut(Self::Item) -> bool,
+    {
+        for_both!(*self, ref mut inner => inner.position(predicate))
     }
 }
 
@@ -952,6 +995,13 @@ where
     {
         for_both!(self, inner => inner.rfold(init, f))
     }
+
+    fn rfind<P>(&mut self, predicate: P) -> Option<Self::Item>
+    where
+        P: FnMut(&Self::Item) -> bool,
+    {
+        for_both!(*self, ref mut inner => inner.rfind(predicate))
+    }
 }
 
 impl<L, R> ExactSizeIterator for Either<L, R>
@@ -962,6 +1012,13 @@ where
     fn len(&self) -> usize {
         for_both!(*self, ref inner => inner.len())
     }
+}
+
+impl<L, R> iter::FusedIterator for Either<L, R>
+where
+    L: iter::FusedIterator,
+    R: iter::FusedIterator<Item = L::Item>,
+{
 }
 
 #[cfg(any(test, feature = "use_std"))]
