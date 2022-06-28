@@ -940,6 +940,18 @@ where
     fn next_back(&mut self) -> Option<Self::Item> {
         for_both!(*self, ref mut inner => inner.next_back())
     }
+
+    // TODO(MSRV): This was stabilized in Rust 1.37
+    // fn nth_back(&mut self, n: usize) -> Option<Self::Item> {
+    //     for_both!(*self, ref mut inner => inner.nth_back(n))
+    // }
+
+    fn rfold<Acc, G>(self, init: Acc, f: G) -> Acc
+    where
+        G: FnMut(Acc, Self::Item) -> Acc,
+    {
+        for_both!(self, inner => inner.rfold(init, f))
+    }
 }
 
 impl<L, R> ExactSizeIterator for Either<L, R>
@@ -947,6 +959,9 @@ where
     L: ExactSizeIterator,
     R: ExactSizeIterator<Item = L::Item>,
 {
+    fn len(&self) -> usize {
+        for_both!(*self, ref inner => inner.len())
+    }
 }
 
 #[cfg(any(test, feature = "use_std"))]
