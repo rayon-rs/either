@@ -23,14 +23,12 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Set up Rust
-        uses: actions-rs/toolchain@v1
+        uses: dtolnay/rust-toolchain@master
         with:
-          profile: minimal
           toolchain: ${{ matrix.rust }}
-          override: true
 
       - name: (1.31.0) Downgrade serde_json
         if: ${{ matrix.rust == '1.31.0' }}
@@ -39,53 +37,31 @@ jobs:
           cargo update -p serde_json --precise 1.0.39
 
       - name: Build (no_std)
-        uses: actions-rs/cargo@v1
-        with:
-          command: build
-          args: --no-default-features
+        run: cargo build --no-default-features
 
       - name: Build
-        uses: actions-rs/cargo@v1
-        with:
-          command: build
-          args: --features "${{ matrix.features }}"
+        run: cargo build --features "${{ matrix.features }}"
 
       - name: Test
-        uses: actions-rs/cargo@v1
-        with:
-          command: test
-          args: --features "${{ matrix.features }}"
+        run: cargo test --features "${{ matrix.features }}"
 
       - name: Doc
-        uses: actions-rs/cargo@v1
-        with:
-          command: doc
-          args: --features "${{ matrix.features }}"
+        run: cargo doc --features "${{ matrix.features }}"
 
   clippy:
     name: Rustfmt and Clippy
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Set up nightly Rust
-        uses: actions-rs/toolchain@v1
+        uses: dtolnay/rust-toolchain@nightly
         with:
-          profile: minimal
-          toolchain: nightly
-          override: true
           components: rustfmt, clippy
 
       - name: Rustfmt
-        uses: actions-rs/cargo@v1
-        with:
-          command: fmt
-          args: --all -- --check
+        run: cargo fmt --all -- --check
 
       - name: Clippy
-        uses: actions-rs/cargo@v1
-        with:
-          command: clippy
-          # args: -- -D warnings
-          args: --
+        run: cargo clippy  # -- -D warnings
