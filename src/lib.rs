@@ -1051,6 +1051,10 @@ where
         for_both!(*self, ref mut inner => inner.read(buf))
     }
 
+    fn read_exact(&mut self, buf: &mut [u8]) -> io::Result<()> {
+        for_both!(*self, ref mut inner => inner.read_exact(buf))
+    }
+
     fn read_to_end(&mut self, buf: &mut std::vec::Vec<u8>) -> io::Result<usize> {
         for_both!(*self, ref mut inner => inner.read_to_end(buf))
     }
@@ -1097,6 +1101,10 @@ where
 {
     fn write(&mut self, buf: &[u8]) -> io::Result<usize> {
         for_both!(*self, ref mut inner => inner.write(buf))
+    }
+
+    fn write_all(&mut self, buf: &[u8]) -> io::Result<()> {
+        for_both!(*self, ref mut inner => inner.write_all(buf))
     }
 
     fn flush(&mut self) -> io::Result<()> {
