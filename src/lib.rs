@@ -1051,8 +1051,16 @@ where
         for_both!(*self, ref mut inner => inner.read(buf))
     }
 
+    fn read_exact(&mut self, buf: &mut [u8]) -> io::Result<()> {
+        for_both!(*self, ref mut inner => inner.read_exact(buf))
+    }
+
     fn read_to_end(&mut self, buf: &mut std::vec::Vec<u8>) -> io::Result<usize> {
         for_both!(*self, ref mut inner => inner.read_to_end(buf))
+    }
+
+    fn read_to_string(&mut self, buf: &mut std::string::String) -> io::Result<usize> {
+        for_both!(*self, ref mut inner => inner.read_to_string(buf))
     }
 }
 
@@ -1084,6 +1092,14 @@ where
     fn consume(&mut self, amt: usize) {
         for_both!(*self, ref mut inner => inner.consume(amt))
     }
+
+    fn read_until(&mut self, byte: u8, buf: &mut std::vec::Vec<u8>) -> io::Result<usize> {
+        for_both!(*self, ref mut inner => inner.read_until(byte, buf))
+    }
+
+    fn read_line(&mut self, buf: &mut std::string::String) -> io::Result<usize> {
+        for_both!(*self, ref mut inner => inner.read_line(buf))
+    }
 }
 
 #[cfg(any(test, feature = "use_std"))]
@@ -1097,6 +1113,14 @@ where
 {
     fn write(&mut self, buf: &[u8]) -> io::Result<usize> {
         for_both!(*self, ref mut inner => inner.write(buf))
+    }
+
+    fn write_all(&mut self, buf: &[u8]) -> io::Result<()> {
+        for_both!(*self, ref mut inner => inner.write_all(buf))
+    }
+
+    fn write_fmt(&mut self, fmt: fmt::Arguments<'_>) -> io::Result<()> {
+        for_both!(*self, ref mut inner => inner.write_fmt(fmt))
     }
 
     fn flush(&mut self) -> io::Result<()> {
