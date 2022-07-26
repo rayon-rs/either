@@ -1119,6 +1119,10 @@ where
         for_both!(*self, ref mut inner => inner.write_all(buf))
     }
 
+    fn write_fmt(&mut self, fmt: fmt::Arguments<'_>) -> io::Result<()> {
+        for_both!(*self, ref mut inner => inner.write_fmt(fmt))
+    }
+
     fn flush(&mut self) -> io::Result<()> {
         for_both!(*self, ref mut inner => inner.flush())
     }
