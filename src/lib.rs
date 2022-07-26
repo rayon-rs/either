@@ -1058,6 +1058,10 @@ where
     fn read_to_end(&mut self, buf: &mut std::vec::Vec<u8>) -> io::Result<usize> {
         for_both!(*self, ref mut inner => inner.read_to_end(buf))
     }
+
+    fn read_to_string(&mut self, buf: &mut std::string::String) -> io::Result<usize> {
+        for_both!(*self, ref mut inner => inner.read_to_string(buf))
+    }
 }
 
 #[cfg(any(test, feature = "use_std"))]
