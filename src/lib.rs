@@ -26,9 +26,11 @@ pub mod serde_untagged_optional;
 
 use core::convert::{AsMut, AsRef};
 use core::fmt;
+use core::future::Future;
 use core::iter;
 use core::ops::Deref;
 use core::ops::DerefMut;
+use core::pin::Pin;
 
 #[cfg(any(test, feature = "use_std"))]
 use std::error::Error;
@@ -252,6 +254,35 @@ impl<L, R> Either<L, R> {
         match *self {
             Left(ref mut inner) => Left(inner),
             Right(ref mut inner) => Right(inner),
+        }
+    }
+
+    /// Convert `Pin<&Either<L, R>>` to `Either<Pin<&L>, Pin<&R>>`,
+    /// pinned projections of the inner variants.
+    pub fn as_pin_ref(self: Pin<&Self>) -> Either<Pin<&L>, Pin<&R>> {
+        // SAFETY: We can use `new_unchecked` because the `inner` parts are
+        // guaranteed to be pinned, as they come from `self` which is pinned.
+        unsafe {
+            match *Pin::get_ref(self) {
+                Left(ref inner) => Left(Pin::new_unchecked(inner)),
+                Right(ref inner) => Right(Pin::new_unchecked(inner)),
+            }
+        }
+    }
+
+    /// Convert `Pin<&mut Either<L, R>>` to `Either<Pin<&mut L>, Pin<&mut R>>`,
+    /// pinned projections of the inner variants.
+    pub fn as_pin_mut(self: Pin<&mut Self>) -> Either<Pin<&mut L>, Pin<&mut R>> {
+        // SAFETY: `get_unchecked_mut` is fine because we don't move anything.
+        // We can use `new_unchecked` because the `inner` parts are guaranteed
+        // to be pinned, as they come from `self` which is pinned, and we never
+        // offer an unpinned `&mut L` or `&mut R` through `Pin<&mut Self>`. We
+        // also don't have an implementation of `Drop`, nor manual `Unpin`.
+        unsafe {
+            match *Pin::get_unchecked_mut(self) {
+                Left(ref mut inner) => Left(Pin::new_unchecked(inner)),
+                Right(ref mut inner) => Right(Pin::new_unchecked(inner)),
+            }
         }
     }
 
@@ -1036,6 +1067,22 @@ where
     L: iter::FusedIterator,
     R: iter::FusedIterator<Item = L::Item>,
 {
+}
+
+/// `Either<L, R>` is a future if both `L` and `R` are futures.
+impl<L, R> Future for Either<L, R>
+where
+    L: Future,
+    R: Future<Output = L::Output>,
+{
+    type Output = L::Output;
+
+    fn poll(
+        self: Pin<&mut Self>,
+        cx: &mut core::task::Context<'_>,
+    ) -> core::task::Poll<Self::Output> {
+        for_both!(self.as_pin_mut(), inner => inner.poll(cx))
+    }
 }
 
 #[cfg(any(test, feature = "use_std"))]

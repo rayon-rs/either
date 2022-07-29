@@ -31,6 +31,15 @@ How to use with cargo::
 Recent Changes
 --------------
 
+- UNRELEASED
+
+  - **MSRV**: ``either`` now requires Rust 1.36 or later.
+
+  - Add new methods ``.as_pin_ref()`` and ``.as_pin_mut()`` to project a
+    pinned ``Either`` as inner ``Pin`` variants, by @cuviper (#77)
+
+  - Implement the ``Future`` trait, by @cuviper (#77)
+
 - 1.7.0
 
   - **MSRV**: ``either`` now requires Rust 1.31 or later.
