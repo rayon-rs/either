@@ -13,7 +13,7 @@ jobs:
       fail-fast: false
       matrix:
         rust:
-          - 1.31.0  # MSRV
+          - 1.36.0  # MSRV
           - stable
           - beta
           - nightly
@@ -29,12 +29,6 @@ jobs:
         uses: dtolnay/rust-toolchain@master
         with:
           toolchain: ${{ matrix.rust }}
-
-      - name: (1.31.0) Downgrade serde_json
-        if: ${{ matrix.rust == '1.31.0' }}
-        run: |
-          cargo generate-lockfile
-          cargo update -p serde_json --precise 1.0.39
 
       - name: Build (no_std)
         run: cargo build --no-default-features
