@@ -25,13 +25,13 @@ __ https://docs.rs/either/
 How to use with cargo::
 
     [dependencies]
-    either = "1.7"
+    either = "1.8"
 
 
 Recent Changes
 --------------
 
-- UNRELEASED
+- 1.8.0
 
   - **MSRV**: ``either`` now requires Rust 1.36 or later.
 
@@ -39,6 +39,8 @@ Recent Changes
     pinned ``Either`` as inner ``Pin`` variants, by @cuviper (#77)
 
   - Implement the ``Future`` trait, by @cuviper (#77)
+
+  - Specialize more methods of the ``io`` traits, by @Kixunil and @cuviper (#75)
 
 - 1.7.0
 
