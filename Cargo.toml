@@ -23,6 +23,7 @@ serde = { version = "1.0", optional = true, features = ["derive"] }
 [features]
 default = ["use_std"]
 use_std = []
+nightly = []
 
 [dev-dependencies]
 serde_json = "1.0.0"

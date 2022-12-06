@@ -14,6 +14,7 @@
 
 #![doc(html_root_url = "https://docs.rs/either/1/")]
 #![no_std]
+#![cfg_attr(feature = "nightly", feature(try_trait_v2))]
 
 #[cfg(any(test, feature = "use_std"))]
 extern crate std;
@@ -958,6 +959,25 @@ where
         F: FnMut(Self::Item),
     {
         for_both!(self, inner => inner.for_each(f))
+    }
+
+    #[cfg(feature = "nightly")]
+    fn try_fold<B, F, E>(&mut self, init: B, f: F) -> E
+    where
+        F: FnMut(B, Self::Item) -> E,
+        E: core::ops::Try<Output = B>,
+    {
+        for_both!(*self, ref mut inner => inner.try_fold(init, f))
+    }
+
+    #[cfg(feature = "nightly")]
+    fn try_for_each<F, E>(&mut self, f: F) -> E
+    where
+        Self: Sized,
+        F: FnMut(Self::Item) -> E,
+        E: core::ops::Try<Output = ()>,
+    {
+        for_both!(*self, ref mut inner => inner.try_for_each(f))
     }
 
     fn count(self) -> usize {
