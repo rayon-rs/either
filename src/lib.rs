@@ -11,6 +11,9 @@
 //! * `"serde"`
 //! Disabled by default. Enable to `#[derive(Serialize, Deserialize)]` for `Either`
 //!
+//! * `"nightly"`
+//! Disabled by default. Requires nightly. Enable to add impls for `Iterator::try_fold`, `Iterator::try_for_each`, and `DoubleEndedIterator::try_rfold`.
+//!
 
 #![doc(html_root_url = "https://docs.rs/either/1/")]
 #![no_std]
@@ -24,6 +27,9 @@ pub mod serde_untagged;
 
 #[cfg(feature = "serde")]
 pub mod serde_untagged_optional;
+
+#[cfg(feature = "nightly")]
+use core::ops::Try;
 
 use core::convert::{AsMut, AsRef};
 use core::fmt;
@@ -962,20 +968,19 @@ where
     }
 
     #[cfg(feature = "nightly")]
-    fn try_fold<B, F, E>(&mut self, init: B, f: F) -> E
+    fn try_fold<B, F, Ret>(&mut self, init: B, f: F) -> Ret
     where
-        F: FnMut(B, Self::Item) -> E,
-        E: core::ops::Try<Output = B>,
+        F: FnMut(B, Self::Item) -> Ret,
+        Ret: Try<Output = B>,
     {
         for_both!(*self, ref mut inner => inner.try_fold(init, f))
     }
 
     #[cfg(feature = "nightly")]
-    fn try_for_each<F, E>(&mut self, f: F) -> E
+    fn try_for_each<F, Ret>(&mut self, f: F) -> Ret
     where
-        Self: Sized,
-        F: FnMut(Self::Item) -> E,
-        E: core::ops::Try<Output = ()>,
+        F: FnMut(Self::Item) -> Ret,
+        Ret: Try<Output = ()>,
     {
         for_both!(*self, ref mut inner => inner.try_for_each(f))
     }
@@ -1062,6 +1067,15 @@ where
         G: FnMut(Acc, Self::Item) -> Acc,
     {
         for_both!(self, inner => inner.rfold(init, f))
+    }
+
+    #[cfg(feature = "nightly")]
+    fn try_rfold<B, F, Ret>(&mut self, init: B, f: F) -> Ret
+    where
+        F: FnMut(B, Self::Item) -> Ret,
+        Ret: Try<Output = B>,
+    {
+        for_both!(*self, ref mut inner => inner.try_rfold(init, f))
     }
 
     fn rfind<P>(&mut self, predicate: P) -> Option<Self::Item>
