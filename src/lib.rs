@@ -348,6 +348,61 @@ impl<L, R> Either<L, R> {
         }
     }
 
+    /// Apply the functions `f` and `g` to the `Left` and `Right` variants
+    /// respectively. This is equivalent to
+    /// [bimap](https://hackage.haskell.org/package/bifunctors-5/docs/Data-Bifunctor.html)
+    /// in functional programming.
+    ///
+    /// ```
+    /// use either::*;
+    ///
+    /// let f = |s: String| s.len();
+    /// let g = |u: u8| u.to_string();
+    ///
+    /// let left: Either<String, u8> = Left("loopy".into());
+    /// assert_eq!(left.map_either(f, g), Left(5));
+    ///
+    /// let right: Either<String, u8> = Right(42);
+    /// assert_eq!(right.map_either(f, g), Right("42".into()));
+    /// ```
+    pub fn map_either<F, G, M, S>(self, f: F, g: G) -> Either<M, S>
+    where
+        F: FnOnce(L) -> M,
+        G: FnOnce(R) -> S,
+    {
+        match self {
+            Left(l) => Left(f(l)),
+            Right(r) => Right(g(r)),
+        }
+    }
+
+    /// Similar to [`map_either`], with an added context `ctx` accessible to
+    /// both functions.
+    ///
+    /// ```
+    /// use either::*;
+    ///
+    /// let mut acc: Vec<String> = Vec::new();
+    ///
+    /// let f = |acc: Vec<String>, s: String| acc.push(s);
+    /// let g = |acc: Vec<String>, u: u32| acc.push(u.to_string());
+    ///
+    /// let values: Vec<Either<String, u32>> = vec![Left("loopy".into()), Right(42)];
+    ///
+    /// let _ = values.iter().for_each(|e| e.map_either_with(acc, f, g));
+    /// assert_eq!(acc, vec!["loopy".into(), "42".into()]);
+    /// ```
+    pub fn map_either_with<Ctx, F, G, M, S>(self, ctx: Ctx, f: F, g: G) -> Either<M, S>
+    where
+        F: FnOnce(Ctx, L) -> M,
+        G: FnOnce(Ctx, R) -> S,
+    {
+        match self {
+            Left(l) => Left(f(ctx, l)),
+            Right(r) => Right(g(ctx, r)),
+        }
+    }
+
     /// Apply one of two functions depending on contents, unifying their result. If the value is
     /// `Left(L)` then the first function `f` is applied; if it is `Right(R)` then the second
     /// function `g` is applied.
