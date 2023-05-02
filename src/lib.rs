@@ -18,26 +18,25 @@
 #[cfg(any(test, feature = "use_std"))]
 extern crate std;
 
-#[cfg(feature = "serde")]
-pub mod serde_untagged;
-
-#[cfg(feature = "serde")]
-pub mod serde_untagged_optional;
-
-use core::convert::{AsMut, AsRef};
+use core::convert::{identity, AsMut, AsRef};
 use core::fmt;
 use core::future::Future;
 use core::iter;
 use core::ops::Deref;
 use core::ops::DerefMut;
 use core::pin::Pin;
-
 #[cfg(any(test, feature = "use_std"))]
 use std::error::Error;
 #[cfg(any(test, feature = "use_std"))]
 use std::io::{self, BufRead, Read, Seek, SeekFrom, Write};
 
 pub use crate::Either::{Left, Right};
+
+#[cfg(feature = "serde")]
+pub mod serde_untagged;
+
+#[cfg(feature = "serde")]
+pub mod serde_untagged_optional;
 
 /// The enum `Either` with variants `Left` and `Right` is a general purpose
 /// sum type with two cases.
@@ -855,6 +854,38 @@ impl<T, L, R> Either<(L, T), (R, T)> {
             Left((l, t)) => (Left(l), t),
             Right((r, t)) => (Right(r), t),
         }
+    }
+}
+
+impl<L, R> Either<Either<L, R>, R> {
+    /// Flattens a nested structure where the left value type is an [`Either`].
+    ///
+    /// ```
+    /// use either::*;
+    /// let left: Either<Either<&str, u64>, u64> = Left(Left("foo"));
+    /// assert_eq!(left.flatten_left(), Left("foo"));
+    ///
+    /// let right: Either<Either<&str, u64>, u64> = Right(30);
+    /// assert_eq!(right.flatten_left(), Right(30));
+    /// ```
+    pub fn flatten_left(self) -> Either<L, R> {
+        self.either(identity, Right)
+    }
+}
+
+impl<L, R> Either<L, Either<L, R>> {
+    /// Flattens a nested structure where the right value type is an [`Either`].
+    ///
+    /// ```
+    /// use either::*;
+    /// let right: Either<&str, Either<&str, u64>> = Right(Right(10));
+    /// assert_eq!(right.flatten_right(), Right(10));
+    ///
+    /// let left: Either<&str, Either<&str, u64>> = Left("foo");
+    /// assert_eq!(left.flatten_right(), Left("foo"));
+    /// ```
+    pub fn flatten_right(self) -> Either<L, R> {
+        self.either(Left, identity)
     }
 }
 
