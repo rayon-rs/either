@@ -382,15 +382,19 @@ impl<L, R> Either<L, R> {
     /// ```
     /// use either::*;
     ///
-    /// let mut acc: Vec<String> = Vec::new();
+    /// let mut sum = 0;
     ///
-    /// let f = |acc: Vec<String>, s: String| acc.push(s);
-    /// let g = |acc: Vec<String>, u: u32| acc.push(u.to_string());
+    /// // Both closures want to update the same value, so pass it as context.
+    /// let mut f = |sum: &mut usize, s: String| { *sum += s.len(); s.to_uppercase() };
+    /// let mut g = |sum: &mut usize, u: usize| { *sum += u; u.to_string() };
     ///
-    /// let values: Vec<Either<String, u32>> = vec![Left("loopy".into()), Right(42)];
+    /// let left: Either<String, usize> = Left("loopy".into());
+    /// assert_eq!(left.map_either_with(&mut sum, &mut f, &mut g), Left("LOOPY".into()));
     ///
-    /// let _ = values.iter().for_each(|e| e.map_either_with(acc, f, g));
-    /// assert_eq!(acc, vec!["loopy".into(), "42".into()]);
+    /// let right: Either<String, usize> = Right(42);
+    /// assert_eq!(right.map_either_with(&mut sum, &mut f, &mut g), Right("42".into()));
+    ///
+    /// assert_eq!(sum, 47);
     /// ```
     pub fn map_either_with<Ctx, F, G, M, S>(self, ctx: Ctx, f: F, g: G) -> Either<M, S>
     where
