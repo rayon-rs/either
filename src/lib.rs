@@ -348,6 +348,65 @@ impl<L, R> Either<L, R> {
         }
     }
 
+    /// Apply the functions `f` and `g` to the `Left` and `Right` variants
+    /// respectively. This is equivalent to
+    /// [bimap](https://hackage.haskell.org/package/bifunctors-5/docs/Data-Bifunctor.html)
+    /// in functional programming.
+    ///
+    /// ```
+    /// use either::*;
+    ///
+    /// let f = |s: String| s.len();
+    /// let g = |u: u8| u.to_string();
+    ///
+    /// let left: Either<String, u8> = Left("loopy".into());
+    /// assert_eq!(left.map_either(f, g), Left(5));
+    ///
+    /// let right: Either<String, u8> = Right(42);
+    /// assert_eq!(right.map_either(f, g), Right("42".into()));
+    /// ```
+    pub fn map_either<F, G, M, S>(self, f: F, g: G) -> Either<M, S>
+    where
+        F: FnOnce(L) -> M,
+        G: FnOnce(R) -> S,
+    {
+        match self {
+            Left(l) => Left(f(l)),
+            Right(r) => Right(g(r)),
+        }
+    }
+
+    /// Similar to [`map_either`], with an added context `ctx` accessible to
+    /// both functions.
+    ///
+    /// ```
+    /// use either::*;
+    ///
+    /// let mut sum = 0;
+    ///
+    /// // Both closures want to update the same value, so pass it as context.
+    /// let mut f = |sum: &mut usize, s: String| { *sum += s.len(); s.to_uppercase() };
+    /// let mut g = |sum: &mut usize, u: usize| { *sum += u; u.to_string() };
+    ///
+    /// let left: Either<String, usize> = Left("loopy".into());
+    /// assert_eq!(left.map_either_with(&mut sum, &mut f, &mut g), Left("LOOPY".into()));
+    ///
+    /// let right: Either<String, usize> = Right(42);
+    /// assert_eq!(right.map_either_with(&mut sum, &mut f, &mut g), Right("42".into()));
+    ///
+    /// assert_eq!(sum, 47);
+    /// ```
+    pub fn map_either_with<Ctx, F, G, M, S>(self, ctx: Ctx, f: F, g: G) -> Either<M, S>
+    where
+        F: FnOnce(Ctx, L) -> M,
+        G: FnOnce(Ctx, R) -> S,
+    {
+        match self {
+            Left(l) => Left(f(ctx, l)),
+            Right(r) => Right(g(ctx, r)),
+        }
+    }
+
     /// Apply one of two functions depending on contents, unifying their result. If the value is
     /// `Left(L)` then the first function `f` is applied; if it is `Right(R)` then the second
     /// function `g` is applied.
