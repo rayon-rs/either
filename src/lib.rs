@@ -806,6 +806,24 @@ impl<L, R> Either<L, R> {
             Either::Right(r) => r.into(),
         }
     }
+
+    /// Extract both the left and right values into a tuple of [`Option`].
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use either::*;
+    /// let left: Either<u16, u32> = Left(3u16);
+    /// assert_eq!(left.into_tuple(), (Some(3u16), None));
+    /// let right: Either<u16, u32> = Right(7u32);
+    /// assert_eq!(right.into_tuple(), (None, Some(7u32)));
+    /// ```
+    pub fn into_tuple(self) -> (Option<L>, Option<R>) {
+        match self {
+            Either::Left(l) => (Some(l), None),
+            Either::Right(r) => (None, Some(r)),
+        }
+    }
 }
 
 impl<L, R> Either<Option<L>, Option<R>> {
