@@ -6,11 +6,13 @@
 //! but in typical cases Vec<String> would suffice, too.
 //!
 //! ```rust
+//! # use serde_crate as serde;
 //! # fn main() -> Result<(), Box<dyn std::error::Error>> {
 //! use either::Either;
 //! use std::collections::HashMap;
 //!
 //! #[derive(serde::Serialize, serde::Deserialize, Debug)]
+//! # #[serde(crate = "serde")]
 //! #[serde(transparent)]
 //! struct IntOrString {
 //!     #[serde(with = "either::serde_untagged_optional")]
@@ -33,10 +35,12 @@
 //! # }
 //! ```
 
-use serde::{Deserialize, Deserializer, Serialize, Serializer};
+use serde_crate::de::{Deserialize, Deserializer};
+use serde_crate::ser::{Serialize, Serializer};
+use serde_derive::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize)]
-#[serde(untagged)]
+#[serde(crate = "serde_crate", untagged)]
 enum Either<L, R> {
     Left(L),
     Right(R),

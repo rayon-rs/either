@@ -45,7 +45,11 @@ pub use crate::Either::{Left, Right};
 /// The `Either` type is symmetric and treats its variants the same way, without
 /// preference.
 /// (For representing success or error, use the regular `Result` enum instead.)
-#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
+#[cfg_attr(
+    feature = "serde",
+    derive(serde_derive::Serialize, serde_derive::Deserialize),
+    serde(crate = "serde_crate")
+)]
 #[derive(Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Debug)]
 pub enum Either<L, R> {
     /// A value of type `L`.
