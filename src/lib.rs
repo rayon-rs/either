@@ -913,6 +913,32 @@ impl<T, L, R> Either<(L, T), (R, T)> {
     }
 }
 
+/// `Either<L, R>` is an iterator if both `L` and `R` are iterators.
+impl<L, R> Either<L, R>
+where
+    L: IntoIterator,
+    R: IntoIterator,
+{
+    /// Factors an `Either` of `Itorator`s to be an `Itorator` of `Either`s
+    /// ```
+    /// use either::*;
+    /// let left: Either<_, Vec<u8>> = Left(&["hello"]);
+    /// assert_eq!(left.factor_iter().next(), Some(Left(&"hello")));
+
+    /// let right: Either<&[&str], _> = Right(vec![0, 1]);
+    /// assert_eq!(right.factor_iter().collect::<Vec<_>>(), vec![Right(0), Right(1)]);
+    ///
+    /// ```
+    // TODO(MSRV): doc(alias) was stabilized in Rust 1.48
+    // #[doc(alias = "transpose")]
+    pub fn factor_iter(self) -> impl Iterator<Item = Either<L::Item, R::Item>> {
+        self.map_either(
+            |l| l.into_iter().map(Either::Left),
+            |r| r.into_iter().map(Either::Right),
+        )
+    }
+}
+
 impl<T> Either<T, T> {
     /// Extract the value of an either over two equivalent types.
     ///
