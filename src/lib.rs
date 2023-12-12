@@ -528,6 +528,28 @@ impl<L, R> Either<L, R> {
         }
     }
 
+    /// Borrow the inner value as an iterator.
+    ///
+    /// ```
+    /// use either::*;
+    ///
+    /// let left: Either<_, &[u32]> = Left(vec![2, 3]);
+    /// let mut right: Either<Vec<u32>, _> = Right([4, 5].as_slice());
+    /// let mut all = vec![1];
+    /// all.extend(left.iter());
+    /// all.extend(right.iter());
+    /// assert_eq!(all, vec![1, 2, 3, 4, 5]);
+    /// ```
+    pub fn iter<'a>(
+        &'a self,
+    ) -> Either<<&'a L as IntoIterator>::IntoIter, <&'a R as IntoIterator>::IntoIter>
+    where
+        &'a L: IntoIterator,
+        &'a R: IntoIterator<Item = <&'a L as IntoIterator>::Item>,
+    {
+        self.as_ref().into_iter()
+    }
+
     /// Return left value or given value
     ///
     /// Arguments passed to `left_or` are eagerly evaluated; if you are passing
