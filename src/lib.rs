@@ -981,7 +981,12 @@ where
     /// ```
     // TODO(MSRV): doc(alias) was stabilized in Rust 1.48
     // #[doc(alias = "transpose")]
-    pub fn factor_iter(self) -> impl Iterator<Item = Either<L::Item, R::Item>> {
+    pub fn factor_iter(
+        self,
+    ) -> Either<
+        iter::Map<L::IntoIter, impl Fn(L::Item) -> Either<L::Item, R::Item>>,
+        iter::Map<R::IntoIter, impl Fn(R::Item) -> Either<L::Item, R::Item>>,
+    > {
         self.map_either(
             |l| l.into_iter().map(Either::Left),
             |r| r.into_iter().map(Either::Right),
