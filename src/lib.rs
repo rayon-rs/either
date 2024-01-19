@@ -568,12 +568,12 @@ impl<L, R> Either<L, R> {
     /// }
     /// assert_eq!(inner, [16, 25]);
     /// ```
-    pub fn iter_mut<'a>(
-        &'a mut self,
-    ) -> Either<<&'a mut L as IntoIterator>::IntoIter, <&'a mut R as IntoIterator>::IntoIter>
+    pub fn iter_mut(
+        &mut self,
+    ) -> Either<<&mut L as IntoIterator>::IntoIter, <&mut R as IntoIterator>::IntoIter>
     where
-        &'a mut L: IntoIterator,
-        &'a mut R: IntoIterator<Item = <&'a mut L as IntoIterator>::Item>,
+        for<'a> &'a mut L: IntoIterator,
+        for<'a> &'a mut R: IntoIterator<Item = <&'a mut L as IntoIterator>::Item>,
     {
         self.as_mut().into_iter()
     }
