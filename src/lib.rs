@@ -540,12 +540,12 @@ impl<L, R> Either<L, R> {
     /// all.extend(right.iter());
     /// assert_eq!(all, vec![1, 2, 3, 4, 5]);
     /// ```
-    pub fn iter<'a>(
-        &'a self,
-    ) -> Either<<&'a L as IntoIterator>::IntoIter, <&'a R as IntoIterator>::IntoIter>
+    pub fn iter(
+        &self,
+    ) -> Either<<&L as IntoIterator>::IntoIter, <&R as IntoIterator>::IntoIter>
     where
-        &'a L: IntoIterator,
-        &'a R: IntoIterator<Item = <&'a L as IntoIterator>::Item>,
+        for<'a> &'a L: IntoIterator,
+        for<'a> &'a R: IntoIterator<Item = <&'a L as IntoIterator>::Item>,
     {
         self.as_ref().into_iter()
     }
