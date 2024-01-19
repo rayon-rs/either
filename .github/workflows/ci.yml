@@ -3,6 +3,7 @@ on:
     branches: [ master ]
   pull_request:
     branches: [ master ]
+  merge_group:
 
 name: CI
 
@@ -68,3 +69,10 @@ jobs:
 
       - name: Clippy
         run: cargo clippy  # -- -D warnings
+
+  done:
+    name: Complete
+    runs-on: ubuntu-latest
+    needs: [ci, clippy]
+    steps:
+      - run: exit 0
