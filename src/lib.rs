@@ -969,7 +969,7 @@ where
     L: IntoIterator,
     R: IntoIterator,
 {
-    /// Factors an `Either` of `Itorator`s to be an `Itorator` of `Either`s
+    /// Factors an `Either` of `Iterator`s to be an `Iterator` of `Either`s
     /// ```
     /// use either::*;
     /// let left: Either<_, Vec<u8>> = Left(&["hello"]);
