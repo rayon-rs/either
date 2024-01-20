@@ -1333,6 +1333,8 @@ where
 
 #[cfg(any(test, feature = "use_std"))]
 /// `Either` implements `Error` if *both* `L` and `R` implement it.
+///
+/// Requires crate feature `"use_std"`
 impl<L, R> Error for Either<L, R>
 where
     L: Error,
