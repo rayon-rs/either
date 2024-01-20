@@ -929,6 +929,7 @@ impl<T> Either<T, T> {
 }
 
 mod iterator;
+pub use iterator::IterEither;
 
 /// Convert from `Result` to `Either` with `Ok => Right` and `Err => Left`.
 impl<L, R> From<Result<R, L>> for Either<L, R> {

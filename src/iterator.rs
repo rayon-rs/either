@@ -84,21 +84,23 @@ impl<L, R> Either<L, R> {
     /// ```
     // TODO(MSRV): doc(alias) was stabilized in Rust 1.48
     // #[doc(alias = "transpose")]
-    pub fn factor_iter(
-        self,
-    ) -> Either<
-        core::iter::Map<L::IntoIter, impl Fn(L::Item) -> Either<L::Item, R::Item>>,
-        core::iter::Map<R::IntoIter, impl Fn(R::Item) -> Either<L::Item, R::Item>>,
-    >
+    pub fn factor_iter(self) -> IterEither<L::IntoIter, R::IntoIter>
     where
         L: IntoIterator,
         R: IntoIterator,
     {
-        self.map_either(
-            |l| l.into_iter().map(Either::Left),
-            |r| r.into_iter().map(Either::Right),
-        )
+        IterEither {
+            inner: self.map_either(L::into_iter, R::into_iter),
+        }
     }
+}
+
+/// Iterator that maps left or right iterators to corresponding `Either`-wrapped items.
+///
+/// This struct is created by the [`Either::factor_iter`] method.
+#[derive(Clone, Debug)]
+pub struct IterEither<L, R> {
+    inner: Either<L, R>,
 }
 
 impl<L, R, A> Extend<A> for Either<L, R>
@@ -250,5 +252,161 @@ impl<L, R> iter::FusedIterator for Either<L, R>
 where
     L: iter::FusedIterator,
     R: iter::FusedIterator<Item = L::Item>,
+{
+}
+
+macro_rules! map_either {
+    ($value:expr, $pattern:pat => $result:expr) => {
+        match $value {
+            Left($pattern) => Left($result),
+            Right($pattern) => Right($result),
+        }
+    };
+}
+
+macro_rules! wrap_either {
+    ($value:expr => $( $tail:tt )*) => {
+        match $value {
+            Left(inner) => inner.map(Left) $($tail)*,
+            Right(inner) => inner.map(Right) $($tail)*,
+        }
+    };
+}
+
+impl<L, R> Iterator for IterEither<L, R>
+where
+    L: Iterator,
+    R: Iterator,
+{
+    type Item = Either<L::Item, R::Item>;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        Some(map_either!(self.inner, ref mut inner => inner.next()?))
+    }
+
+    fn size_hint(&self) -> (usize, Option<usize>) {
+        for_both!(self.inner, ref inner => inner.size_hint())
+    }
+
+    fn fold<Acc, G>(self, init: Acc, f: G) -> Acc
+    where
+        G: FnMut(Acc, Self::Item) -> Acc,
+    {
+        wrap_either!(self.inner => .fold(init, f))
+    }
+
+    fn for_each<F>(self, f: F)
+    where
+        F: FnMut(Self::Item),
+    {
+        wrap_either!(self.inner => .for_each(f))
+    }
+
+    fn count(self) -> usize {
+        for_both!(self.inner, inner => inner.count())
+    }
+
+    fn last(self) -> Option<Self::Item> {
+        Some(map_either!(self.inner, inner => inner.last()?))
+    }
+
+    fn nth(&mut self, n: usize) -> Option<Self::Item> {
+        Some(map_either!(self.inner, ref mut inner => inner.nth(n)?))
+    }
+
+    fn collect<B>(self) -> B
+    where
+        B: iter::FromIterator<Self::Item>,
+    {
+        wrap_either!(self.inner => .collect())
+    }
+
+    fn partition<B, F>(self, f: F) -> (B, B)
+    where
+        B: Default + Extend<Self::Item>,
+        F: FnMut(&Self::Item) -> bool,
+    {
+        wrap_either!(self.inner => .partition(f))
+    }
+
+    fn all<F>(&mut self, f: F) -> bool
+    where
+        F: FnMut(Self::Item) -> bool,
+    {
+        wrap_either!(&mut self.inner => .all(f))
+    }
+
+    fn any<F>(&mut self, f: F) -> bool
+    where
+        F: FnMut(Self::Item) -> bool,
+    {
+        wrap_either!(&mut self.inner => .any(f))
+    }
+
+    fn find<P>(&mut self, predicate: P) -> Option<Self::Item>
+    where
+        P: FnMut(&Self::Item) -> bool,
+    {
+        wrap_either!(&mut self.inner => .find(predicate))
+    }
+
+    fn find_map<B, F>(&mut self, f: F) -> Option<B>
+    where
+        F: FnMut(Self::Item) -> Option<B>,
+    {
+        wrap_either!(&mut self.inner => .find_map(f))
+    }
+
+    fn position<P>(&mut self, predicate: P) -> Option<usize>
+    where
+        P: FnMut(Self::Item) -> bool,
+    {
+        wrap_either!(&mut self.inner => .position(predicate))
+    }
+}
+
+impl<L, R> DoubleEndedIterator for IterEither<L, R>
+where
+    L: DoubleEndedIterator,
+    R: DoubleEndedIterator,
+{
+    fn next_back(&mut self) -> Option<Self::Item> {
+        Some(map_either!(self.inner, ref mut inner => inner.next_back()?))
+    }
+
+    // TODO(MSRV): This was stabilized in Rust 1.37
+    // fn nth_back(&mut self, n: usize) -> Option<Self::Item> {
+    //     Some(map_either!(self.inner, ref mut inner => inner.nth_back(n)?))
+    // }
+
+    fn rfold<Acc, G>(self, init: Acc, f: G) -> Acc
+    where
+        G: FnMut(Acc, Self::Item) -> Acc,
+    {
+        wrap_either!(self.inner => .rfold(init, f))
+    }
+
+    fn rfind<P>(&mut self, predicate: P) -> Option<Self::Item>
+    where
+        P: FnMut(&Self::Item) -> bool,
+    {
+        wrap_either!(&mut self.inner => .rfind(predicate))
+    }
+}
+
+impl<L, R> ExactSizeIterator for IterEither<L, R>
+where
+    L: ExactSizeIterator,
+    R: ExactSizeIterator,
+{
+    fn len(&self) -> usize {
+        for_both!(self.inner, ref inner => inner.len())
+    }
+}
+
+impl<L, R> iter::FusedIterator for IterEither<L, R>
+where
+    L: iter::FusedIterator,
+    R: iter::FusedIterator,
 {
 }
