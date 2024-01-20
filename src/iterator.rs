@@ -30,7 +30,7 @@ impl<L, R> Either<L, R> {
     /// use either::*;
     ///
     /// let left: Either<_, &[u32]> = Left(vec![2, 3]);
-    /// let mut right: Either<Vec<u32>, _> = Right([4, 5].as_slice());
+    /// let mut right: Either<Vec<u32>, _> = Right(&[4, 5][..]);
     /// let mut all = vec![1];
     /// all.extend(left.iter());
     /// all.extend(right.iter());
@@ -56,7 +56,7 @@ impl<L, R> Either<L, R> {
     /// assert_eq!(left, Left(vec![4, 9]));
     ///
     /// let mut inner = [4, 5];
-    /// let mut right: Either<Vec<u32>, _> = Right(inner.as_mut_slice());
+    /// let mut right: Either<Vec<u32>, _> = Right(&mut inner[..]);
     /// for r in right.iter_mut() {
     ///     *r *= *r
     /// }
