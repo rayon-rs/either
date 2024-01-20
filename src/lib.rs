@@ -88,11 +88,11 @@ macro_rules! for_both {
     };
 }
 
-/// Macro for unwrapping the left side of an `Either`, which fails early
+/// Macro for unwrapping the left side of an [`Either`], which fails early
 /// with the opposite side. Can only be used in functions that return
 /// `Either` because of the early return of `Right` that it provides.
 ///
-/// See also `try_right!` for its dual, which applies the same just to the
+/// See also [`try_right!`] for its dual, which applies the same just to the
 /// right side.
 ///
 /// # Example
@@ -120,7 +120,7 @@ macro_rules! try_left {
     };
 }
 
-/// Dual to `try_left!`, see its documentation for more information.
+/// Dual to [`try_left!`], see its documentation for more information.
 #[macro_export]
 macro_rules! try_right {
     ($expr:expr) => {
@@ -376,7 +376,7 @@ impl<L, R> Either<L, R> {
         }
     }
 
-    /// Similar to [`map_either`], with an added context `ctx` accessible to
+    /// Similar to [`map_either`][Self::map_either], with an added context `ctx` accessible to
     /// both functions.
     ///
     /// ```
@@ -434,7 +434,7 @@ impl<L, R> Either<L, R> {
         }
     }
 
-    /// Like `either`, but provide some context to whichever of the
+    /// Like [`either`][Self::either], but provide some context to whichever of the
     /// functions ends up being called.
     ///
     /// ```
@@ -531,10 +531,8 @@ impl<L, R> Either<L, R> {
     /// Return left value or given value
     ///
     /// Arguments passed to `left_or` are eagerly evaluated; if you are passing
-    /// the result of a function call, it is recommended to use [`left_or_else`],
-    /// which is lazily evaluated.
-    ///
-    /// [`left_or_else`]: #method.left_or_else
+    /// the result of a function call, it is recommended to use
+    /// [`left_or_else`][Self::left_or_else], which is lazily evaluated.
     ///
     /// # Examples
     ///
@@ -600,10 +598,8 @@ impl<L, R> Either<L, R> {
     /// Return right value or given value
     ///
     /// Arguments passed to `right_or` are eagerly evaluated; if you are passing
-    /// the result of a function call, it is recommended to use [`right_or_else`],
-    /// which is lazily evaluated.
-    ///
-    /// [`right_or_else`]: #method.right_or_else
+    /// the result of a function call, it is recommended to use
+    /// [`right_or_else`][Self::right_or_else], which is lazily evaluated.
     ///
     /// # Examples
     ///
@@ -1337,6 +1333,8 @@ where
 
 #[cfg(any(test, feature = "use_std"))]
 /// `Either` implements `Error` if *both* `L` and `R` implement it.
+///
+/// Requires crate feature `"use_std"`
 impl<L, R> Error for Either<L, R>
 where
     L: Error,
@@ -1477,9 +1475,9 @@ fn read_write() {
 }
 
 #[test]
-#[allow(deprecated)]
 fn error() {
     let invalid_utf8 = b"\xff";
+    #[allow(invalid_from_utf8)]
     let res = if let Err(error) = ::std::str::from_utf8(invalid_utf8) {
         Err(Left(error))
     } else if let Err(error) = "x".parse::<i32>() {
@@ -1488,6 +1486,7 @@ fn error() {
         Ok(())
     };
     assert!(res.is_err());
+    #[allow(deprecated)]
     res.unwrap_err().description(); // make sure this can be called
 }
 
