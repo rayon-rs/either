@@ -25,6 +25,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
+      - name: Cache the registry
+        uses: actions/cache@v4
+        if: startsWith(matrix.rust, '1')
+        with:
+          path: ~/.cargo/registry/index
+          key: cargo-${{ matrix.rust }}-git-index
+
       - name: Set up Rust
         uses: dtolnay/rust-toolchain@master
         with:
