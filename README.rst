@@ -16,7 +16,7 @@ __ https://docs.rs/either/
 
 |build_status|_ |crates|_
 
-.. |build_status| image:: https://github.com/rayon-rs/either/workflows/CI/badge.svg?branch=master
+.. |build_status| image:: https://github.com/rayon-rs/either/workflows/CI/badge.svg?branch=main
 .. _build_status: https://github.com/rayon-rs/either/actions
 
 .. |crates| image:: https://img.shields.io/crates/v/either.svg
