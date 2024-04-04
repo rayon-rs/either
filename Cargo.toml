@@ -33,3 +33,6 @@ tag-name = "{{version}}"
 
 [package.metadata.docs.rs]
 features = ["serde"]
+
+[package.metadata.playground]
+features = ["serde"]
