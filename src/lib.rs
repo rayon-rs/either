@@ -955,6 +955,62 @@ impl<T> Either<T, T> {
     }
 }
 
+impl<L, R> Either<&L, &R> {
+    /// Maps an `Either<&L, &R>` to an `Either<L, R>` by cloning the contents of
+    /// either branch.
+    pub fn cloned(self) -> Either<L, R>
+    where
+        L: Clone,
+        R: Clone,
+    {
+        match self {
+            Self::Left(l) => Either::Left(l.clone()),
+            Self::Right(r) => Either::Right(r.clone()),
+        }
+    }
+
+    /// Maps an `Either<&L, &R>` to an `Either<L, R>` by copying the contents of
+    /// either branch.
+    pub fn copied(self) -> Either<L, R>
+    where
+        L: Copy,
+        R: Copy,
+    {
+        match self {
+            Self::Left(l) => Either::Left(*l),
+            Self::Right(r) => Either::Right(*r),
+        }
+    }
+}
+
+impl<L, R> Either<&mut L, &mut R> {
+    /// Maps an `Either<&mut L, &mut R>` to an `Either<L, R>` by cloning the contents of
+    /// either branch.
+    pub fn cloned(self) -> Either<L, R>
+    where
+        L: Clone,
+        R: Clone,
+    {
+        match self {
+            Self::Left(l) => Either::Left(l.clone()),
+            Self::Right(r) => Either::Right(r.clone()),
+        }
+    }
+
+    /// Maps an `Either<&L, &R>` to an `Either<L, R>` by copying the contents of
+    /// either branch.
+    pub fn copied(self) -> Either<L, R>
+    where
+        L: Copy,
+        R: Copy,
+    {
+        match self {
+            Self::Left(l) => Either::Left(*l),
+            Self::Right(r) => Either::Right(*r),
+        }
+    }
+}
+
 /// Convert from `Result` to `Either` with `Ok => Right` and `Err => Left`.
 impl<L, R> From<Result<R, L>> for Either<L, R> {
     fn from(r: Result<R, L>) -> Self {
