@@ -997,7 +997,7 @@ impl<L, R> Either<&mut L, &mut R> {
         }
     }
 
-    /// Maps an `Either<&L, &R>` to an `Either<L, R>` by copying the contents of
+    /// Maps an `Either<&mut L, &mut R>` to an `Either<L, R>` by copying the contents of
     /// either branch.
     pub fn copied(self) -> Either<L, R>
     where
