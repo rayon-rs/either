@@ -6,10 +6,10 @@
 //! **Crate features:**
 //!
 //! * `"use_std"`
-//! Enabled by default. Disable to make the library `#![no_std]`.
+//!   Enabled by default. Disable to make the library `#![no_std]`.
 //!
 //! * `"serde"`
-//! Disabled by default. Enable to `#[derive(Serialize, Deserialize)]` for `Either`
+//!   Disabled by default. Enable to `#[derive(Serialize, Deserialize)]` for `Either`
 //!
 
 #![doc(html_root_url = "https://docs.rs/either/1/")]
