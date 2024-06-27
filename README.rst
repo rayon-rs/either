@@ -50,7 +50,7 @@ Recent Changes
 
   - Add new methods ``.factor_iter()``, ``.factor_iter_mut()``,  and ``.factor_into_iter()``
     that return ``Either`` items, plus ``.iter()`` and ``.iter_mut()`` to convert to direct
-    referene iterators; by @aj-bagwell and @cuviper (#91)
+    reference iterators; by @aj-bagwell and @cuviper (#91)
 
 - 1.9.0
 
