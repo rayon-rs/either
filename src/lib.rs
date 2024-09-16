@@ -60,6 +60,8 @@ pub enum Either<L, R> {
 ///
 /// Syntax: `either::for_both!(` *expression* `,` *pattern* `=>` *expression* `)`
 ///
+/// Unlike [`map_both!`], this macro converges both variants to the type returned by the expression.
+///
 /// # Example
 ///
 /// ```
@@ -83,6 +85,37 @@ macro_rules! for_both {
         match $value {
             $crate::Either::Left($pattern) => $result,
             $crate::Either::Right($pattern) => $result,
+        }
+    };
+}
+
+/// Evaluate the provided expression for both [`Either::Left`] and [`Either::Right`],
+/// returning an [`Either`] with the results.
+///
+/// This macro is useful in cases where both sides of [`Either`] can be interacted with
+/// in the same way even though the don't share the same type.
+///
+/// Syntax: `either::map_both!(` *expression* `,` *pattern* `=>` *expression* `)`
+///
+/// Unlike [`for_both!`], this macro returns an [`Either`] with the results of the expressions.
+///
+/// # Example
+///
+/// ```
+/// use either::Either;
+///
+/// struct Wrapper<T>(T);
+///
+/// fn wrap(owned_or_borrowed: Either<String, &'static str>) -> Either<Wrapper<String>, Wrapper<&'static str>> {
+///    either::map_both!(owned_or_borrowed, s => Wrapper(s))
+/// }
+/// ```
+#[macro_export]
+macro_rules! map_both {
+    ($value:expr, $pattern:pat => $result:expr) => {
+        match $value {
+            $crate::Either::Left($pattern) => $crate::Either::Left($result),
+            $crate::Either::Right($pattern) => $crate::Either::Right($result),
         }
     };
 }
