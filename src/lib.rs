@@ -120,6 +120,41 @@ macro_rules! map_both {
     };
 }
 
+/// Evaluate the provided expression for both [`Either::Left`] and [`Either::Right`],
+/// returning a [Result] where the [`Ok`] variant is an [`Either`] with the results.
+///
+/// This macro is useful in cases where both sides of [`Either`] can be interacted with
+/// in the same way even though the don't share the same type.
+///
+/// `either::map_both!(` *expression* `,` *pattern* `=>` *expression* `)`
+///
+/// Unlike [`map_both!`], this macro returns a [Result] where the [`Ok`] variant is an [`Either`] with the results.
+///
+/// # Example
+///
+/// ```
+/// use either::Either;
+///
+/// fn wrap(owned_or_borrowed: Either<String, &'static str>) -> Result<Either<String, &'static str>, ()> {
+///    either::try_map_both!(owned_or_borrowed, s => Ok(s))
+/// }
+/// ```
+#[macro_export]
+macro_rules! try_map_both {
+    ($value:expr, $pattern:pat => $result:expr) => {
+        match $value {
+            $crate::Either::Left($pattern) => match $result {
+                Ok(ok) => Ok($crate::Either::Left(ok)),
+                Err(err) => Err(err),
+            },
+            $crate::Either::Right($pattern) => match $result {
+                Ok(ok) => Ok($crate::Either::Right(ok)),
+                Err(err) => Err(err),
+            },
+        }
+    };
+}
+
 /// Macro for unwrapping the left side of an [`Either`], which fails early
 /// with the opposite side. Can only be used in functions that return
 /// `Either` because of the early return of `Right` that it provides.
