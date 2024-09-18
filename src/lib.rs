@@ -130,7 +130,9 @@ macro_rules! map_both {
 ///
 /// Unlike [`map_both!`], this macro returns a [Result] where the [`Ok`] variant is an [`Either`] with the results.
 ///
-/// # Example
+/// # Examples
+///
+/// Works with [`Result`]:
 ///
 /// ```
 /// use either::Either;
@@ -139,18 +141,39 @@ macro_rules! map_both {
 ///    either::try_map_both!(owned_or_borrowed, s => Ok(s))
 /// }
 /// ```
+///
+/// Works with [`Option`]:
+///
+/// ```
+/// use either::Either;
+///
+/// fn wrap(owned_or_borrowed: Either<String, &'static str>) -> Option<Either<String, &'static str>> {
+///   either::try_map_both!(owned_or_borrowed, s => Some(s))
+/// }
+/// ```
+///
+/// If you want to see another [`Try`](https://doc.rust-lang.org/beta/std/ops/trait.Try.html) type
+/// supported, please open an issue or a PR.
 #[macro_export]
 macro_rules! try_map_both {
     ($value:expr, $pattern:pat => $result:expr) => {
         match $value {
-            $crate::Either::Left($pattern) => match $result {
-                Ok(ok) => Ok($crate::Either::Left(ok)),
-                Err(err) => Err(err),
-            },
-            $crate::Either::Right($pattern) => match $result {
-                Ok(ok) => Ok($crate::Either::Right(ok)),
-                Err(err) => Err(err),
-            },
+            $crate::Either::Left($pattern) => {
+                let f = move || {
+                    let result = $result?;
+                    let e = $crate::Either::Left(result);
+                    <_ as $crate::__either_internals::Tryish>::from_output(e)
+                };
+                f()
+            }
+            $crate::Either::Right($pattern) => {
+                let f = move || {
+                    let result = $result?;
+                    let e = $crate::Either::Right(result);
+                    <_ as $crate::__either_internals::Tryish>::from_output(e)
+                };
+                f()
+            }
         }
     };
 }
@@ -1640,4 +1663,45 @@ fn _unsized_std_propagation() {
     check_t!(::std::path::Path);
     check_t!(::std::ffi::OsStr);
     check_t!(::std::ffi::CStr);
+}
+
+mod private {
+    /// The trait that allows [sealing] the hidden [`Tryish`](super::__either_internals::Tryish)
+    /// trait, which is used in [`try_map_both`] macro.
+    ///
+    /// [sealing]: https://rust-lang.github.io/api-guidelines/future-proofing.html#sealed-traits-protect-against-downstream-implementations-c-sealed
+    pub trait TryishSealed {}
+}
+
+#[doc(hidden)]
+pub mod __either_internals {
+    use super::private::TryishSealed;
+
+    /// The minimal interface for a type to be used with [`try_map_both`]
+    /// while [`Try`](https://doc.rust-lang.org/beta/std/ops/trait.Try.html)
+    /// trait is unstable.
+    pub trait Tryish: TryishSealed {
+        type Output;
+
+        fn from_output(output: Self::Output) -> Self;
+    }
+
+    impl<T, E> TryishSealed for Result<T, E> {}
+    impl<T> TryishSealed for Option<T> {}
+
+    impl<T> Tryish for Option<T> {
+        type Output = T;
+
+        fn from_output(output: Self::Output) -> Self {
+            Some(output)
+        }
+    }
+
+    impl<T, E> Tryish for Result<T, E> {
+        type Output = T;
+
+        fn from_output(output: Self::Output) -> Self {
+            Ok(output)
+        }
+    }
 }
