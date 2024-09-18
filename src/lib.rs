@@ -121,14 +121,15 @@ macro_rules! map_both {
 }
 
 /// Evaluate the provided expression for both [`Either::Left`] and [`Either::Right`],
-/// returning a [Result] where the [`Ok`] variant is an [`Either`] with the results.
+/// returning a `T`: [`Try`] where the [`Try::Output`] variant is an [`Either`] with outputs.
 ///
 /// This macro is useful in cases where both sides of [`Either`] can be interacted with
 /// in the same way even though the don't share the same type.
 ///
-/// `either::map_both!(` *expression* `,` *pattern* `=>` *expression* `)`
+/// `either::try_map_both!(` *expression* `,` *pattern* `=>` *expression* `)`
 ///
-/// Unlike [`map_both!`], this macro returns a [Result] where the [`Ok`] variant is an [`Either`] with the results.
+/// Unlike [`map_both!`], this macro returns a [`Try`] where the [`Try::Output`] variant is an
+/// [`Either`] with the outputs.
 ///
 /// # Examples
 ///
@@ -154,6 +155,9 @@ macro_rules! map_both {
 ///
 /// If you want to see another [`Try`](https://doc.rust-lang.org/beta/std/ops/trait.Try.html) type
 /// supported, please open an issue or a PR.
+///
+/// [`Try`]: https://doc.rust-lang.org/beta/std/ops/trait.Try.html
+/// [`Try::Output`]: https://doc.rust-lang.org/beta/std/ops/trait.Try.html#associatedtype.Output
 #[macro_export]
 macro_rules! try_map_both {
     ($value:expr, $pattern:pat => $result:expr) => {
