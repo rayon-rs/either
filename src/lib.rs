@@ -221,15 +221,6 @@ macro_rules! try_right {
     };
 }
 
-macro_rules! map_either {
-    ($value:expr, $pattern:pat => $result:expr) => {
-        match $value {
-            Left($pattern) => Left($result),
-            Right($pattern) => Right($result),
-        }
-    };
-}
-
 mod iterator;
 pub use self::iterator::IterEither;
 
@@ -630,7 +621,7 @@ impl<L, R> Either<L, R> {
         L: IntoIterator,
         R: IntoIterator<Item = L::Item>,
     {
-        map_either!(self, inner => inner.into_iter())
+        map_both!(self, inner => inner.into_iter())
     }
 
     /// Borrow the inner value as an iterator.
@@ -653,7 +644,7 @@ impl<L, R> Either<L, R> {
         for<'a> &'a L: IntoIterator,
         for<'a> &'a R: IntoIterator<Item = <&'a L as IntoIterator>::Item>,
     {
-        map_either!(self, inner => inner.into_iter())
+        map_both!(self, inner => inner.into_iter())
     }
 
     /// Mutably borrow the inner value as an iterator.
@@ -684,7 +675,7 @@ impl<L, R> Either<L, R> {
         for<'a> &'a mut L: IntoIterator,
         for<'a> &'a mut R: IntoIterator<Item = <&'a mut L as IntoIterator>::Item>,
     {
-        map_either!(self, inner => inner.into_iter())
+        map_both!(self, inner => inner.into_iter())
     }
 
     /// Converts an `Either` of `Iterator`s to be an `Iterator` of `Either`s
@@ -708,7 +699,7 @@ impl<L, R> Either<L, R> {
         L: IntoIterator,
         R: IntoIterator,
     {
-        IterEither::new(map_either!(self, inner => inner.into_iter()))
+        IterEither::new(map_both!(self, inner => inner.into_iter()))
     }
 
     /// Borrows an `Either` of `Iterator`s to be an `Iterator` of `Either`s
@@ -732,7 +723,7 @@ impl<L, R> Either<L, R> {
         for<'a> &'a L: IntoIterator,
         for<'a> &'a R: IntoIterator,
     {
-        IterEither::new(map_either!(self, inner => inner.into_iter()))
+        IterEither::new(map_both!(self, inner => inner.into_iter()))
     }
 
     /// Mutably borrows an `Either` of `Iterator`s to be an `Iterator` of `Either`s
@@ -758,7 +749,7 @@ impl<L, R> Either<L, R> {
         for<'a> &'a mut L: IntoIterator,
         for<'a> &'a mut R: IntoIterator,
     {
-        IterEither::new(map_either!(self, inner => inner.into_iter()))
+        IterEither::new(map_both!(self, inner => inner.into_iter()))
     }
 
     /// Return left value or given value
