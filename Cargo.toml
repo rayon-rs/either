@@ -19,9 +19,10 @@ categories = ["data-structures", "no-std"]
 
 [dependencies]
 serde = { version = "1.0", optional = true, features = ["derive"] }
+borsh = { version = "1.5.4", optional = true, features = ["derive"] } # using 1.5.4 as it is good regarding syn
 
 [features]
-default = ["use_std"]
+default = ["use_std", "borsh"]
 use_std = []
 
 [dev-dependencies]
@@ -32,7 +33,7 @@ no-dev-version = true
 tag-name = "{{version}}"
 
 [package.metadata.docs.rs]
-features = ["serde"]
+features = ["serde", "borsh"]
 
 [package.metadata.playground]
-features = ["serde"]
+features = ["serde", "borsh"]
