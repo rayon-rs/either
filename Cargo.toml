@@ -19,7 +19,7 @@ categories = ["data-structures", "no-std"]
 
 [dependencies]
 serde = { version = "1.0", optional = true, features = ["derive"] }
-borsh = { version = ">=1.5.4, <1.6", optional = true, features = ["derive"] }
+borsh = { version = ">=1.5.4, <2", default-features = false, optional = true }
 
 [features]
 default = ["use_std"]

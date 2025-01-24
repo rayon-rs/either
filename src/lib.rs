@@ -24,6 +24,9 @@ pub mod serde_untagged;
 #[cfg(feature = "serde")]
 pub mod serde_untagged_optional;
 
+#[cfg(feature = "borsh")]
+mod borsh_impl;
+
 use core::convert::{AsMut, AsRef};
 use core::fmt;
 use core::future::Future;
@@ -45,10 +48,6 @@ pub use crate::Either::{Left, Right};
 /// preference.
 /// (For representing success or error, use the regular `Result` enum instead.)
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
-#[cfg_attr(
-    feature = "borsh",
-    derive(borsh::BorshSerialize, borsh::BorshDeserialize)
-)] // encdoed as u8 discriminant prefix + value
 #[derive(Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Debug)]
 pub enum Either<L, R> {
     /// A value of type `L`.

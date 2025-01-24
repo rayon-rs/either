@@ -20,6 +20,7 @@ jobs:
         features:
           - ""
           - "serde"
+          - "borsh"
 
     steps:
       - name: Checkout
