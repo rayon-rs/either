@@ -7,11 +7,13 @@
 //!
 //! ```rust
 //! # fn main() -> Result<(), Box<dyn std::error::Error>> {
+//! # extern crate serde_internal as serde;
 //! use either::Either;
 //! use std::collections::HashMap;
 //!
 //! #[derive(serde::Serialize, serde::Deserialize, Debug)]
 //! #[serde(transparent)]
+//! # #[serde(crate = "serde_internal")]
 //! struct IntOrString {
 //!     #[serde(with = "either::serde_untagged")]
 //!     inner: Either<Vec<String>, HashMap<String, i32>>
