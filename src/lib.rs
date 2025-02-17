@@ -173,7 +173,7 @@ impl<L, R> Either<L, R> {
     /// assert_eq!(values[1].is_left(), false);
     /// ```
     pub fn is_left(&self) -> bool {
-        match *self {
+        match self {
             Left(_) => true,
             Right(_) => false,
         }
@@ -240,9 +240,9 @@ impl<L, R> Either<L, R> {
     /// assert_eq!(right.as_ref(), Right(&"some value"));
     /// ```
     pub fn as_ref(&self) -> Either<&L, &R> {
-        match *self {
-            Left(ref inner) => Left(inner),
-            Right(ref inner) => Right(inner),
+        match self {
+            Left(inner) => Left(inner),
+            Right(inner) => Right(inner),
         }
     }
 
@@ -265,9 +265,9 @@ impl<L, R> Either<L, R> {
     /// assert_eq!(right, Right(123));
     /// ```
     pub fn as_mut(&mut self) -> Either<&mut L, &mut R> {
-        match *self {
-            Left(ref mut inner) => Left(inner),
-            Right(ref mut inner) => Right(inner),
+        match self {
+            Left(inner) => Left(inner),
+            Right(inner) => Right(inner),
         }
     }
 
@@ -277,9 +277,9 @@ impl<L, R> Either<L, R> {
         // SAFETY: We can use `new_unchecked` because the `inner` parts are
         // guaranteed to be pinned, as they come from `self` which is pinned.
         unsafe {
-            match *Pin::get_ref(self) {
-                Left(ref inner) => Left(Pin::new_unchecked(inner)),
-                Right(ref inner) => Right(Pin::new_unchecked(inner)),
+            match Pin::get_ref(self) {
+                Left(inner) => Left(Pin::new_unchecked(inner)),
+                Right(inner) => Right(Pin::new_unchecked(inner)),
             }
         }
     }
@@ -293,9 +293,9 @@ impl<L, R> Either<L, R> {
         // offer an unpinned `&mut L` or `&mut R` through `Pin<&mut Self>`. We
         // also don't have an implementation of `Drop`, nor manual `Unpin`.
         unsafe {
-            match *Pin::get_unchecked_mut(self) {
-                Left(ref mut inner) => Left(Pin::new_unchecked(inner)),
-                Right(ref mut inner) => Right(Pin::new_unchecked(inner)),
+            match Pin::get_unchecked_mut(self) {
+                Left(inner) => Left(Pin::new_unchecked(inner)),
+                Right(inner) => Right(Pin::new_unchecked(inner)),
             }
         }
     }
@@ -1196,19 +1196,19 @@ where
     R: Read,
 {
     fn read(&mut self, buf: &mut [u8]) -> io::Result<usize> {
-        for_both!(*self, ref mut inner => inner.read(buf))
+        for_both!(self, inner => inner.read(buf))
     }
 
     fn read_exact(&mut self, buf: &mut [u8]) -> io::Result<()> {
-        for_both!(*self, ref mut inner => inner.read_exact(buf))
+        for_both!(self, inner => inner.read_exact(buf))
     }
 
     fn read_to_end(&mut self, buf: &mut std::vec::Vec<u8>) -> io::Result<usize> {
-        for_both!(*self, ref mut inner => inner.read_to_end(buf))
+        for_both!(self, inner => inner.read_to_end(buf))
     }
 
     fn read_to_string(&mut self, buf: &mut std::string::String) -> io::Result<usize> {
-        for_both!(*self, ref mut inner => inner.read_to_string(buf))
+        for_both!(self, inner => inner.read_to_string(buf))
     }
 }
 
@@ -1222,7 +1222,7 @@ where
     R: Seek,
 {
     fn seek(&mut self, pos: SeekFrom) -> io::Result<u64> {
-        for_both!(*self, ref mut inner => inner.seek(pos))
+        for_both!(self, inner => inner.seek(pos))
     }
 }
 
@@ -1234,19 +1234,19 @@ where
     R: BufRead,
 {
     fn fill_buf(&mut self) -> io::Result<&[u8]> {
-        for_both!(*self, ref mut inner => inner.fill_buf())
+        for_both!(self, inner => inner.fill_buf())
     }
 
     fn consume(&mut self, amt: usize) {
-        for_both!(*self, ref mut inner => inner.consume(amt))
+        for_both!(self, inner => inner.consume(amt))
     }
 
     fn read_until(&mut self, byte: u8, buf: &mut std::vec::Vec<u8>) -> io::Result<usize> {
-        for_both!(*self, ref mut inner => inner.read_until(byte, buf))
+        for_both!(self, inner => inner.read_until(byte, buf))
     }
 
     fn read_line(&mut self, buf: &mut std::string::String) -> io::Result<usize> {
-        for_both!(*self, ref mut inner => inner.read_line(buf))
+        for_both!(self, inner => inner.read_line(buf))
     }
 }
 
@@ -1260,19 +1260,19 @@ where
     R: Write,
 {
     fn write(&mut self, buf: &[u8]) -> io::Result<usize> {
-        for_both!(*self, ref mut inner => inner.write(buf))
+        for_both!(self, inner => inner.write(buf))
     }
 
     fn write_all(&mut self, buf: &[u8]) -> io::Result<()> {
-        for_both!(*self, ref mut inner => inner.write_all(buf))
+        for_both!(self, inner => inner.write_all(buf))
     }
 
     fn write_fmt(&mut self, fmt: fmt::Arguments<'_>) -> io::Result<()> {
-        for_both!(*self, ref mut inner => inner.write_fmt(fmt))
+        for_both!(self, inner => inner.write_fmt(fmt))
     }
 
     fn flush(&mut self) -> io::Result<()> {
-        for_both!(*self, ref mut inner => inner.flush())
+        for_both!(self, inner => inner.flush())
     }
 }
 
@@ -1282,7 +1282,7 @@ where
     R: AsRef<Target>,
 {
     fn as_ref(&self) -> &Target {
-        for_both!(*self, ref inner => inner.as_ref())
+        for_both!(self, inner => inner.as_ref())
     }
 }
 
@@ -1293,7 +1293,7 @@ macro_rules! impl_specific_ref_and_mut {
             where L: AsRef<$t>, R: AsRef<$t>
         {
             fn as_ref(&self) -> &$t {
-                for_both!(*self, ref inner => inner.as_ref())
+                for_both!(self, inner => inner.as_ref())
             }
         }
 
@@ -1302,7 +1302,7 @@ macro_rules! impl_specific_ref_and_mut {
             where L: AsMut<$t>, R: AsMut<$t>
         {
             fn as_mut(&mut self) -> &mut $t {
-                for_both!(*self, ref mut inner => inner.as_mut())
+                for_both!(self, inner => inner.as_mut())
             }
         }
     };
@@ -1331,7 +1331,7 @@ where
     R: AsRef<[Target]>,
 {
     fn as_ref(&self) -> &[Target] {
-        for_both!(*self, ref inner => inner.as_ref())
+        for_both!(self, inner => inner.as_ref())
     }
 }
 
@@ -1341,7 +1341,7 @@ where
     R: AsMut<Target>,
 {
     fn as_mut(&mut self) -> &mut Target {
-        for_both!(*self, ref mut inner => inner.as_mut())
+        for_both!(self, inner => inner.as_mut())
     }
 }
 
@@ -1351,7 +1351,7 @@ where
     R: AsMut<[Target]>,
 {
     fn as_mut(&mut self) -> &mut [Target] {
-        for_both!(*self, ref mut inner => inner.as_mut())
+        for_both!(self, inner => inner.as_mut())
     }
 }
 
@@ -1363,7 +1363,7 @@ where
     type Target = L::Target;
 
     fn deref(&self) -> &Self::Target {
-        for_both!(*self, ref inner => &**inner)
+        for_both!(self, inner => &**inner)
     }
 }
 
@@ -1373,7 +1373,7 @@ where
     R: DerefMut<Target = L::Target>,
 {
     fn deref_mut(&mut self) -> &mut Self::Target {
-        for_both!(*self, ref mut inner => &mut *inner)
+        for_both!(self, inner => &mut *inner)
     }
 }
 
@@ -1387,17 +1387,17 @@ where
     R: Error,
 {
     fn source(&self) -> Option<&(dyn Error + 'static)> {
-        for_both!(*self, ref inner => inner.source())
+        for_both!(self, inner => inner.source())
     }
 
     #[allow(deprecated)]
     fn description(&self) -> &str {
-        for_both!(*self, ref inner => inner.description())
+        for_both!(self, inner => inner.description())
     }
 
     #[allow(deprecated)]
     fn cause(&self) -> Option<&dyn Error> {
-        for_both!(*self, ref inner => inner.cause())
+        for_both!(self, inner => inner.cause())
     }
 }
 
@@ -1407,7 +1407,7 @@ where
     R: fmt::Display,
 {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        for_both!(*self, ref inner => inner.fmt(f))
+        for_both!(self, inner => inner.fmt(f))
     }
 }
 
