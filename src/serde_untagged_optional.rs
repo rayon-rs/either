@@ -33,10 +33,10 @@
 //! # }
 //! ```
 
-use serde::{Deserialize, Deserializer, Serialize, Serializer};
+use serde_internal::{Deserialize, Deserializer, Serialize, Serializer};
 
 #[derive(Serialize, Deserialize)]
-#[serde(untagged)]
+#[serde(crate = "serde_internal", untagged)]
 enum Either<L, R> {
     Left(L),
     Right(R),
