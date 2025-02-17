@@ -1464,7 +1464,7 @@ fn deref() {
 
     fn is_str(_: &str) {}
     let value: Either<String, &str> = Left(String::from("test"));
-    is_str(&*value);
+    is_str(&value);
 }
 
 #[test]
@@ -1485,8 +1485,8 @@ fn seek() {
 
     let use_empty = false;
     let mut mockdata = [0x00; 256];
-    for i in 0..256 {
-        mockdata[i] = i as u8;
+    for (i, data) in mockdata.iter_mut().enumerate() {
+        *data = i as u8;
     }
 
     let mut reader = if use_empty {
