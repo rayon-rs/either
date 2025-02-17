@@ -185,7 +185,7 @@ where
     type Item = Either<L::Item, R::Item>;
 
     fn next(&mut self) -> Option<Self::Item> {
-        Some(map_either!(self.inner, ref mut inner => inner.next()?))
+        Some(map_both!(self.inner, ref mut inner => inner.next()?))
     }
 
     fn size_hint(&self) -> (usize, Option<usize>) {
@@ -211,11 +211,11 @@ where
     }
 
     fn last(self) -> Option<Self::Item> {
-        Some(map_either!(self.inner, inner => inner.last()?))
+        Some(map_both!(self.inner, inner => inner.last()?))
     }
 
     fn nth(&mut self, n: usize) -> Option<Self::Item> {
-        Some(map_either!(self.inner, ref mut inner => inner.nth(n)?))
+        Some(map_both!(self.inner, ref mut inner => inner.nth(n)?))
     }
 
     fn collect<B>(self) -> B
@@ -275,11 +275,11 @@ where
     R: DoubleEndedIterator,
 {
     fn next_back(&mut self) -> Option<Self::Item> {
-        Some(map_either!(self.inner, ref mut inner => inner.next_back()?))
+        Some(map_both!(self.inner, ref mut inner => inner.next_back()?))
     }
 
     fn nth_back(&mut self, n: usize) -> Option<Self::Item> {
-        Some(map_either!(self.inner, ref mut inner => inner.nth_back(n)?))
+        Some(map_both!(self.inner, ref mut inner => inner.nth_back(n)?))
     }
 
     fn rfold<Acc, G>(self, init: Acc, f: G) -> Acc
