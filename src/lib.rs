@@ -240,10 +240,7 @@ impl<L, R> Either<L, R> {
     /// assert_eq!(right.as_ref(), Right(&"some value"));
     /// ```
     pub fn as_ref(&self) -> Either<&L, &R> {
-        match self {
-            Left(inner) => Left(inner),
-            Right(inner) => Right(inner),
-        }
+        map_either!(self, inner => inner)
     }
 
     /// Convert `&mut Either<L, R>` to `Either<&mut L, &mut R>`.
@@ -265,10 +262,7 @@ impl<L, R> Either<L, R> {
     /// assert_eq!(right, Right(123));
     /// ```
     pub fn as_mut(&mut self) -> Either<&mut L, &mut R> {
-        match self {
-            Left(inner) => Left(inner),
-            Right(inner) => Right(inner),
-        }
+        map_either!(self, inner => inner)
     }
 
     /// Convert `Pin<&Either<L, R>>` to `Either<Pin<&L>, Pin<&R>>`,
@@ -276,12 +270,7 @@ impl<L, R> Either<L, R> {
     pub fn as_pin_ref(self: Pin<&Self>) -> Either<Pin<&L>, Pin<&R>> {
         // SAFETY: We can use `new_unchecked` because the `inner` parts are
         // guaranteed to be pinned, as they come from `self` which is pinned.
-        unsafe {
-            match Pin::get_ref(self) {
-                Left(inner) => Left(Pin::new_unchecked(inner)),
-                Right(inner) => Right(Pin::new_unchecked(inner)),
-            }
-        }
+        unsafe { map_either!(Pin::get_ref(self), inner => Pin::new_unchecked(inner)) }
     }
 
     /// Convert `Pin<&mut Either<L, R>>` to `Either<Pin<&mut L>, Pin<&mut R>>`,
@@ -292,12 +281,7 @@ impl<L, R> Either<L, R> {
         // to be pinned, as they come from `self` which is pinned, and we never
         // offer an unpinned `&mut L` or `&mut R` through `Pin<&mut Self>`. We
         // also don't have an implementation of `Drop`, nor manual `Unpin`.
-        unsafe {
-            match Pin::get_unchecked_mut(self) {
-                Left(inner) => Left(Pin::new_unchecked(inner)),
-                Right(inner) => Right(Pin::new_unchecked(inner)),
-            }
-        }
+        unsafe { map_either!(Pin::get_unchecked_mut(self), inner => Pin::new_unchecked(inner)) }
     }
 
     /// Convert `Either<L, R>` to `Either<R, L>`.
@@ -939,10 +923,7 @@ impl<L, R> Either<L, R> {
         L: Into<T>,
         R: Into<T>,
     {
-        match self {
-            Either::Left(l) => l.into(),
-            Either::Right(r) => r.into(),
-        }
+        for_both!(self, inner => inner.into())
     }
 }
 
@@ -1101,10 +1082,7 @@ impl<L, R> Either<&L, &R> {
         L: Clone,
         R: Clone,
     {
-        match self {
-            Self::Left(l) => Either::Left(l.clone()),
-            Self::Right(r) => Either::Right(r.clone()),
-        }
+        map_either!(self, inner => inner.clone())
     }
 
     /// Maps an `Either<&L, &R>` to an `Either<L, R>` by copying the contents of
@@ -1114,10 +1092,7 @@ impl<L, R> Either<&L, &R> {
         L: Copy,
         R: Copy,
     {
-        match self {
-            Self::Left(l) => Either::Left(*l),
-            Self::Right(r) => Either::Right(*r),
-        }
+        map_either!(self, inner => *inner)
     }
 }
 
@@ -1129,10 +1104,7 @@ impl<L, R> Either<&mut L, &mut R> {
         L: Clone,
         R: Clone,
     {
-        match self {
-            Self::Left(l) => Either::Left(l.clone()),
-            Self::Right(r) => Either::Right(r.clone()),
-        }
+        map_either!(self, inner => inner.clone())
     }
 
     /// Maps an `Either<&mut L, &mut R>` to an `Either<L, R>` by copying the contents of
@@ -1142,10 +1114,7 @@ impl<L, R> Either<&mut L, &mut R> {
         L: Copy,
         R: Copy,
     {
-        match self {
-            Self::Left(l) => Either::Left(*l),
-            Self::Right(r) => Either::Right(*r),
-        }
+        map_either!(self, inner => *inner)
     }
 }
 
