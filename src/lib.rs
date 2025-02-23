@@ -589,7 +589,7 @@ impl<L, R> Either<L, R> {
     /// use either::*;
     /// let left: Either<_, Vec<u8>> = Left(&["hello"]);
     /// assert_eq!(left.factor_into_iter().next(), Some(Left(&"hello")));
-
+    ///
     /// let right: Either<&[&str], _> = Right(vec![0, 1]);
     /// assert_eq!(right.factor_into_iter().collect::<Vec<_>>(), vec![Right(0), Right(1)]);
     ///
@@ -613,7 +613,7 @@ impl<L, R> Either<L, R> {
     /// use either::*;
     /// let left: Either<_, Vec<u8>> = Left(["hello"]);
     /// assert_eq!(left.factor_iter().next(), Some(Left(&"hello")));
-
+    ///
     /// let right: Either<[&str; 2], _> = Right(vec![0, 1]);
     /// assert_eq!(right.factor_iter().collect::<Vec<_>>(), vec![Right(&0), Right(&1)]);
     ///
@@ -638,7 +638,7 @@ impl<L, R> Either<L, R> {
     /// let mut left: Either<_, Vec<u8>> = Left(["hello"]);
     /// left.factor_iter_mut().for_each(|x| *x.unwrap_left() = "goodbye");
     /// assert_eq!(left, Left(["goodbye"]));
-
+    ///
     /// let mut right: Either<[&str; 2], _> = Right(vec![0, 1, 2]);
     /// right.factor_iter_mut().for_each(|x| if let Right(r) = x { *r = -*r; });
     /// assert_eq!(right, Right(vec![0, -1, -2]));
