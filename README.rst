@@ -25,11 +25,19 @@ __ https://docs.rs/either/
 How to use with cargo::
 
     [dependencies]
-    either = "1.12"
+    either = "1"
 
 
 Recent Changes
 --------------
+
+- 1.14.0
+
+  - **MSRV**: ``either`` now requires Rust 1.63 or later.
+
+  - Implement ``fmt::Write`` for ``Either``, by @yotamofek (#113)
+
+  - Replace ``Into<Result> for Either`` with ``From<Either> for Result``, by @cuviper (#118)
 
 - 1.13.0
 
