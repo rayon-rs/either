@@ -1129,10 +1129,9 @@ impl<L, R> From<Result<R, L>> for Either<L, R> {
 }
 
 /// Convert from `Either` to `Result` with `Right => Ok` and `Left => Err`.
-#[allow(clippy::from_over_into)] // From requires RFC 2451, Rust 1.41
-impl<L, R> Into<Result<R, L>> for Either<L, R> {
-    fn into(self) -> Result<R, L> {
-        match self {
+impl<L, R> From<Either<L, R>> for Result<R, L> {
+    fn from(val: Either<L, R>) -> Self {
+        match val {
             Left(l) => Err(l),
             Right(r) => Ok(r),
         }
