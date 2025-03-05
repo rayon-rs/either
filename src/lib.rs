@@ -1280,17 +1280,17 @@ impl_specific_ref_and_mut!(str,);
 impl_specific_ref_and_mut!(
     ::std::path::Path,
     cfg(feature = "std"),
-    doc = "Requires crate feature `use_std`."
+    doc = "Requires crate feature `std`."
 );
 impl_specific_ref_and_mut!(
     ::std::ffi::OsStr,
     cfg(feature = "std"),
-    doc = "Requires crate feature `use_std`."
+    doc = "Requires crate feature `std`."
 );
 impl_specific_ref_and_mut!(
     ::std::ffi::CStr,
     cfg(feature = "std"),
-    doc = "Requires crate feature `use_std`."
+    doc = "Requires crate feature `std`."
 );
 
 impl<L, R, Target> AsRef<[Target]> for Either<L, R>
