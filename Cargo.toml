@@ -1,6 +1,6 @@
 [package]
 name = "either"
-version = "1.14.0"
+version = "1.15.0"
 authors = ["bluss"]
 edition = "2021"
 rust-version = "1.63.0"
@@ -29,7 +29,8 @@ use_std = ["std"] # deprecated alias
 serde_json = "1.0.0"
 
 [package.metadata.release]
-no-dev-version = true
+allow-branch = ["main"]
+sign-tag = true
 tag-name = "{{version}}"
 
 [package.metadata.docs.rs]
