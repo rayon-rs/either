@@ -462,6 +462,62 @@ impl<L, R> Either<L, R> {
         }
     }
 
+    /// Returns `other` if the result is [`Left`], otherwise returns the [`Right`] value of `self`.
+    ///
+    /// Arguments passed to `left_and` are eagerly evaluated; if you are passing the
+    /// result of a function call, it is recommended to use [`left_and_then`], which is
+    /// lazily evaluated.
+    ///
+    /// [`left_and_then`]: Either::left_and_then
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use either::*;
+    ///
+    /// let left: Either<_, u32> = Left(123);
+    /// assert_eq!(left.left_and::<()>(Right(246)), Right(246));
+    /// assert_eq!(left.left_and(Left(246)), Left(246));
+    ///
+    /// let right: Either<u32, _> = Right(123);
+    /// assert_eq!(right.left_and::<()>(Right(246)), Right(123));
+    /// assert_eq!(right.left_and(Left(246)), Right(123));
+    /// ```
+    pub fn left_and<S>(self, other: Either<S, R>) -> Either<S, R> {
+        match self {
+            Left(_) => other,
+            Right(r) => Right(r),
+        }
+    }
+
+    /// Returns `other` if the result is [`Right`], otherwise returns the [`Left`] value of `self`.
+    ///
+    /// Arguments passed to `left_and` are eagerly evaluated; if you are passing the
+    /// result of a function call, it is recommended to use [`right_and_then`], which is
+    /// lazily evaluated.
+    ///
+    /// [`right_and_then`]: Either::right_and_then
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use either::*;
+    ///
+    /// let left: Either<_, u32> = Left(123);
+    /// assert_eq!(left.right_and(Right(246)), Left(123));
+    /// assert_eq!(left.right_and::<()>(Left(246)), Left(123));
+    ///
+    /// let right: Either<u32, _> = Right(123);
+    /// assert_eq!(right.right_and(Right(246)), Right(246));
+    /// assert_eq!(right.right_and::<()>(Left(246)), Left(246));
+    /// ```
+    pub fn right_and<S>(self, other: Either<L, S>) -> Either<L, S> {
+        match self {
+            Left(l) => Left(l),
+            Right(_) => other,
+        }
+    }
+
     /// Apply the function `f` on the value in the `Left` variant if it is present.
     ///
     /// ```
