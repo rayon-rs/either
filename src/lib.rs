@@ -58,7 +58,10 @@ pub enum Either<L, R> {
 /// This macro is useful in cases where both sides of [`Either`] can be interacted with
 /// in the same way even though the don't share the same type.
 ///
-/// Syntax: `either::for_both!(` *expression* `,` *pattern* `=>` *expression* `)`
+/// Syntax:
+///
+/// - `either::for_both!(` *expression* `,` *pattern* `=>` *expression* `)`
+/// - `either::for_both!(` *ident* `=>` *expression* `)`
 ///
 /// # Example
 ///
@@ -77,12 +80,34 @@ pub enum Either<L, R> {
 ///     assert_eq!(length(owned), 12);
 /// }
 /// ```
+///
+/// ```
+/// use either::Either;
+///
+/// fn length(s: Either<String, Vec<u8>>) -> usize {
+///     either::for_both!(s => s.len())
+/// }
+///
+/// fn main() {
+///     let string = Either::Left("Hello world!".to_owned());
+///     let bytes = Either::Right(b"Hello world!".to_vec());
+///
+///     assert_eq!(length(string), 12);
+///     assert_eq!(length(bytes), 12);
+/// }
+/// ```
 #[macro_export]
 macro_rules! for_both {
     ($value:expr, $pattern:pat => $result:expr) => {
         match $value {
             $crate::Either::Left($pattern) => $result,
             $crate::Either::Right($pattern) => $result,
+        }
+    };
+    ($name:ident => $result:expr) => {
+        match $name {
+            $crate::Either::Left($name) => $result,
+            $crate::Either::Right($name) => $result,
         }
     };
 }
