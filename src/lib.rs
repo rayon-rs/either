@@ -807,6 +807,7 @@ impl<L, R> Either<L, R> {
     /// let right: Either<(), _> = Right(3);
     /// right.unwrap_left();
     /// ```
+    #[track_caller]
     pub fn unwrap_left(self) -> L
     where
         R: core::fmt::Debug,
@@ -838,6 +839,7 @@ impl<L, R> Either<L, R> {
     /// let left: Either<_, ()> = Left(3);
     /// left.unwrap_right();
     /// ```
+    #[track_caller]
     pub fn unwrap_right(self) -> R
     where
         L: core::fmt::Debug,
@@ -867,6 +869,7 @@ impl<L, R> Either<L, R> {
     /// let right: Either<(), _> = Right(3);
     /// right.expect_left("value was Right");
     /// ```
+    #[track_caller]
     pub fn expect_left(self, msg: &str) -> L
     where
         R: core::fmt::Debug,
@@ -896,6 +899,7 @@ impl<L, R> Either<L, R> {
     /// let left: Either<_, ()> = Left(3);
     /// left.expect_right("value was Right");
     /// ```
+    #[track_caller]
     pub fn expect_right(self, msg: &str) -> R
     where
         L: core::fmt::Debug,
