@@ -594,8 +594,6 @@ impl<L, R> Either<L, R> {
     /// assert_eq!(right.factor_into_iter().collect::<Vec<_>>(), vec![Right(0), Right(1)]);
     ///
     /// ```
-    // TODO(MSRV): doc(alias) was stabilized in Rust 1.48
-    // #[doc(alias = "transpose")]
     pub fn factor_into_iter(self) -> IterEither<L::IntoIter, R::IntoIter>
     where
         L: IntoIterator,
@@ -938,8 +936,7 @@ impl<L, R> Either<Option<L>, Option<R>> {
     /// let right: Either<Option<Vec<u8>>, _> = Right(Some(String::new()));
     /// assert_eq!(right.factor_none(), Some(Right(String::new())));
     /// ```
-    // TODO(MSRV): doc(alias) was stabilized in Rust 1.48
-    // #[doc(alias = "transpose")]
+    #[doc(alias = "transpose")]
     pub fn factor_none(self) -> Option<Either<L, R>> {
         match self {
             Left(l) => l.map(Either::Left),
@@ -961,8 +958,7 @@ impl<L, R, E> Either<Result<L, E>, Result<R, E>> {
     /// let right: Either<Result<Vec<u8>, u32>, _> = Right(Ok(String::new()));
     /// assert_eq!(right.factor_err(), Ok(Right(String::new())));
     /// ```
-    // TODO(MSRV): doc(alias) was stabilized in Rust 1.48
-    // #[doc(alias = "transpose")]
+    #[doc(alias = "transpose")]
     pub fn factor_err(self) -> Result<Either<L, R>, E> {
         match self {
             Left(l) => l.map(Either::Left),
@@ -984,8 +980,7 @@ impl<T, L, R> Either<Result<T, L>, Result<T, R>> {
     /// let right: Either<Result<u32, Vec<u8>>, _> = Right(Err(String::new()));
     /// assert_eq!(right.factor_ok(), Err(Right(String::new())));
     /// ```
-    // TODO(MSRV): doc(alias) was stabilized in Rust 1.48
-    // #[doc(alias = "transpose")]
+    #[doc(alias = "transpose")]
     pub fn factor_ok(self) -> Result<T, Either<L, R>> {
         match self {
             Left(l) => l.map_err(Either::Left),
