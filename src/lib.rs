@@ -594,7 +594,6 @@ impl<L, R> Either<L, R> {
     /// assert_eq!(right.factor_into_iter().collect::<Vec<_>>(), vec![Right(0), Right(1)]);
     ///
     /// ```
-    #[doc(alias = "transpose")]
     pub fn factor_into_iter(self) -> IterEither<L::IntoIter, R::IntoIter>
     where
         L: IntoIterator,
