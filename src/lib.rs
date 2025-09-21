@@ -346,6 +346,54 @@ impl<L, R> Either<L, R> {
         }
     }
 
+    /// Returns the provided default (if [`Right`]), or
+    /// applies a function to the contained value (if [`Left`]).
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use either::*;
+    ///
+    /// let x: Either<_, i32> = Left(123);
+    /// assert_eq!(x.map_left_or(0, |n| n*2), 246);
+    ///
+    /// let x: Either<i32, _> = Right(123);
+    /// assert_eq!(x.map_left_or(0, |n| n*2), 0);
+    /// ```
+    pub fn map_left_or<F, S>(self, default: S, f: F) -> S
+    where
+        F: FnOnce(L) -> S,
+    {
+        match self {
+            Left(left) => f(left),
+            Right(_) => default,
+        }
+    }
+
+    /// Returns the provided default (if [`Left`]), or
+    /// applies a function to the contained value (if [`Right`]).
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use either::*;
+    ///
+    /// let x: Either<_, i32> = Left(123);
+    /// assert_eq!(x.map_right_or(0, |n| n*2), 0);
+    ///
+    /// let x: Either<i32, _> = Right(123);
+    /// assert_eq!(x.map_right_or(0, |n| n*2), 246);
+    /// ```
+    pub fn map_right_or<F, S>(self, default: S, f: F) -> S
+    where
+        F: FnOnce(R) -> S,
+    {
+        match self {
+            Left(_) => default,
+            Right(right) => f(right),
+        }
+    }
+
     /// Apply the functions `f` and `g` to the `Left` and `Right` variants
     /// respectively. This is equivalent to
     /// [bimap](https://hackage.haskell.org/package/bifunctors-5/docs/Data-Bifunctor.html)
