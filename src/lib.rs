@@ -1066,10 +1066,7 @@ impl<T> Either<T, T> {
     where
         F: FnOnce(T) -> M,
     {
-        match self {
-            Left(l) => Left(f(l)),
-            Right(r) => Right(f(r)),
-        }
+        map_either!(self, t => f(t))
     }
 }
 
