@@ -11,7 +11,15 @@
 //! * `"serde"`
 //!   Disabled by default. Enable to `#[derive(Serialize, Deserialize)]` for `Either`
 //!
+//! * `"nightly"`
+//!   Disabled by default. Enable to use nightly-only features for `Iterator` implementations.
+//!   This feature should be considered unstable and may break at any time.
+//!
 
+#![cfg_attr(
+    feature = "nightly",
+    feature(iter_advance_by, try_trait_v2, trusted_len)
+)]
 #![doc(html_root_url = "https://docs.rs/either/1/")]
 #![no_std]
 
@@ -1066,10 +1074,7 @@ impl<T> Either<T, T> {
     where
         F: FnOnce(T) -> M,
     {
-        match self {
-            Left(l) => Left(f(l)),
-            Right(r) => Right(f(r)),
-        }
+        map_either!(self, t => f(t))
     }
 }
 
