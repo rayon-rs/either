@@ -130,6 +130,21 @@ where
     {
         for_both!(self, inner => inner.position(predicate))
     }
+
+    #[cfg(feature = "nightly")]
+    fn advance_by(&mut self, n: usize) -> Result<(), core::num::NonZeroUsize> {
+        for_both!(self, inner => inner.advance_by(n))
+    }
+
+    #[cfg(feature = "nightly")]
+    fn try_fold<B, F, T>(&mut self, init: B, f: F) -> T
+    where
+        Self: Sized,
+        F: FnMut(B, Self::Item) -> T,
+        T: core::ops::Try<Output = B>,
+    {
+        for_both!(self, inner => inner.try_fold(init, f))
+    }
 }
 
 impl<L, R> DoubleEndedIterator for Either<L, R>
@@ -158,6 +173,21 @@ where
     {
         for_both!(self, inner => inner.rfind(predicate))
     }
+
+    #[cfg(feature = "nightly")]
+    fn advance_back_by(&mut self, n: usize) -> Result<(), core::num::NonZeroUsize> {
+        for_both!(self, ref mut inner => inner.advance_back_by(n))
+    }
+
+    #[cfg(feature = "nightly")]
+    fn try_rfold<B, F, T>(&mut self, init: B, f: F) -> T
+    where
+        Self: Sized,
+        F: FnMut(B, Self::Item) -> T,
+        T: core::ops::Try<Output = B>,
+    {
+        for_both!(self, inner => inner.try_fold(init, f))
+    }
 }
 
 impl<L, R> ExactSizeIterator for Either<L, R>
@@ -168,6 +198,14 @@ where
     fn len(&self) -> usize {
         for_both!(self, inner => inner.len())
     }
+}
+
+#[cfg(feature = "nightly")]
+unsafe impl<L, R> iter::TrustedLen for Either<L, R>
+where
+    L: iter::TrustedLen,
+    R: iter::TrustedLen<Item = L::Item>,
+{
 }
 
 impl<L, R> iter::FusedIterator for Either<L, R>
@@ -267,6 +305,21 @@ where
     {
         wrap_either!(&mut self.inner => .position(predicate))
     }
+
+    #[cfg(feature = "nightly")]
+    fn advance_by(&mut self, n: usize) -> Result<(), core::num::NonZeroUsize> {
+        for_both!(self.inner, ref mut inner => inner.advance_by(n))
+    }
+
+    #[cfg(feature = "nightly")]
+    fn try_fold<B, F, T>(&mut self, init: B, f: F) -> T
+    where
+        Self: Sized,
+        F: FnMut(B, Self::Item) -> T,
+        T: core::ops::Try<Output = B>,
+    {
+        wrap_either!(&mut self.inner => .try_fold(init, f))
+    }
 }
 
 impl<L, R> DoubleEndedIterator for IterEither<L, R>
@@ -295,6 +348,21 @@ where
     {
         wrap_either!(&mut self.inner => .rfind(predicate))
     }
+
+    #[cfg(feature = "nightly")]
+    fn advance_back_by(&mut self, n: usize) -> Result<(), core::num::NonZeroUsize> {
+        for_both!(self.inner, ref mut inner => inner.advance_back_by(n))
+    }
+
+    #[cfg(feature = "nightly")]
+    fn try_rfold<B, F, T>(&mut self, init: B, f: F) -> T
+    where
+        Self: Sized,
+        F: FnMut(B, Self::Item) -> T,
+        T: core::ops::Try<Output = B>,
+    {
+        wrap_either!(&mut self.inner => .try_rfold(init, f))
+    }
 }
 
 impl<L, R> ExactSizeIterator for IterEither<L, R>
@@ -305,6 +373,14 @@ where
     fn len(&self) -> usize {
         for_both!(self.inner, ref inner => inner.len())
     }
+}
+
+#[cfg(feature = "nightly")]
+unsafe impl<L, R> iter::TrustedLen for IterEither<L, R>
+where
+    L: iter::TrustedLen,
+    R: iter::TrustedLen,
+{
 }
 
 impl<L, R> iter::FusedIterator for IterEither<L, R>
