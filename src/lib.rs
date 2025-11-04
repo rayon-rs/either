@@ -950,7 +950,7 @@ impl<L, R> Either<Option<L>, Option<R>> {
 }
 
 impl<L, R, E> Either<Result<L, E>, Result<R, E>> {
-    /// Factors out a homogenous type from an `Either` of [`Result`].
+    /// Factors out a homogeneous type from an `Either` of [`Result`].
     ///
     /// Here, the homogeneous type is the `Err` type of the [`Result`].
     ///
@@ -972,7 +972,7 @@ impl<L, R, E> Either<Result<L, E>, Result<R, E>> {
 }
 
 impl<T, L, R> Either<Result<T, L>, Result<T, R>> {
-    /// Factors out a homogenous type from an `Either` of [`Result`].
+    /// Factors out a homogeneous type from an `Either` of [`Result`].
     ///
     /// Here, the homogeneous type is the `Ok` type of the [`Result`].
     ///
