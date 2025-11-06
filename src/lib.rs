@@ -60,6 +60,8 @@ pub enum Either<L, R> {
 ///
 /// Syntax: `either::for_both!(` *expression* `,` *pattern* `=>` *expression* `)`
 ///
+/// Unlike [`map_both!`], this macro converges both variants to the type returned by the expression.
+///
 /// # Example
 ///
 /// ```
@@ -83,6 +85,99 @@ macro_rules! for_both {
         match $value {
             $crate::Either::Left($pattern) => $result,
             $crate::Either::Right($pattern) => $result,
+        }
+    };
+}
+
+/// Evaluate the provided expression for both [`Either::Left`] and [`Either::Right`],
+/// returning an [`Either`] with the results.
+///
+/// This macro is useful in cases where both sides of [`Either`] can be interacted with
+/// in the same way even though the don't share the same type.
+///
+/// Syntax: `either::map_both!(` *expression* `,` *pattern* `=>` *expression* `)`
+///
+/// Unlike [`for_both!`], this macro returns an [`Either`] with the results of the expressions.
+///
+/// # Example
+///
+/// ```
+/// use either::Either;
+///
+/// struct Wrapper<T>(T);
+///
+/// fn wrap(owned_or_borrowed: Either<String, &'static str>) -> Either<Wrapper<String>, Wrapper<&'static str>> {
+///    either::map_both!(owned_or_borrowed, s => Wrapper(s))
+/// }
+/// ```
+#[macro_export]
+macro_rules! map_both {
+    ($value:expr, $pattern:pat => $result:expr) => {
+        match $value {
+            $crate::Either::Left($pattern) => $crate::Either::Left($result),
+            $crate::Either::Right($pattern) => $crate::Either::Right($result),
+        }
+    };
+}
+
+/// Evaluate the provided expression for both [`Either::Left`] and [`Either::Right`],
+/// returning a `T`: [`Try`] where the [`Try::Output`] variant is an [`Either`] with outputs.
+///
+/// This macro is useful in cases where both sides of [`Either`] can be interacted with
+/// in the same way even though the don't share the same type.
+///
+/// `either::try_map_both!(` *expression* `,` *pattern* `=>` *expression* `)`
+///
+/// Unlike [`map_both!`], this macro returns a [`Try`] where the [`Try::Output`] variant is an
+/// [`Either`] with the outputs.
+///
+/// # Examples
+///
+/// Works with [`Result`]:
+///
+/// ```
+/// use either::Either;
+///
+/// fn wrap(owned_or_borrowed: Either<String, &'static str>) -> Result<Either<String, &'static str>, ()> {
+///    either::try_map_both!(owned_or_borrowed, s => Ok(s))
+/// }
+/// ```
+///
+/// Works with [`Option`]:
+///
+/// ```
+/// use either::Either;
+///
+/// fn wrap(owned_or_borrowed: Either<String, &'static str>) -> Option<Either<String, &'static str>> {
+///   either::try_map_both!(owned_or_borrowed, s => Some(s))
+/// }
+/// ```
+///
+/// If you want to see another [`Try`](https://doc.rust-lang.org/beta/std/ops/trait.Try.html) type
+/// supported, please open an issue or a PR.
+///
+/// [`Try`]: https://doc.rust-lang.org/beta/std/ops/trait.Try.html
+/// [`Try::Output`]: https://doc.rust-lang.org/beta/std/ops/trait.Try.html#associatedtype.Output
+#[macro_export]
+macro_rules! try_map_both {
+    ($value:expr, $pattern:pat => $result:expr) => {
+        match $value {
+            $crate::Either::Left($pattern) => {
+                let f = move || {
+                    let result = $result?;
+                    let e = $crate::Either::Left(result);
+                    <_ as $crate::__either_internals::Tryish>::from_output(e)
+                };
+                f()
+            }
+            $crate::Either::Right($pattern) => {
+                let f = move || {
+                    let result = $result?;
+                    let e = $crate::Either::Right(result);
+                    <_ as $crate::__either_internals::Tryish>::from_output(e)
+                };
+                f()
+            }
         }
     };
 }
@@ -126,15 +221,6 @@ macro_rules! try_right {
         match $expr {
             $crate::Left(err) => return $crate::Left(::core::convert::From::from(err)),
             $crate::Right(val) => val,
-        }
-    };
-}
-
-macro_rules! map_either {
-    ($value:expr, $pattern:pat => $result:expr) => {
-        match $value {
-            Left($pattern) => Left($result),
-            Right($pattern) => Right($result),
         }
     };
 }
@@ -523,7 +609,7 @@ impl<L, R> Either<L, R> {
         L: IntoIterator,
         R: IntoIterator<Item = L::Item>,
     {
-        map_either!(self, inner => inner.into_iter())
+        map_both!(self, inner => inner.into_iter())
     }
 
     /// Borrow the inner value as an iterator.
@@ -546,7 +632,7 @@ impl<L, R> Either<L, R> {
         for<'a> &'a L: IntoIterator,
         for<'a> &'a R: IntoIterator<Item = <&'a L as IntoIterator>::Item>,
     {
-        map_either!(self, inner => inner.into_iter())
+        map_both!(self, inner => inner.into_iter())
     }
 
     /// Mutably borrow the inner value as an iterator.
@@ -577,7 +663,7 @@ impl<L, R> Either<L, R> {
         for<'a> &'a mut L: IntoIterator,
         for<'a> &'a mut R: IntoIterator<Item = <&'a mut L as IntoIterator>::Item>,
     {
-        map_either!(self, inner => inner.into_iter())
+        map_both!(self, inner => inner.into_iter())
     }
 
     /// Converts an `Either` of `Iterator`s to be an `Iterator` of `Either`s
@@ -599,7 +685,7 @@ impl<L, R> Either<L, R> {
         L: IntoIterator,
         R: IntoIterator,
     {
-        IterEither::new(map_either!(self, inner => inner.into_iter()))
+        IterEither::new(map_both!(self, inner => inner.into_iter()))
     }
 
     /// Borrows an `Either` of `Iterator`s to be an `Iterator` of `Either`s
@@ -623,7 +709,7 @@ impl<L, R> Either<L, R> {
         for<'a> &'a L: IntoIterator,
         for<'a> &'a R: IntoIterator,
     {
-        IterEither::new(map_either!(self, inner => inner.into_iter()))
+        IterEither::new(map_both!(self, inner => inner.into_iter()))
     }
 
     /// Mutably borrows an `Either` of `Iterator`s to be an `Iterator` of `Either`s
@@ -649,7 +735,7 @@ impl<L, R> Either<L, R> {
         for<'a> &'a mut L: IntoIterator,
         for<'a> &'a mut R: IntoIterator,
     {
-        IterEither::new(map_either!(self, inner => inner.into_iter()))
+        IterEither::new(map_both!(self, inner => inner.into_iter()))
     }
 
     /// Return left value or given value
@@ -1554,4 +1640,45 @@ fn _unsized_std_propagation() {
     check_t!(::std::path::Path);
     check_t!(::std::ffi::OsStr);
     check_t!(::std::ffi::CStr);
+}
+
+mod private {
+    /// The trait that allows [sealing] the hidden [`Tryish`](super::__either_internals::Tryish)
+    /// trait, which is used in [`try_map_both`] macro.
+    ///
+    /// [sealing]: https://rust-lang.github.io/api-guidelines/future-proofing.html#sealed-traits-protect-against-downstream-implementations-c-sealed
+    pub trait TryishSealed {}
+}
+
+#[doc(hidden)]
+pub mod __either_internals {
+    use super::private::TryishSealed;
+
+    /// The minimal interface for a type to be used with [`try_map_both`]
+    /// while [`Try`](https://doc.rust-lang.org/beta/std/ops/trait.Try.html)
+    /// trait is unstable.
+    pub trait Tryish: TryishSealed {
+        type Output;
+
+        fn from_output(output: Self::Output) -> Self;
+    }
+
+    impl<T, E> TryishSealed for Result<T, E> {}
+    impl<T> TryishSealed for Option<T> {}
+
+    impl<T> Tryish for Option<T> {
+        type Output = T;
+
+        fn from_output(output: Self::Output) -> Self {
+            Some(output)
+        }
+    }
+
+    impl<T, E> Tryish for Result<T, E> {
+        type Output = T;
+
+        fn from_output(output: Self::Output) -> Self {
+            Ok(output)
+        }
+    }
 }
