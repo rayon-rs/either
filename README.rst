@@ -14,13 +14,14 @@ Please read the `API documentation here`__
 
 __ https://docs.rs/either/
 
-|build_status|_ |crates|_
+|build_status|_ |crates|_ |codecov|_
 
 .. |build_status| image:: https://github.com/rayon-rs/either/workflows/CI/badge.svg?branch=main
 .. _build_status: https://github.com/rayon-rs/either/actions
 
 .. |crates| image:: https://img.shields.io/crates/v/either.svg
 .. _crates: https://crates.io/crates/either
+.. |codecov| image:: https://codecov.io/gh/rayon-rs/either/branch/main/graph/badge.svg
 
 How to use with cargo::
 
