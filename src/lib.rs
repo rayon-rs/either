@@ -112,12 +112,26 @@ macro_rules! for_both {
 ///     either::map_both!(owned_or_borrowed, s => Wrapper(s))
 /// }
 /// ```
+///
+/// ```
+/// use either::Either;
+///
+/// fn widen(x: Either<i32, u32>) -> Either<i64, u64> {
+///     either::map_both!(x => x.into())
+/// }
+/// ```
 #[macro_export]
 macro_rules! map_both {
     ($value:expr, $pattern:pat => $result:expr) => {
         match $value {
             $crate::Either::Left($pattern) => $crate::Either::Left($result),
             $crate::Either::Right($pattern) => $crate::Either::Right($result),
+        }
+    };
+    ($name:ident => $result:expr) => {
+        match $name {
+            $crate::Either::Left($name) => $crate::Either::Left($result),
+            $crate::Either::Right($name) => $crate::Either::Right($result),
         }
     };
 }
