@@ -462,7 +462,7 @@ impl<L, R> Either<L, R> {
         }
     }
 
-    /// Returns `other` if the result is [`Left`], otherwise returns the [`Right`] value of `self`.
+    /// Returns `other` if the value is [`Left`], otherwise returns the [`Right`] value of `self`.
     ///
     /// Arguments passed to `left_and` are eagerly evaluated; if you are passing the
     /// result of a function call, it is recommended to use [`left_and_then`], which is
@@ -490,9 +490,9 @@ impl<L, R> Either<L, R> {
         }
     }
 
-    /// Returns `other` if the result is [`Right`], otherwise returns the [`Left`] value of `self`.
+    /// Returns `other` if the value is [`Right`], otherwise returns the [`Left`] value of `self`.
     ///
-    /// Arguments passed to `left_and` are eagerly evaluated; if you are passing the
+    /// Arguments passed to `right_and` are eagerly evaluated; if you are passing the
     /// result of a function call, it is recommended to use [`right_and_then`], which is
     /// lazily evaluated.
     ///
