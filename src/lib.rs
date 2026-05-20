@@ -106,8 +106,10 @@ macro_rules! for_both {
 ///
 /// struct Wrapper<T>(T);
 ///
-/// fn wrap(owned_or_borrowed: Either<String, &'static str>) -> Either<Wrapper<String>, Wrapper<&'static str>> {
-///    either::map_both!(owned_or_borrowed, s => Wrapper(s))
+/// fn wrap(
+///     owned_or_borrowed: Either<String, &'static str>,
+/// ) -> Either<Wrapper<String>, Wrapper<&'static str>> {
+///     either::map_both!(owned_or_borrowed, s => Wrapper(s))
 /// }
 /// ```
 #[macro_export]
