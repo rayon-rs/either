@@ -355,10 +355,10 @@ impl<L, R> Either<L, R> {
     /// use either::*;
     ///
     /// let x: Either<_, i32> = Left(123);
-    /// assert_eq!(x.map_left_or(0, |n| n*2), 246);
+    /// assert_eq!(x.map_left_or(0, |n| n * 2), 246);
     ///
     /// let x: Either<i32, _> = Right(123);
-    /// assert_eq!(x.map_left_or(0, |n| n*2), 0);
+    /// assert_eq!(x.map_left_or(0, |n| n * 2), 0);
     /// ```
     pub fn map_left_or<F, S>(self, default: S, f: F) -> S
     where
@@ -379,10 +379,10 @@ impl<L, R> Either<L, R> {
     /// use either::*;
     ///
     /// let x: Either<_, i32> = Left(123);
-    /// assert_eq!(x.map_right_or(0, |n| n*2), 0);
+    /// assert_eq!(x.map_right_or(0, |n| n * 2), 0);
     ///
     /// let x: Either<i32, _> = Right(123);
-    /// assert_eq!(x.map_right_or(0, |n| n*2), 246);
+    /// assert_eq!(x.map_right_or(0, |n| n * 2), 246);
     /// ```
     pub fn map_right_or<F, S>(self, default: S, f: F) -> S
     where
