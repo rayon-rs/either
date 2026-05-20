@@ -179,7 +179,7 @@ impl<L, R> Either<L, R> {
         }
     }
 
-    /// Returns `true` if the result is [`Left`] and the value inside of it matches a predicate.
+    /// Returns `true` if the value is [`Left`] and the value inside of it matches a predicate.
     ///
     /// # Examples
     ///
@@ -204,7 +204,7 @@ impl<L, R> Either<L, R> {
         }
     }
 
-    /// Returns `true` if the result is [`Right`] and the value inside of it matches a predicate.
+    /// Returns `true` if the value is [`Right`] and the value inside of it matches a predicate.
     ///
     /// # Examples
     ///
