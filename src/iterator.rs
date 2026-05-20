@@ -1,4 +1,4 @@
-use super::{for_both, Either, Left, Right};
+use super::{Either, Left, Right};
 use core::iter;
 
 macro_rules! wrap_either {
