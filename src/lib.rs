@@ -908,6 +908,56 @@ impl<L, R> Either<L, R> {
         }
     }
 
+    /// Calls a function with a reference to the contained value if [`Left`].
+    ///
+    /// Returns the original self.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use either::*;
+    ///
+    /// # fn foo() -> Either<u32, u32> { Right(2) }
+    /// let x = foo()
+    ///     .inspect_left(|n| println!("left: {n}"))
+    ///     .left_or(0);
+    /// ```
+    pub fn inspect_left<F>(self, f: F) -> Self
+    where
+        F: FnOnce(&L),
+    {
+        if let Left(ref left) = self {
+            f(left);
+        }
+
+        self
+    }
+
+    /// Calls a function with a reference to the contained value if [`Right`].
+    ///
+    /// Returns the original self.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use either::*;
+    ///
+    /// # fn foo() -> Either<u32, u32> { Right(2) }
+    /// let x = foo()
+    ///     .inspect_right(|n| println!("right: {n}"))
+    ///     .left_or(0);
+    /// ```
+    pub fn inspect_right<F>(self, f: F) -> Self
+    where
+        F: FnOnce(&R),
+    {
+        if let Right(ref right) = self {
+            f(right);
+        }
+
+        self
+    }
+
     /// Convert the contained value into `T`
     ///
     /// # Examples
