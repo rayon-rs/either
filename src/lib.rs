@@ -1644,6 +1644,26 @@ where
     }
 }
 
+impl<L, R> fmt::LowerHex for Either<L, R>
+where
+    L: fmt::LowerHex,
+    R: fmt::LowerHex,
+{
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        for_both!(self, inner => inner.fmt(f))
+    }
+}
+
+impl<L, R> fmt::UpperHex for Either<L, R>
+where
+    L: fmt::UpperHex,
+    R: fmt::UpperHex,
+{
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        for_both!(self, inner => inner.fmt(f))
+    }
+}
+
 impl<L, R> fmt::Write for Either<L, R>
 where
     L: fmt::Write,
@@ -1698,6 +1718,16 @@ fn deref() {
     fn is_str(_: &str) {}
     let value: Either<String, &str> = Left(String::from("test"));
     is_str(&value);
+}
+
+#[test]
+fn fmt_traits() {
+    use std::format;
+
+    let value: Either<u32, i32> = Left(0xC0DE);
+    assert_eq!("49374", format!("{value}"));
+    assert_eq!("c0de", format!("{value:x}"));
+    assert_eq!("C0DE", format!("{value:X}"));
 }
 
 #[test]
