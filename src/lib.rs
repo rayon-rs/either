@@ -1727,6 +1727,10 @@ fn fmt_traits() {
     assert_eq!("4.9374E4", format!("{value:E}"));
     // fmt::UpperHex
     assert_eq!("C0DE", format!("{value:X}"));
+
+    // fmt::Pointer
+    let pointer: Either<*const u32, &mut i32> = Left(std::ptr::null());
+    assert_eq!("0x0", format!("{pointer:p}"));
 }
 
 #[test]
