@@ -31,6 +31,10 @@ How to use with cargo::
 Recent Changes
 --------------
 
+- 1.17.0
+
+  - Add implementations for all ``std::fmt`` traits, by @msrd0 (#141)
+
 - 1.16.0
 
   - Add many new methods dealing with each side, by @A4-Tacks:
