@@ -1,12 +1,15 @@
 # Either
 
-The enum `Either` with variants `Left` and `Right` and trait
-implementations including Iterator, Read, Write.
+The enum `Either` with variants `Left` and `Right` is a general purpose sum
+type with two cases.
 
-Either has methods that are similar to Option and Result.
+`Either` has methods that are similar to `Option` and `Result`, and it also
+implements traits like `Iterator`, `Read`, and `Write`.
 
-Includes convenience macros `try_left!()` and `try_right!()` to use for
-short-circuiting logic.
+The crate includes macros `try_left!()` and `try_right!()` to use for
+short-circuiting logic, similar to how the `?` operator is used with `Result`.
+Note that `Either` is general purpose and unopinionated about the meaning of
+`Left` and `Right`. For describing success or error, use the regular `Result`.
 
 Please read the [API documentation here](https://docs.rs/either/)
 
