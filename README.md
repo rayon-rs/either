@@ -17,7 +17,7 @@ Note that `Either` is general purpose and unopinionated about the meaning of
 `Left` and `Right`. For describing success or error, use the regular `Result`.
 
 Please read the [API documentation here](https://docs.rs/either/), and see
-[RELEASES.md][RELEASES.md] for the version history.
+[RELEASES.md](RELEASES.md) for the version history.
 
 How to use with cargo:
 
