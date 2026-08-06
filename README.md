@@ -1,5 +1,10 @@
 # Either
 
+[![Either crate](https://img.shields.io/crates/v/either.svg)](https://crates.io/crates/either)
+[![Either documentation](https://docs.rs/either/badge.svg)](https://docs.rs/either)
+![minimum rustc 1.63](https://img.shields.io/badge/rustc-1.63+-red.svg)
+[![build status](https://github.com/rayon-rs/either/actions/workflows/ci.yml/badge.svg)](https://github.com/rayon-rs/either/actions)
+
 The enum `Either` with variants `Left` and `Right` is a general purpose sum
 type with two cases.
 
@@ -13,9 +18,6 @@ Note that `Either` is general purpose and unopinionated about the meaning of
 
 Please read the [API documentation here](https://docs.rs/either/), and see
 [RELEASES.md][RELEASES.md] for the version history.
-
-[![build_status](https://github.com/rayon-rs/either/actions/workflows/ci.yml/badge.svg)](https://github.com/rayon-rs/either/actions)
-[![crates](https://img.shields.io/crates/v/either.svg)](https://crates.io/crates/either)
 
 How to use with cargo:
 
