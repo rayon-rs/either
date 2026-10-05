@@ -14,6 +14,7 @@
 
 #![doc(html_root_url = "https://docs.rs/either/1/")]
 #![no_std]
+#![cfg_attr(feature = "nightly", feature(trusted_len))]
 
 #[cfg(any(test, feature = "std"))]
 extern crate std;

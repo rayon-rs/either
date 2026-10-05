@@ -219,6 +219,14 @@ where
 {
 }
 
+#[cfg(feature = "nightly")]
+unsafe impl<L, R> iter::TrustedLen for Either<L, R>
+where
+    L: iter::TrustedLen,
+    R: iter::TrustedLen<Item = L::Item>,
+{
+}
+
 impl<L, R> Iterator for IterEither<L, R>
 where
     L: Iterator,
