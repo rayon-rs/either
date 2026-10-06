@@ -20,6 +20,9 @@ jobs:
         features:
           - ""
           - "serde"
+        include:
+          - rust: nightly
+            features: "nightly"
 
     steps:
       - name: Checkout
